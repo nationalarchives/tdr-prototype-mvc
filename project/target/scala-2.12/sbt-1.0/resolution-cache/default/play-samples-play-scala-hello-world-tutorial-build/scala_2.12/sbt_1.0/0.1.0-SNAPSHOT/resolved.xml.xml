@@ -4,7 +4,7 @@
 		module="play-samples-play-scala-hello-world-tutorial-build"
 		revision="0.1.0-SNAPSHOT"
 		status="integration"
-		publication="20190619133544"
+		publication="20190619141454"
 		e:sbtVersion="1.0" e:scalaVersion="2.12"
 	>
 		<description>
