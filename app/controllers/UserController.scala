@@ -1,7 +1,7 @@
 package controllers
 
 import javax.inject._
-import models.{User}
+import models.User
 import play.api.data.Form
 import play.api.data.Forms.{mapping, nonEmptyText}
 import play.api.mvc._
@@ -32,7 +32,6 @@ class UserController @Inject()(cc: MessagesControllerComponents) extends Message
       BadRequest(views.html.login(formWithErrors, formSubmitUrl))
     }
     val successFunction = { user: User =>
-      // form validation/binding succeeded ...
       val foundUser: Boolean = true
       if (foundUser) {
         Redirect(routes.DashboardController.index())
