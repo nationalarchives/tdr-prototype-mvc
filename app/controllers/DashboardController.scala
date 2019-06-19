@@ -9,9 +9,13 @@ import play.api.mvc._
   * application's home page.
   */
 @Singleton
-class DashboardController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
+class DashboardController @Inject()(
+  cc: ControllerComponents,
+  authenticatedUserAction: AuthenticatedUserAction
+)extends AbstractController(cc) {
 
-  def index() = Action { implicit request: Request[AnyContent] =>
+  def index() = authenticatedUserAction { implicit request: Request[AnyContent] =>
     Ok(views.html.dashboard())
   }
+
 }
