@@ -10,6 +10,7 @@ GET     /tutorial                           controllers.HomeController.tutorial
 GET     /dashboard                          controllers.DashboardController.index
 GET     /login                              controllers.UserController.loginForm
 POST    /users/doLogin                      controllers.UserController.processLoginAttempt
+GET     /authenticate/cognito               controllers.AuthController.authenticate
 
 
 # Map static resources from the /public folder to the /assets URL path
