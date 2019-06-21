@@ -10,13 +10,18 @@ It is based on the [Play Hello World Scala seed project][hello-world].
 
 ## Run the project
 
-You will need several configuration values from AWS:
+You will need several configuration values:
 
-- A [Cognito client app][cognito-app] ID and secret
-- An access key and secret key for an IAM user who has permission to view users of the Cognito user pool. For this
+- AWS configuration:
+  - A [Cognito client app][cognito-app] ID and secret
+  - An access key and secret key for an IAM user who has permission to view users of the Cognito user pool. For this
   prototype, you can use your developer keys
+- Several keys to use for cryptographic signing. In development, these can be any string value. In deployed
+  environments, they should be a unique random key.
 
 [cognito-app]: https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html
+
+### Command line
 
 Run sbt, filling in the environment variable values:
 
@@ -24,8 +29,23 @@ Run sbt, filling in the environment variable values:
 COGNITO_CLIENT_ID=some_client_id \
 COGNITO_CLIENT_SECRET=some_client_secret \
 AWS_ACCESS_KEY_ID=some_access_key \
-AWS_SECRET_ACCESS_KEY=some_secret_key
+AWS_SECRET_ACCESS_KEY=some_secret_key \
+AUTHENTICATOR_SIGNER_KEY=changeme \
+AUTHENTICATOR_CRYPTER_KEY=changeme \
+CSRF_SIGNER_KEY=changeme \
+SOCIAL_STATE_SIGNER_KEY=changeme \
 sbt run
 ```
+
+Then visit <http://localhost:9000>
+
+### IntelliJ
+
+Add a new sbt configuration:
+
+- Set the task to `run`
+- Uncheck "Use SBT shell" so that you can edit the environment variables
+- Add an environment variable for each of the values in the command line section above
+- Save the configuration, and hit Run or Debug
 
 Then visit <http://localhost:9000>
