@@ -1,37 +1,31 @@
-# Play Hello World Web Tutorial for Scala
+# Transfer Digital Records: MVC prototype
 
-To follow the steps in this tutorial, you will need the correct version of Java and sbt. The template requires:
+## Purpose
 
-* Java Software Developer's Kit (SE) 1.8 or higher
-* sbt 0.13.15 or higher (we recommend 1.2.3) Note: if you downloaded this project as a zip file from https://developer.lightbend.com, the file includes an sbt distribution for your convenience.
+Prototype project to experiment with the basic features of the Transfer Digital Records project in a Play MVC app.
 
-To check your Java version, enter the following in a command window:
+It is based on the [Play Hello World Scala seed project][hello-world].
 
-```bash
-java -version
+[hello-world]: https://github.com/playframework/play-samples/tree/2.7.x/play-scala-hello-world-tutorial
+
+## Run the project
+
+You will need several configuration values from AWS:
+
+- A [Cognito client app][cognito-app] ID and secret
+- An access key and secret key for an IAM user who has permission to view users of the Cognito user pool. For this
+  prototype, you can use your developer keys
+
+[cognito-app]: https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html
+
+Run sbt, filling in the environment variable values:
+
+```
+COGNITO_CLIENT_ID=some_client_id \
+COGNITO_CLIENT_SECRET=some_client_secret \
+AWS_ACCESS_KEY_ID=some_access_key \
+AWS_SECRET_ACCESS_KEY=some_secret_key
+sbt run
 ```
 
-To check your sbt version, enter the following in a command window:
-
-```bash
-sbt sbt-version
-```
-
-If you do not have the required versions, follow these links to obtain them:
-
-* [Java SE](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
-* [sbt](http://www.scala-sbt.org/download.html)
-
-## Build and run the project
-
-This example Play project was created from a seed template. It includes all Play components and an Akka HTTP server. The project is also configured with filters for Cross-Site Request Forgery (CSRF) protection and security headers.
-
-To build and run the project:
-
-1. Use a command window to change into the example project directory, for example: `cd play-scala-hello-world-web`
-
-2. Build the project. Enter: `sbt run`. The project builds and starts the embedded HTTP server. Since this downloads libraries and dependencies, the amount of time required depends partly on your connection's speed.
-
-3. After the message `Server started, ...` displays, enter the following URL in a browser: <http://localhost:9000>
-
-The Play application responds: `Welcome to the Hello World Tutorial!`
+Then visit <http://localhost:9000>
