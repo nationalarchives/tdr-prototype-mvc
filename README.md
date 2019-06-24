@@ -8,6 +8,12 @@ It is based on the [Play Hello World Scala seed project][hello-world].
 
 [hello-world]: https://github.com/playframework/play-samples/tree/2.7.x/play-scala-hello-world-tutorial
 
+## Design
+
+This project uses the [GOV.UK Design System][govuk-design] to lay out the pages and style components.
+
+[govuk-design]: https://design-system.service.gov.uk/
+
 ## Run the project
 
 You will need several configuration values:
