@@ -5,11 +5,7 @@
 
 # An example controller showing a sample home page
 GET     /                                   controllers.HomeController.index
-GET     /explore                            controllers.HomeController.explore
-GET     /tutorial                           controllers.HomeController.tutorial
 GET     /dashboard                          controllers.DashboardController.index
-GET     /login                              controllers.UserController.loginForm
-POST    /users/doLogin                      controllers.UserController.processLoginAttempt
 GET     /authenticate/cognito               controllers.AuthController.authenticate
 
 
