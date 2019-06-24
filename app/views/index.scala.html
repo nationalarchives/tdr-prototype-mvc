@@ -3,10 +3,9 @@
 @main("Welcome") {
 @defining(play.core.PlayVersion.current) { version =>
 
-<section id="content">
-  <p>
-    <a href="@routes.AuthController.authenticate">Log in with Cognito</a>
-  </p>
-</section>
+  <h1 class="govuk-heading-xl">Transfer Digital Records</h1>
+  <a href="@routes.AuthController.authenticate" role="button" draggable="false" class="govuk-button govuk-button--start">
+    Sign in
+  </a>
 }
 }

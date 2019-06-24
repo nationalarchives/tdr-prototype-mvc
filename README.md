@@ -8,6 +8,12 @@ It is based on the [Play Hello World Scala seed project][hello-world].
 
 [hello-world]: https://github.com/playframework/play-samples/tree/2.7.x/play-scala-hello-world-tutorial
 
+## Design
+
+This project uses the [GOV.UK Design System][govuk-design] to lay out the pages and style components.
+
+[govuk-design]: https://design-system.service.gov.uk/
+
 ## Run the project
 
 You will need several configuration values:
@@ -20,6 +26,22 @@ You will need several configuration values:
   environments, they should be a unique random key.
 
 [cognito-app]: https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-client-apps.html
+
+You will also need to setup a user in the userpool:
+1. Go to the user pool where you have created the Cognito client app
+2. Go to "General Settings" > "Users and groups" > "Create users"
+3. Fill in the information on the dialog.
+  * If you are not using a genuine email address for the user, you will need manually verify the user in AWS. See instructions below. 
+4. Note down the user details, to enable login when you run the application.
+
+#### Manually Verify User
+
+1. If you used a dummy email address, you must confirm the user manually through the Cognito console.
+2. From the AWS console, click Services then select Cognito under Security, Identity & Compliance.
+3. Choose Manage your User Pools
+4. Select the user pool you created the user under and click Users and groups in the left navigation bar.
+5. You should see a user corresponding to the email address that you submitted through the registration page. Choose that username to view the user detail page.
+6. Choose Confirm user to finalize the account creation process.
 
 ### Command line
 
