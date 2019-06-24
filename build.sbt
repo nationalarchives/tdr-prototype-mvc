@@ -7,6 +7,8 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 scalaVersion := "2.12.8"
 
+resolvers += "Atlassian Releases" at "https://maven.atlassian.com/public/"
+
 crossScalaVersions := Seq("2.12.8", "2.11.12")
 
 libraryDependencies += guice
