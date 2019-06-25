@@ -1,6 +1,6 @@
-'use strict';
+import React, { Component } from "react";
 
-class FileUpload extends React.Component {
+class FileUpload extends Component {
     constructor(props) {
         super(props);
         this.state = {};
@@ -21,7 +21,4 @@ class FileUpload extends React.Component {
     }
 }
 
-const domContainer = document.querySelector('#file_upload_container');
-if (domContainer) {
-    ReactDOM.render(<FileUpload/>, domContainer);
-}
+export default FileUpload;
