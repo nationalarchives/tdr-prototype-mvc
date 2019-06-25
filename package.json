@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/nationalarchives/tdr-prototype-mvc/issues"
   },
-  "homepage": "https://github.com/nationalarchives/tdr-prototype-mvc#readme"
+  "homepage": "https://github.com/nationalarchives/tdr-prototype-mvc#readme",
+  "devDependencies": {
+    "webpack": "^4.35.0"
+  }
 }
