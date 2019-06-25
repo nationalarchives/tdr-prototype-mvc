@@ -1,9 +1,11 @@
 @()
 
 @main("Dashboard") {
-    @defining(play.core.PlayVersion.current) { version =>
-        <h1 class="govuk-heading-xl">Dashboard</h1>
+@defining(play.core.PlayVersion.current) { version =>
+    <h1 class="govuk-heading-xl">Dashboard</h1>
 
-        <div id="like_button_container"></div>
-    }
+    <a href="@routes.UploadController.index" role="button" draggable="false" class="govuk-button govuk-button--start">
+        Upload files
+    </a>
+}
 }
