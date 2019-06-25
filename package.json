@@ -1,0 +1,19 @@
+{
+  "name": "tdr-mvc-prototype",
+  "version": "0.1.0",
+  "description": "MVC prototype of the Transfer Digital Records frontend application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nationalarchives/tdr-prototype-mvc.git"
+  },
+  "author": "The National Archives",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/nationalarchives/tdr-prototype-mvc/issues"
+  },
+  "homepage": "https://github.com/nationalarchives/tdr-prototype-mvc#readme"
+}
