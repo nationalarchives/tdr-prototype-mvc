@@ -2,9 +2,9 @@
   "name": "tdr-mvc-prototype",
   "version": "0.1.0",
   "description": "MVC prototype of the Transfer Digital Records frontend application",
-  "main": "index.js",
+  "private":  true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "webpack --config webpack.config.js"
   },
   "repository": {
     "type": "git",
@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/nationalarchives/tdr-prototype-mvc#readme",
   "devDependencies": {
-    "webpack": "^4.35.0"
+    "webpack": "^4.35.0",
+    "webpack-cli": "^3.3.5"
   }
 }
