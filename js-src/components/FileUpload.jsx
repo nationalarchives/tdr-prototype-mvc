@@ -1,15 +1,13 @@
 import React, { Component } from "react";
 import {
-    IAuthenticationDetailsData,
-    AuthenticationDetails,
     CognitoUserPool,
     CognitoUserSession,
     CognitoIdToken,
     CognitoRefreshToken,
     CognitoAccessToken,
-    ICognitoUserData,
     CognitoUser
 } from "amazon-cognito-identity-js";
+
 import AWS from "aws-sdk";
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
 
@@ -49,10 +47,6 @@ class FileUpload extends Component {
                 // the user that logged into the app.
                 const userName = decoded["cognito:username"];
 
-                console.log("Decoded:");
-                console.log(decoded);
-                console.log("User name: " + userName);
-
                 const session = new CognitoUserSession({
                     IdToken: new CognitoIdToken({ IdToken: json.id_token }),
                     RefreshToken: new CognitoRefreshToken({ RefreshToken: json.refresh_token }),
@@ -65,13 +59,7 @@ class FileUpload extends Component {
                 });
                 user.setSignInUserSession(session);
 
-                console.log("User:");
-                console.log(user);
-
                 const currentUser = userPool.getCurrentUser();
-
-                console.log("Current user:");
-                console.log(currentUser);
 
                 currentUser.getSession((err, session) => {
                     if (err) {
@@ -79,19 +67,43 @@ class FileUpload extends Component {
                         console.log(err);
                     } else {
                         console.log("Got session");
-                        currentUser.getUserAttributes((err, userData) => {
-                            if (err) {
-                                console.log("Error getting user attributes");
-                                console.log(err);
-                            } else {
-                                console.log("Got user attributes");
-                                console.log(userData);
+
+                        const cognitoLoginId = "cognito-idp.eu-west-2.amazonaws.com/eu-west-2_6Mn0M2i9C";
+
+                        console.log("Configuring AWS creds");
+                        console.log("JWT token:");
+                        console.log(session.getIdToken().getJwtToken());
+
+                        AWS.config.region = "eu-west-2";
+                        AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+                            IdentityPoolId: "eu-west-2:dc4d5838-bca5-40f6-bc62-97e5fe4d7d00",
+                            Logins: {
+                                [cognitoLoginId]: session.getIdToken().getJwtToken()
                             }
                         });
+
+                        const s3 = new AWS.S3({
+                            params: {
+                                Bucket: "tdr-files"
+                            }
+                        });
+
+                        const filename = "tmp-file-" + new Date().getTime();
+
+                        s3.upload(
+                            {
+                                Key: filename,
+                                Body: "placeholder content",
+                                Bucket: "tdr-files"
+                            },
+                            {},
+                            function(err) {
+                                console.log("Error uploading files to S3");
+                                console.log(err);
+                            }
+                        );
                     }
                 });
-
-
 
                 this.setState({
                     awsCode: awsCode
