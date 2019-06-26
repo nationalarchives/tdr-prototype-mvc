@@ -1,8 +1,8 @@
 import React, {Component} from "react";
 
-import {authenticateUser, getUserPool} from "../aws/auth";
+import {authenticateUser} from "../aws/auth";
 
-import AWS from "aws-sdk";
+import {uploadFile} from "../aws/s3Upload";
 
 class FileUpload extends Component {
     constructor(props) {
@@ -17,53 +17,18 @@ class FileUpload extends Component {
 
         const component = this;
 
-        const userPool = getUserPool();
-
         authenticateUser(awsCode).then(() => {
-            const currentUser = userPool.getCurrentUser();
 
-            currentUser.getSession((err, session) => {
-                if (err) {
-                    console.log("Error getting user session");
-                    console.log(err);
-                } else {
-                    const cognitoLoginId = "cognito-idp.eu-west-2.amazonaws.com/eu-west-2_6Mn0M2i9C";
+            const fileName = "tmp-file-" + new Date().getTime();
+            const fileBody = "placeholder content";
 
-                    AWS.config.region = "eu-west-2";
-                    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-                        IdentityPoolId: "eu-west-2:4b26364a-3070-4f98-8e86-1e33a1b54d85",
-                        Logins: {
-                            [cognitoLoginId]: session.getIdToken().getJwtToken()
-                        }
-                    });
-
-                    const s3 = new AWS.S3({
-                        params: {
-                            Bucket: "tdr-files"
-                        }
-                    });
-
-                    const filename = "tmp-file-" + new Date().getTime();
-
-                    s3.upload(
-                        {
-                            Key: `tmp-play-app/${filename}`,
-                            Body: "placeholder content",
-                            Bucket: "tdr-files"
-                        },
-                        {},
-                        function(err) {
-                            if (err) {
-                                console.log("Error uploading files to S3");
-                                console.log(err);
-                            } else {
-                                component.setState({
-                                    uploadedFile: filename
-                                });
-                            }
-                        }
-                    );
-                }
+            uploadFile(fileName, fileBody).then(() => {
+                component.setState({
+                    uploadedFile: fileName
+                });
+            }).catch(error => {
+                console.log("Error uploading file");
+                console.log(error)
             });
         }).catch(error => {
             console.log("Error authenticating user");
