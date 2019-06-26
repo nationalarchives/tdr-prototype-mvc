@@ -76,7 +76,7 @@ class FileUpload extends Component {
 
                         AWS.config.region = "eu-west-2";
                         AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-                            IdentityPoolId: "eu-west-2:dc4d5838-bca5-40f6-bc62-97e5fe4d7d00",
+                            IdentityPoolId: "eu-west-2:4b26364a-3070-4f98-8e86-1e33a1b54d85",
                             Logins: {
                                 [cognitoLoginId]: session.getIdToken().getJwtToken()
                             }
