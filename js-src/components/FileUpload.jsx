@@ -37,10 +37,9 @@ class FileUpload extends Component {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: `grant_type=authorization_code&client_id=2u2clbhcqnjaj3fn0jaid078ao&redirect_uri=http://localhost:9000/upload&code=${awsCode}`
+            body: `grant_type=authorization_code&scope=openid+profile&client_id=2u2clbhcqnjaj3fn0jaid078ao&redirect_uri=http://localhost:9000/upload&code=${awsCode}`
         })
             .then(res => {
-                console.log("Got token response");
                 return res.json();
             })
             .then(json => {
@@ -50,9 +49,6 @@ class FileUpload extends Component {
                     AccessToken: new CognitoAccessToken({ AccessToken: json.access_token })
                 });
 
-                console.log("Is session valid?");
-                console.log(session.isValid());
-
                 const user = new CognitoUser({
                     // TODO: Get programatically
                     Username: "play-test-user",
@@ -60,10 +56,33 @@ class FileUpload extends Component {
                 });
                 user.setSignInUserSession(session);
 
+                console.log("User:");
+                console.log(user);
+
                 const currentUser = userPool.getCurrentUser();
 
                 console.log("Current user:");
                 console.log(currentUser);
+
+                currentUser.getSession((err, session) => {
+                    if (err) {
+                        console.log("Error getting user session");
+                        console.log(err);
+                    } else {
+                        console.log("Got session");
+                        currentUser.getUserAttributes((err, userData) => {
+                            if (err) {
+                                console.log("Error getting user attributes");
+                                console.log(err);
+                            } else {
+                                console.log("Got user attributes");
+                                console.log(userData);
+                            }
+                        });
+                    }
+                });
+
+
 
                 this.setState({
                     awsCode: awsCode
