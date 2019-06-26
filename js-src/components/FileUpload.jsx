@@ -44,12 +44,6 @@ class FileUpload extends Component {
                 return res.json();
             })
             .then(json => {
-                console.log(json);
-                console.log(json.id_token);
-                console.log(json.refresh_token);
-                console.log(new CognitoAccessToken({ AccessToken: json.access_token }).getIssuedAt())
-                console.log(new CognitoIdToken({ IdToken: json.id_token }).getIssuedAt())
-
                 const session = new CognitoUserSession({
                     IdToken: new CognitoIdToken({ IdToken: json.id_token }),
                     RefreshToken: new CognitoRefreshToken({ RefreshToken: json.refresh_token }),
@@ -59,10 +53,17 @@ class FileUpload extends Component {
                 console.log("Is session valid?");
                 console.log(session.isValid());
 
-                const user = userPool.getCurrentUser();
+                const user = new CognitoUser({
+                    // TODO: Get programatically
+                    Username: "play-test-user",
+                    Pool: userPool
+                });
+                user.setSignInUserSession(session);
+
+                const currentUser = userPool.getCurrentUser();
 
                 console.log("Current user:");
-                console.log(user);
+                console.log(currentUser);
 
                 this.setState({
                     awsCode: awsCode
