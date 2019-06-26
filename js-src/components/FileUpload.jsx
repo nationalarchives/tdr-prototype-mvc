@@ -44,15 +44,14 @@ class FileUpload extends Component {
             })
             .then(json => {
                 const idToken = new CognitoIdToken({ IdToken: json.id_token });
-                const jwtToken = idToken.getJwtToken();
                 const decoded = idToken.decodePayload();
+                // If we decide to use this auth mechanism in production, we should verify that this username matches
+                // the user that logged into the app.
+                const userName = decoded["cognito:username"];
 
-                console.log("ID token:");
-                console.log(idToken);
-                console.log("JWT token:");
-                console.log(jwtToken);
                 console.log("Decoded:");
                 console.log(decoded);
+                console.log("User name: " + userName);
 
                 const session = new CognitoUserSession({
                     IdToken: new CognitoIdToken({ IdToken: json.id_token }),
@@ -61,8 +60,7 @@ class FileUpload extends Component {
                 });
 
                 const user = new CognitoUser({
-                    // TODO: Get programatically
-                    Username: "play-test-user",
+                    Username: userName,
                     Pool: userPool
                 });
                 user.setSignInUserSession(session);
