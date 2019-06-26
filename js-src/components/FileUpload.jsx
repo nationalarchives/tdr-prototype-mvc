@@ -9,7 +9,6 @@ import {
 } from "amazon-cognito-identity-js";
 
 import AWS from "aws-sdk";
-import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
 
 class FileUpload extends Component {
     constructor(props) {
@@ -29,6 +28,8 @@ class FileUpload extends Component {
         const userPool = new CognitoUserPool(poolData);
 
         const tokenEndpoint = "https://tdr.auth.eu-west-2.amazoncognito.com/oauth2/token";
+
+        const component = this;
 
         fetch(tokenEndpoint, {
             method: 'POST',
@@ -66,13 +67,7 @@ class FileUpload extends Component {
                         console.log("Error getting user session");
                         console.log(err);
                     } else {
-                        console.log("Got session");
-
                         const cognitoLoginId = "cognito-idp.eu-west-2.amazonaws.com/eu-west-2_6Mn0M2i9C";
-
-                        console.log("Configuring AWS creds");
-                        console.log("JWT token:");
-                        console.log(session.getIdToken().getJwtToken());
 
                         AWS.config.region = "eu-west-2";
                         AWS.config.credentials = new AWS.CognitoIdentityCredentials({
@@ -98,15 +93,17 @@ class FileUpload extends Component {
                             },
                             {},
                             function(err) {
-                                console.log("Error uploading files to S3");
-                                console.log(err);
+                                if (err) {
+                                    console.log("Error uploading files to S3");
+                                    console.log(err);
+                                } else {
+                                    component.setState({
+                                       uploadedFile: filename
+                                    });
+                                }
                             }
                         );
                     }
-                });
-
-                this.setState({
-                    awsCode: awsCode
                 });
             })
             .catch(error => {
@@ -116,7 +113,7 @@ class FileUpload extends Component {
     }
 
     render() {
-        return `In the file upload component. AWS code: '${this.state.awsCode}'`;
+        return `In the file upload component. Uploaded file: '${this.state.uploadedFile}'`;
     }
 }
 
