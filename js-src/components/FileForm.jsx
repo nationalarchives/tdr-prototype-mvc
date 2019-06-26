@@ -37,6 +37,9 @@ class FileForm extends Component {
                     />
                 </div>
                 <p>You have selected {this.state.files.length} files.</p>
+                <button type="submit" className="govuk-button">
+                    Upload
+                </button>
             </div>
         );
     }
