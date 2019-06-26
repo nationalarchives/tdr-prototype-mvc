@@ -15,23 +15,19 @@ class FileUpload extends Component {
         const codeRegex = /.*?code\=([\w-]+)/;
         const awsCode = codeRegex.exec(url)[1];
 
+        const fileName = "tmp-file-" + new Date().getTime();
+        const fileBody = "placeholder content";
+
         const component = this;
 
         authenticateUser(awsCode).then(() => {
-
-            const fileName = "tmp-file-" + new Date().getTime();
-            const fileBody = "placeholder content";
-
-            uploadFile(fileName, fileBody).then(() => {
-                component.setState({
-                    uploadedFile: fileName
-                });
-            }).catch(error => {
-                console.log("Error uploading file");
-                console.log(error)
+            return uploadFile(fileName, fileBody);
+        }).then(() => {
+            component.setState({
+                uploadedFile: fileName
             });
         }).catch(error => {
-            console.log("Error authenticating user");
+            console.log("Error uploading file");
             console.log(error);
         });
     }
