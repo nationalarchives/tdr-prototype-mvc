@@ -1,14 +1,6 @@
-import React, { Component } from "react";
-import {
-    CognitoUserPool,
-    CognitoUserSession,
-    CognitoIdToken,
-    CognitoRefreshToken,
-    CognitoAccessToken,
-    CognitoUser
-} from "amazon-cognito-identity-js";
+import React, {Component} from "react";
 
-import { authenticateUser } from "../aws/auth";
+import {authenticateUser, getUserPool} from "../aws/auth";
 
 import AWS from "aws-sdk";
 
@@ -25,12 +17,7 @@ class FileUpload extends Component {
 
         const component = this;
 
-        // TODO: Commonise
-        const poolData = {
-            UserPoolId: "eu-west-2_6Mn0M2i9C",
-            ClientId: "2u2clbhcqnjaj3fn0jaid078ao"
-        };
-        const userPool = new CognitoUserPool(poolData);
+        const userPool = getUserPool();
 
         authenticateUser(awsCode).then(() => {
             const currentUser = userPool.getCurrentUser();

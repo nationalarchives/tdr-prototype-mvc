@@ -6,12 +6,15 @@ import {
     CognitoUserSession
 } from "amazon-cognito-identity-js";
 
+const poolData = {
+    UserPoolId: "eu-west-2_6Mn0M2i9C",
+    ClientId: "2u2clbhcqnjaj3fn0jaid078ao"
+};
+
+export const getUserPool = () => { return new CognitoUserPool(poolData) };
+
 export const authenticateUser = authenticationCode => {
-    const poolData = {
-        UserPoolId: "eu-west-2_6Mn0M2i9C",
-        ClientId: "2u2clbhcqnjaj3fn0jaid078ao"
-    };
-    const userPool = new CognitoUserPool(poolData);
+    const userPool = getUserPool();
 
     const tokenEndpoint = "https://tdr.auth.eu-west-2.amazoncognito.com/oauth2/token";
 
@@ -42,4 +45,4 @@ export const authenticateUser = authenticationCode => {
         });
         user.setSignInUserSession(session);
     });
-}
+};
