@@ -92,7 +92,7 @@ class FileUpload extends Component {
 
                         s3.upload(
                             {
-                                Key: filename,
+                                Key: `tmp-play-app/${filename}`,
                                 Body: "placeholder content",
                                 Bucket: "tdr-files"
                             },
