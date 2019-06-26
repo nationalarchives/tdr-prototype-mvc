@@ -31,9 +31,6 @@ class FileUpload extends Component {
     }
 
     handleUpload(files) {
-        console.log("Handling upload of files");
-        console.log(files);
-
         uploadFiles(files).then(() => {
             this.setState({ uploadedFileCount: files.length })
         }).catch(error => {

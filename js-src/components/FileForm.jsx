@@ -15,8 +15,6 @@ class FileForm extends Component {
 
     handleFileSelect(event) {
         const files = event.target.files;
-        console.log("Files were selected");
-        console.log(files);
 
         this.setState({ files });
     }
@@ -43,7 +41,6 @@ class FileForm extends Component {
                         onChange={this.handleFileSelect}
                     />
                 </div>
-                <p>You have selected {this.state.files.length} files.</p>
                 <button type="submit" className="govuk-button">
                     Upload
                 </button>
