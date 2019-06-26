@@ -2,7 +2,7 @@ import React, {Component} from "react";
 
 import {authenticateUser} from "../aws/auth";
 
-import {uploadFile} from "../aws/s3Upload";
+import {uploadFiles} from "../aws/s3Upload";
 import FileForm from "./FileForm.jsx";
 
 class FileUpload extends Component {
@@ -34,10 +34,7 @@ class FileUpload extends Component {
         console.log("Handling upload of files");
         console.log(files);
 
-        // TODO: Upload all files
-        const file = files[0];
-
-        uploadFile(file.name, file).then(() => {
+        uploadFiles(files).then(() => {
             this.setState({ uploadedFileCount: files.length })
         }).catch(error => {
             console.log("Error uploading file");
