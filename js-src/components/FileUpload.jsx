@@ -3,6 +3,10 @@ import {
     IAuthenticationDetailsData,
     AuthenticationDetails,
     CognitoUserPool,
+    CognitoUserSession,
+    CognitoIdToken,
+    CognitoRefreshToken,
+    CognitoAccessToken,
     ICognitoUserData,
     CognitoUser
 } from "amazon-cognito-identity-js";
@@ -20,6 +24,12 @@ class FileUpload extends Component {
         const codeRegex = /.*?code\=([\w-]+)/;
         const awsCode = codeRegex.exec(url)[1];
 
+        const poolData = {
+            UserPoolId: "eu-west-2_6Mn0M2i9C",
+            ClientId: "2u2clbhcqnjaj3fn0jaid078ao"
+        };
+        const userPool = new CognitoUserPool(poolData);
+
         const tokenEndpoint = "https://tdr.auth.eu-west-2.amazoncognito.com/oauth2/token";
 
         fetch(tokenEndpoint, {
@@ -30,28 +40,38 @@ class FileUpload extends Component {
             body: `grant_type=authorization_code&client_id=2u2clbhcqnjaj3fn0jaid078ao&redirect_uri=http://localhost:9000/upload&code=${awsCode}`
         })
             .then(res => {
-                console.log("Got response");
-                console.log(res);
+                console.log("Got token response");
+                return res.json();
+            })
+            .then(json => {
+                console.log(json);
+                console.log(json.id_token);
+                console.log(json.refresh_token);
+                console.log(new CognitoAccessToken({ AccessToken: json.access_token }).getIssuedAt())
+                console.log(new CognitoIdToken({ IdToken: json.id_token }).getIssuedAt())
+
+                const session = new CognitoUserSession({
+                    IdToken: new CognitoIdToken({ IdToken: json.id_token }),
+                    RefreshToken: new CognitoRefreshToken({ RefreshToken: json.refresh_token }),
+                    AccessToken: new CognitoAccessToken({ AccessToken: json.access_token })
+                });
+
+                console.log("Is session valid?");
+                console.log(session.isValid());
+
+                const user = userPool.getCurrentUser();
+
+                console.log("Current user:");
+                console.log(user);
+
+                this.setState({
+                    awsCode: awsCode
+                });
             })
             .catch(error => {
                 console.log("Error fetching token");
                 console.log(error);
             });
-
-        const poolData = {
-            UserPoolId: "eu-west-2_6Mn0M2i9C",
-            ClientId: "2u2clbhcqnjaj3fn0jaid078ao"
-        };
-        const userPool = new CognitoUserPool(poolData);
-
-        const user = userPool.getCurrentUser();
-
-        console.log("Current user:");
-        console.log(user);
-
-        this.setState({
-           awsCode: awsCode
-        });
     }
 
     render() {
