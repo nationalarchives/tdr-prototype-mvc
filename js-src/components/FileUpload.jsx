@@ -9,7 +9,10 @@ class FileUpload extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {};
+        this.state = {
+            userAuthenticated: false,
+            uploadedFileCount: 0
+        };
 
         this.handleUpload = this.handleUpload.bind(this);
     }
@@ -19,19 +22,10 @@ class FileUpload extends Component {
         const codeRegex = /.*?code\=([\w-]+)/;
         const awsCode = codeRegex.exec(url)[1];
 
-        const fileName = "tmp-file-" + new Date().getTime();
-        const fileBody = "placeholder content";
-
-        const component = this;
-
         authenticateUser(awsCode).then(() => {
-            return uploadFile(fileName, fileBody);
-        }).then(() => {
-            component.setState({
-                uploadedFile: fileName
-            });
+            this.setState({ userAuthenticated: true })
         }).catch(error => {
-            console.log("Error uploading file");
+            console.log("Error authenticating user");
             console.log(error);
         });
     }
@@ -39,9 +33,25 @@ class FileUpload extends Component {
     handleUpload(files) {
         console.log("Handling upload of files");
         console.log(files);
+
+        // TODO: Upload all files
+        const file = files[0];
+
+        uploadFile(file.name, file).then(() => {
+            this.setState({ uploadedFileCount: files.length })
+        }).catch(error => {
+            console.log("Error uploading file");
+            console.log(error);
+        });
     }
 
     render() {
+        if (!this.state.userAuthenticated) {
+            return "Authenticating user..."
+        } else if (this.state.uploadedFileCount > 0) {
+            return `Uploaded ${this.state.uploadedFileCount} files`;
+        }
+
         return <FileForm onUpload={this.handleUpload} />
     }
 }
