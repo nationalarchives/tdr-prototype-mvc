@@ -37,12 +37,23 @@ class FileUpload extends Component {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: `grant_type=authorization_code&scope=openid+profile&client_id=2u2clbhcqnjaj3fn0jaid078ao&redirect_uri=http://localhost:9000/upload&code=${awsCode}`
+            body: `grant_type=authorization_code&scope=profile&client_id=2u2clbhcqnjaj3fn0jaid078ao&redirect_uri=http://localhost:9000/upload&code=${awsCode}`
         })
             .then(res => {
                 return res.json();
             })
             .then(json => {
+                const idToken = new CognitoIdToken({ IdToken: json.id_token });
+                const jwtToken = idToken.getJwtToken();
+                const decoded = idToken.decodePayload();
+
+                console.log("ID token:");
+                console.log(idToken);
+                console.log("JWT token:");
+                console.log(jwtToken);
+                console.log("Decoded:");
+                console.log(decoded);
+
                 const session = new CognitoUserSession({
                     IdToken: new CognitoIdToken({ IdToken: json.id_token }),
                     RefreshToken: new CognitoRefreshToken({ RefreshToken: json.refresh_token }),
