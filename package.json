@@ -4,7 +4,8 @@
   "description": "MVC prototype of the Transfer Digital Records frontend application",
   "private": true,
   "scripts": {
-    "build": "webpack --config webpack.config.js"
+    "build": "webpack --config webpack.config.js",
+    "watch": "webpack --config webpack.config.js --watch"
   },
   "repository": {
     "type": "git",

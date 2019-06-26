@@ -16,6 +16,8 @@ This project uses the [GOV.UK Design System][govuk-design] to lay out the pages 
 
 ## Run the project
 
+### Prerequisites
+
 You will need several configuration values:
 
 - AWS configuration:
@@ -42,6 +44,11 @@ You will also need to setup a user in the userpool:
 4. Select the user pool you created the user under and click Users and groups in the left navigation bar.
 5. You should see a user corresponding to the email address that you submitted through the registration page. Choose that username to view the user detail page.
 6. Choose Confirm user to finalize the account creation process.
+
+### Build the JavaScript components
+
+Run `npm run build` to compile the components, or run `npm run watch` to make webpack automatically rebuild the
+components when any of the JavaScript source files change.
 
 ### Command line
 
