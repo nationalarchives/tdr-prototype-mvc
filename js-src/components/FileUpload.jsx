@@ -3,11 +3,15 @@ import React, {Component} from "react";
 import {authenticateUser} from "../aws/auth";
 
 import {uploadFile} from "../aws/s3Upload";
+import FileForm from "./FileForm.jsx";
 
 class FileUpload extends Component {
     constructor(props) {
         super(props);
+
         this.state = {};
+
+        this.handleUpload = this.handleUpload.bind(this);
     }
 
     componentDidMount() {
@@ -32,8 +36,13 @@ class FileUpload extends Component {
         });
     }
 
+    handleUpload(files) {
+        console.log("Handling upload of files");
+        console.log(files);
+    }
+
     render() {
-        return `In the file upload component. Uploaded file: '${this.state.uploadedFile}'`;
+        return <FileForm onUpload={this.handleUpload} />
     }
 }
 

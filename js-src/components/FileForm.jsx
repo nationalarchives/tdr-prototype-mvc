@@ -10,6 +10,7 @@ class FileForm extends Component {
         };
 
         this.handleFileSelect = this.handleFileSelect.bind(this);
+        this.handleUpload = this.handleUpload.bind(this);
     }
 
     handleFileSelect(event) {
@@ -20,9 +21,15 @@ class FileForm extends Component {
         this.setState({ files });
     }
 
+    handleUpload(event) {
+        event.preventDefault();
+
+        this.props.onUpload(this.state.files);
+    }
+
     render() {
         return (
-            <div>
+            <form onSubmit={this.handleUpload}>
                 <div className="govuk-form-group">
                     <label className="govuk-label" htmlFor="upload-files">
                         Upload a file
@@ -40,7 +47,7 @@ class FileForm extends Component {
                 <button type="submit" className="govuk-button">
                     Upload
                 </button>
-            </div>
+            </form>
         );
     }
 }
