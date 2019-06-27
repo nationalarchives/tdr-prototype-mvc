@@ -20,6 +20,8 @@ class FileUpload extends Component {
     componentDidMount() {
         const url = window.location.href;
         const codeRegex = /.*?code\=([\w-]+)/;
+        // Remove authentication code from page URL
+        window.history.replaceState(null, null, window.location.pathname);
         const awsCode = codeRegex.exec(url)[1];
 
         authenticateUser(awsCode).then(() => {
