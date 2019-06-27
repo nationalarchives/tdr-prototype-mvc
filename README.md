@@ -121,7 +121,9 @@ ssh to the deployment machine and start the app, replacing the version number an
 
 ```
 unzip transfer-digital-records-<version>.zip
-transfer-digital-records-1.0-SNAPSHOT/bin/transfer-digital-records \
+-DAWS_ACCESS_KEY_ID=some_access_key \
+  -DAWS_SECRET_ACCESS_KEY=some_secret_key \
+  transfer-digital-records-1.0-SNAPSHOT/bin/transfer-digital-records \
   -Dplay.http.secret.key=some_secret_key \
   -DAUTHENTICATOR_SIGNER_KEY=some_secret_key \
   -DAUTHENTICATOR_CRYPTER_KEY=some_secret_key \
@@ -130,7 +132,6 @@ transfer-digital-records-1.0-SNAPSHOT/bin/transfer-digital-records \
   -DCOGNITO_CLIENT_ID=some_client_id \
   -DCOGNITO_CLIENT_SECRET=some_client_secret \
   -DCOGNITO_UPLOAD_CLIENT_ID=client_id_for_upload_app \
-  -DAWS_ACCESS_KEY_ID=some_access_key \
-  -DAWS_SECRET_ACCESS_KEY=some_secret_key \
+  -DTDR_BASE_URL=https://some-tdr-domain.com
   -Dhttp.port=8080
 ```
