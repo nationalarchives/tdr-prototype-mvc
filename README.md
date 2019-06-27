@@ -101,8 +101,8 @@ Build the frontend, replacing the values of the environment variables:
 
 ```
 TDR_BASE_URL=https://example.com \
-UPLOAD_APP_CLIENT_ID=some_cognito_app_id
-npm run build
+  UPLOAD_APP_CLIENT_ID=some_cognito_app_id \
+  npm run build
 ```
 
 Build the Play app:
