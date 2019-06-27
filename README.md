@@ -21,7 +21,10 @@ This project uses the [GOV.UK Design System][govuk-design] to lay out the pages 
 You will need several configuration values:
 
 - AWS configuration:
-  - A [Cognito client app][cognito-app] ID and secret
+  - A [Cognito client app][cognito-app] ID and secret for login. The app should have the `aws.cognito.signin.user.admin`
+    scope.
+  - A separate Cognito client app ID for the upload client. This app is used client-side, so it should not have a client
+    secret. It should have the `openid` and `profile` scopes but not `aws.cognito.signin.user.admin`.
   - An access key and secret key for an IAM user who has permission to view users of the Cognito user pool. For this
   prototype, you can use your developer keys
 - Several keys to use for cryptographic signing. In development, these can be any string value. In deployed
@@ -57,6 +60,7 @@ Run sbt, filling in the environment variable values:
 ```
 COGNITO_CLIENT_ID=some_client_id \
 COGNITO_CLIENT_SECRET=some_client_secret \
+COGNITO_UPLOAD_CLIENT_ID=client_id_for_upload_app \
 AWS_ACCESS_KEY_ID=some_access_key \
 AWS_SECRET_ACCESS_KEY=some_secret_key \
 AUTHENTICATOR_SIGNER_KEY=changeme \
