@@ -82,3 +82,55 @@ Add a new sbt configuration:
 - Save the configuration, and hit Run or Debug
 
 Then visit <http://localhost:9000>
+
+# Deployment
+
+This project is a prototype, so the deployment steps are currently quite manual and can be run on a development machine.
+
+## Prerequisites
+
+Deployment requires a server such as an EC2 instance with:
+
+- Java JRE 8
+- A web server such as nginx, configured to proxy HTTP and/or HTTPS requests to whatever port you will be running TDR on 
+- Ports 80 and/or 443 open
+
+## Build a production distribution
+
+Build the frontend, replacing the values of the environment variables:
+
+```
+TDR_BASE_URL=https://example.com \
+UPLOAD_APP_CLIENT_ID=some_cognito_app_id
+npm run build
+```
+
+Build the Play app:
+
+```
+sbt clean dist
+```
+
+This should create a zip file in the target/universal directory.
+
+## Deploy the application
+
+scp the zip file from target/universal to the deployment machine.
+
+ssh to the deployment machine and start the app, replacing the version number and environment variables:
+
+```
+unzip transfer-digital-records-<version>.zip
+transfer-digital-records-1.0-SNAPSHOT/bin/transfer-digital-records \
+  -Dplay.http.secret.key=some_secret_key \
+  -DAUTHENTICATOR_SIGNER_KEY=some_secret_key \
+  -DAUTHENTICATOR_CRYPTER_KEY=some_secret_key \
+  -DCSRF_SIGNER_KEY=some_secret_key \
+  -DSOCIAL_STATE_SIGNER_KEY=some_secret_key \
+  -DCOGNITO_CLIENT_ID=some_client_id \
+  -DCOGNITO_CLIENT_SECRET=some_client_secret \
+  -DCOGNITO_UPLOAD_CLIENT_ID=client_id_for_upload_app \
+  -DAWS_ACCESS_KEY_ID=some_access_key \
+  -DAWS_SECRET_ACCESS_KEY=some_secret_key \
+  -Dhttp.port=8080
+```
