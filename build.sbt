@@ -1,4 +1,4 @@
-name := """play-scala-seed"""
+name := """transfer-digital-records"""
 organization := "com.example"
 
 version := "1.0-SNAPSHOT"
