@@ -50,6 +50,7 @@ You will also need to setup a user in the userpool:
 
 ### Build the JavaScript components
 
+Run `npm install` the first time to install dependencies.
 Run `npm run build` to compile the components, or run `npm run watch` to make webpack automatically rebuild the
 components when any of the JavaScript source files change.
 
