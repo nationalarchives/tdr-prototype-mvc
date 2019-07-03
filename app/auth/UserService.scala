@@ -2,9 +2,9 @@ package auth
 
 import java.util.UUID
 
-import javax.inject.Inject
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.services.IdentityService
+import javax.inject.Inject
 import providers.CognitoSocialProfile
 
 import scala.collection.mutable
@@ -30,13 +30,7 @@ class UserService @Inject()(implicit ex: ExecutionContext) extends IdentityServi
       case None => // Insert a new user
         val user = User(
           userID = UUID.randomUUID(),
-          loginInfo = profile.loginInfo,
-          firstName = None,
-          lastName = None,
-          fullName = None,
-          email = None,
-          avatarURL = None,
-          activated = true
+          loginInfo = profile.loginInfo
         )
         UserService.save(user)
         user
