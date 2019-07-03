@@ -1,6 +1,6 @@
 package controllers
 
-import auth.{DefaultEnv, UserService}
+import auth.{DefaultEnv, DynamoUserService}
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import javax.inject.Inject
@@ -12,7 +12,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class AuthController @Inject() (
                                  components: ControllerComponents,
                                  silhouette: Silhouette[DefaultEnv],
-                                 userService: UserService,
+                                 userService: DynamoUserService,
                                  authInfoRepository: AuthInfoRepository,
                                  cognitoProvider: CognitoProvider
 )(

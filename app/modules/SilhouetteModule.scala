@@ -56,7 +56,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
 
   @Provides
   def provideEnvironment(
-    userService: UserService,
+    userService: DynamoUserService,
     authenticatorService: AuthenticatorService[CookieAuthenticator],
     eventBus: EventBus): Environment[DefaultEnv] = {
 

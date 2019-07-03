@@ -48,6 +48,24 @@ You will also need to setup a user in the userpool:
 5. You should see a user corresponding to the email address that you submitted through the registration page. Choose that username to view the user detail page.
 6. Choose Confirm user to finalize the account creation process.
 
+### Set up the database
+
+Install the [AWS command line interface][aws-cli] and [configure your credentials][cli-config].
+
+Download and extract the [local version Dynamo DB][localdb].
+
+Run the local Dynamo DB:
+
+```
+java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb
+```
+
+Create the user tables by running the create_user_db.sh script.
+
+[localdb]: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html
+[aws-cli]: https://aws.amazon.com/cli/
+[cli-config]: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
+
 ### Build the JavaScript components
 
 Run `npm install` the first time to install dependencies.
@@ -133,6 +151,7 @@ unzip transfer-digital-records-<version>.zip
   -DCOGNITO_CLIENT_ID=some_client_id \
   -DCOGNITO_CLIENT_SECRET=some_client_secret \
   -DCOGNITO_UPLOAD_CLIENT_ID=client_id_for_upload_app \
-  -DTDR_BASE_URL=https://some-tdr-domain.com
+  -DUSER_DB_ENDPOINT=url_of_dynamo_db \
+  -DTDR_BASE_URL=https://some-tdr-domain.com \
   -Dhttp.port=8080
 ```
