@@ -52,7 +52,7 @@ You will also need to setup a user in the userpool:
 
 Install the [AWS command line interface][aws-cli] and [configure your credentials][cli-config].
 
-Download and extract the [local version Dynamo DB][localdb].
+Download and extract the [local version of Dynamo DB][localdb].
 
 Run the local Dynamo DB:
 
