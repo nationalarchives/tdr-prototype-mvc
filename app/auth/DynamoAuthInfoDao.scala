@@ -25,8 +25,11 @@ class DynamoAuthInfoDao @Inject()(dbClient: UserDbClient) extends DelegableAuthI
         val properties = item.entrySet().asScala.map(entry => (entry.getKey, entry.getValue)).toMap
         val accessToken = properties("accessToken").s
         val refreshToken = properties.get("refreshToken").map(token => token.s)
+        val idToken = properties.get("idToken").map(token => token.s)
 
-        Some(OAuth2Info(accessToken, refreshToken = refreshToken))
+        val extraParams = idToken.map(t => Map("idToken" -> t))
+
+        Some(OAuth2Info(accessToken, refreshToken = refreshToken, params = extraParams))
       }
     }
 
@@ -41,6 +44,7 @@ class DynamoAuthInfoDao @Inject()(dbClient: UserDbClient) extends DelegableAuthI
     val attributes = Map(
       "id" -> AttributeValue.builder.s(loginInfo.providerKey).build,
       "accessToken" -> AttributeValue.builder.s(authInfo.accessToken).build,
+      "idToken" -> authInfo.params.get.get("idToken").map(token => AttributeValue.builder.s(authInfo.accessToken).build).getOrElse(AttributeValue.builder.nul(true).build),
       "refreshToken" -> authInfo.refreshToken.map(token => AttributeValue.builder.s(authInfo.accessToken).build).getOrElse(AttributeValue.builder.nul(true).build)
     ).asJava
     val putItemRequest = PutItemRequest.builder.tableName(tokenTable).item(attributes).build

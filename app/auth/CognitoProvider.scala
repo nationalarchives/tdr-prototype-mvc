@@ -3,6 +3,8 @@ package providers
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.HTTPLayer
 import com.mohiva.play.silhouette.impl.providers._
+import play.api.libs.functional.syntax._
+import play.api.libs.json.{Reads, __}
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient
 import software.amazon.awssdk.services.cognitoidentityprovider.model.{GetUserRequest, GetUserResponse}
@@ -10,9 +12,10 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.{GetUserReq
 import scala.concurrent.Future
 
 class CognitoProvider(
-                       protected val httpLayer: HTTPLayer,
-                       val stateHandler: SocialStateHandler,
-                       val settings: OAuth2Settings) extends OAuth2Provider {
+  protected val httpLayer: HTTPLayer,
+  val stateHandler: SocialStateHandler,
+  val settings: OAuth2Settings
+) extends OAuth2Provider {
 
   override type Self = CognitoProvider
 
@@ -37,10 +40,22 @@ class CognitoProvider(
   }
 
   override protected def profileParser: SocialProfileParser[GetUserResponse, CognitoSocialProfile, OAuth2Info] = new CognitoProfileParser
+
+  override implicit protected val accessTokenReads: Reads[OAuth2Info] = CognitoProvider.infoReads
 }
 
-object CognitoProvider {
+object CognitoProvider extends OAuth2Constants {
   val id = "cognito"
+
+  implicit val infoReads: Reads[OAuth2Info] = (
+    (__ \ AccessToken).read[String] and
+      (__ \ TokenType).readNullable[String] and
+      (__ \ ExpiresIn).readNullable[Int] and
+      (__ \ RefreshToken).readNullable[String] and
+      (__ \ "id_token").readNullable[String]
+    )((accessToken: String, tokenType: Option[String], expiresIn: Option[Int], refreshToken: Option[String], idToken: Option[String]) =>
+    new OAuth2Info(accessToken, tokenType, expiresIn, refreshToken, idToken.map(t => Map("idToken" -> t)))
+  )
 }
 
 case class CognitoSocialProfile(
