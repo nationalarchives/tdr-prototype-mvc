@@ -12,9 +12,9 @@ import com.mohiva.play.silhouette.api.{Environment, EventBus, Silhouette, Silhou
 import com.mohiva.play.silhouette.crypto.{JcaCrypter, JcaCrypterSettings, JcaSigner, JcaSignerSettings}
 import com.mohiva.play.silhouette.impl.authenticators.{CookieAuthenticator, CookieAuthenticatorService, CookieAuthenticatorSettings}
 import com.mohiva.play.silhouette.impl.providers.state.{CsrfStateItemHandler, CsrfStateSettings}
-import com.mohiva.play.silhouette.impl.providers.{DefaultSocialStateHandler, OAuth1Info, OAuth2Info, OAuth2Settings, OpenIDInfo, SocialStateHandler}
+import com.mohiva.play.silhouette.impl.providers.{DefaultSocialStateHandler, OAuth2Info, OAuth2Settings, SocialStateHandler}
 import com.mohiva.play.silhouette.impl.util.{DefaultFingerprintGenerator, SecureRandomIDGenerator}
-import com.mohiva.play.silhouette.persistence.daos.{DelegableAuthInfoDAO, InMemoryAuthInfoDAO}
+import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
 import com.typesafe.config.Config
 import net.ceedubs.ficus.Ficus._
@@ -37,8 +37,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     bind[Clock].toInstance(Clock())
     bind[FingerprintGenerator].toInstance(new DefaultFingerprintGenerator(false))
     bind[IDGenerator].toInstance(new SecureRandomIDGenerator())
-
-    bind[DelegableAuthInfoDAO[OAuth2Info]].toInstance(new InMemoryAuthInfoDAO[OAuth2Info])
+    bind[DelegableAuthInfoDAO[OAuth2Info]].to[DynamoAuthInfoDao]
   }
 
   implicit val sameSiteReader: ValueReader[Option[Option[Cookie.SameSite]]] =
