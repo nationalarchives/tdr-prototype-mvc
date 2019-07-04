@@ -4,14 +4,18 @@ import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.impl.providers.OAuth2Info
 import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 import javax.inject.Inject
+import play.api.Configuration
 import software.amazon.awssdk.services.dynamodb.model.{AttributeValue, GetItemRequest, PutItemRequest}
 
 import scala.collection.JavaConverters._
 import scala.concurrent.Future
 
-class DynamoAuthInfoDao @Inject()(dbClient: UserDbClient) extends DelegableAuthInfoDAO[OAuth2Info] {
+class DynamoAuthInfoDao @Inject() (
+  dbClient: UserDbClient,
+  configuration: Configuration
+) extends DelegableAuthInfoDAO[OAuth2Info] {
 
-  private val tokenTable = "UserTokens"
+  private val tokenTable = configuration.get[String]("userdb.tables.tokens")
   val client = dbClient.client
 
   override def find(loginInfo: LoginInfo): Future[Option[OAuth2Info]] = {

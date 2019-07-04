@@ -152,6 +152,8 @@ unzip transfer-digital-records-<version>.zip
   -DCOGNITO_CLIENT_SECRET=some_client_secret \
   -DCOGNITO_UPLOAD_CLIENT_ID=client_id_for_upload_app \
   -DUSER_DB_ENDPOINT=url_of_dynamo_db \
+  -DUSER_DB_USERS_TABLE=dynamo_db_users_table \
+  -DUSER_DB_TOKENS_TABLE=dynamo_db_tokens_table \
   -DTDR_BASE_URL=https://some-tdr-domain.com \
   -Dhttp.port=8080
 ```

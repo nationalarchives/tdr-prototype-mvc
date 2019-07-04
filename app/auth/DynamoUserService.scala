@@ -3,15 +3,21 @@ package auth
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.services.IdentityService
 import javax.inject.Inject
+import play.api.Configuration
 import providers.CognitoSocialProfile
 import software.amazon.awssdk.services.dynamodb.model.{AttributeValue, GetItemRequest, PutItemRequest}
 
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
-class DynamoUserService @Inject()(dbClient: UserDbClient)(implicit ex: ExecutionContext) extends IdentityService[User] {
+class DynamoUserService @Inject()(
+  dbClient: UserDbClient,
+  configuration: Configuration
+) (
+  implicit ex: ExecutionContext
+) extends IdentityService[User] {
 
-  private val userTable = "Users"
+  private val userTable = configuration.get[String]("userdb.tables.users")
 
   private val client = dbClient.client
 
