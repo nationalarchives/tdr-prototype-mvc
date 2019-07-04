@@ -1,11 +1,18 @@
-@()
+@(user: Option[auth.User])
 
 @main("Welcome") {
 @defining(play.core.PlayVersion.current) { version =>
 
   <h1 class="govuk-heading-xl">Transfer Digital Records</h1>
-  <a href="@routes.AuthController.authenticate" role="button" draggable="false" class="govuk-button govuk-button--start">
-    Sign in
-  </a>
+
+  @user.map { u =>
+    <a href="@routes.DashboardController.index" role="button" draggable="false" class="govuk-button govuk-button--start">
+      Dashboard
+    </a>
+  }.getOrElse {
+    <a href="@routes.AuthController.authenticate" role="button" draggable="false" class="govuk-button govuk-button--start">
+      Sign in
+    </a>
+  }
 }
 }
