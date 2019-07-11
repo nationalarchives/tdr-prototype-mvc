@@ -52,9 +52,16 @@ You will also need to setup a user in the userpool:
 
 Install the [AWS command line interface][aws-cli] and [configure your credentials][cli-config].
 
-Download and extract the [local version of Dynamo DB][localdb].
+#### Download and Run Local DynamoDb
 
-Run the local Dynamo DB:
+1. Download the [local version of Dynamo DB][localdb].
+2. Create a folder on local machine called dynamo in a convenient location. Recommend the /usr/lib folder
+3. Extract the contents of download to the dynamo folder
+4. Ensure that you have permission to access the dynamo file in the folder. Run following command: 
+```
+$ sudo chown -R [user name]:[user name] dynamo/
+```
+5. Run the local Dynamo DB:
 
 ```
 java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb
@@ -101,6 +108,8 @@ Add a new sbt configuration:
 - Save the configuration, and hit Run or Debug
 
 Then visit <http://localhost:9000>
+
+Note: Intellij may fail to build the project successfully. If this occurs compile the project first from the command line. Then try from Intellij again.
 
 # Deployment
 
