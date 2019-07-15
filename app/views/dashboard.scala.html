@@ -1,8 +1,13 @@
-@()
+@(dd:List[String])
 
 @main("Dashboard") {
 @defining(play.core.PlayVersion.current) { version =>
     <h1 class="govuk-heading-xl">Dashboard</h1>
+    <ul>
+        @dd.map { stock =>
+            <li>@stock</li>
+        }
+    </ul>
 
     <a href="@routes.UploadController.index" role="button" draggable="false" class="govuk-button govuk-button--start">
         Upload files
