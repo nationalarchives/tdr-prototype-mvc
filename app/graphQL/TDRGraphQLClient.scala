@@ -1,30 +1,26 @@
 package graphQL
 
-import javax.inject.Inject
+import akka.actor.ActorSystem
+import akka.http.scaladsl.Http.OutgoingConnection
+import akka.http.scaladsl.model.{HttpHeader, HttpRequest, HttpResponse, Uri}
+import akka.http.scaladsl.{Http, HttpExt}
+import akka.stream.ActorMaterializer
+import akka.stream.scaladsl.Flow
 import com.github.jarlakxen.drunk._
-import io.circe.Decoder
-import io.circe.generic.semiauto.deriveDecoder
-import sangria.macros._
-import model.TdrCollection
 
-class TDRGraphQLClient {
+import scala.collection.immutable.Seq
+import scala.concurrent.Future
 
-  case class GetCollectionsQuery(tdrCollection: TdrCollection)
+object TDRGraphQLClient {
 
-  implicit val getCollectionsQueryDecoder: Decoder[GetCollectionsQuery] = deriveDecoder
-  implicit val tdrCollectionDecoder: Decoder[TdrCollection] = deriveDecoder
+  implicit val system = ActorSystem()
+  implicit val materializer: ActorMaterializer = ActorMaterializer()
+  val uri: Uri = Uri(s"https://qad2wpgi3befniyihgl42yvfea.appsync-api.eu-west-2.amazonaws.com/graphql")
 
-  val apiUrl = "https://qad2wpgi3befniyihgl42yvfea.appsync-api.eu-west-2.amazonaws.com/graphql"
-  val client = GraphQLClient(apiUrl)
+  val http: HttpExt = Http()
+  val flow: Flow[HttpRequest, HttpResponse, Future[OutgoingConnection]] = http.outgoingConnectionHttps(uri.authority.host.address(), uri.effectivePort)
 
-  val getCollectionsDoc =
-    graphql"""
-      query GetCollections {
-        getCollections {
-          collections {
-            id, name, legalStatus, closure, copyright
-          }
-        }
-      }
-    """
+  def appSyncClient (oathHeaders: Seq[HttpHeader]) = GraphQLClient(uri, flow, clientOptions = ClientOptions.Default, oathHeaders)
+
+
 }

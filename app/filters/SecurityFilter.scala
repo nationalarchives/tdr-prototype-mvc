@@ -1,6 +1,5 @@
 package filters
 
-import akka.actor.Status.Success
 import akka.stream.Materializer
 import auth.{DefaultEnv, DynamoUserService, User}
 import com.mohiva.play.silhouette.api.Silhouette
@@ -8,8 +7,7 @@ import com.mohiva.play.silhouette.api.actions.UserAwareRequest
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.impl.providers.OAuth2Info
 import javax.inject.{Inject, Singleton}
-import modules.TypedKeys
-import play.api.libs.typedmap.TypedKey
+import modules.TDRAttributes
 import play.api.mvc.Results.Unauthorized
 import play.api.mvc._
 
@@ -17,14 +15,14 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class SecurityFilter @Inject()(
-    silhouette: Silhouette[DefaultEnv],
-    bodyParsers: PlayBodyParsers,
-    userService: DynamoUserService,
-    authInfoRepository: AuthInfoRepository
-  )(
-    implicit val mat: Materializer,
-    implicit val ex: ExecutionContext
-  ) extends Filter {
+                                silhouette: Silhouette[DefaultEnv],
+                                bodyParsers: PlayBodyParsers,
+                                userService: DynamoUserService,
+                                authInfoRepository: AuthInfoRepository
+                              )(
+                                implicit val mat: Materializer,
+                                implicit val ex: ExecutionContext
+                              ) extends Filter {
 
   def apply(next: RequestHeader => Future[Result])(
 
@@ -38,9 +36,11 @@ class SecurityFilter @Inject()(
         case "/" | "/authenticate/cognito" | Assets(_) => next(request)
         case _ => isRequestAuthenticated(r).flatMap {
           case Some(user) => {
-            authInfoRepository.find[OAuth2Info](user.loginInfo).flatMap {
-              case Some(p) => {
-                next(request.addAttr(TypedKeys.oAuth2Info, p))
+
+            val oauth2InfoOption: Future[Option[OAuth2Info]] = authInfoRepository.find[OAuth2Info](user.loginInfo)
+            oauth2InfoOption.flatMap {
+              case Some(someToken) => {
+                 next(request.addAttr(TDRAttributes.OAuthAccessTokenKey, someToken))
               }
               case _ => next(request)
             }

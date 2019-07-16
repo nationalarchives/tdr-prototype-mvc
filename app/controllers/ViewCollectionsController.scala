@@ -1,37 +1,53 @@
 package controllers
 
+import akka.http.scaladsl.model.headers.RawHeader
 import graphQL.TDRGraphQLClient
-import javax.inject._
+import io.circe.Decoder
+import io.circe.generic.semiauto.deriveDecoder
+import javax.inject.{Inject, _}
+import model.TdrCollection
+import modules.TDRAttributes
 import play.api.Configuration
 import play.api.mvc._
-import model.TdrCollection
+import sangria.macros._
+
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class ViewCollectionsController @Inject()(
-  controllerComponents: ControllerComponents,
-  configuration: Configuration) extends AbstractController(controllerComponents)
-{
-  def index() = Action { implicit request: Request[AnyContent] =>
-    val apiUrl = "https://rn9sl8cy7f.execute-api.eu-west-2.amazonaws.com/dev"
+                                           controllerComponents: ControllerComponents,
+                                           configuration: Configuration)(
+                                           implicit val ex: ExecutionContext) extends AbstractController(controllerComponents) {
+  def index() = Action.async { implicit request: Request[AnyContent] =>
 
-    val collection1 = new TdrCollection(
-      "Id1",
-      "Name 1",
-      "Crown Copyright",
-      "true",
-      "Legal Status")
+    case class GetCollectionsQuery(collections: Seq[TdrCollection])
+    case class CollectionsResult(getCollections: GetCollectionsQuery)
+    implicit val tdrCollectionDecoder: Decoder[TdrCollection] = deriveDecoder
+    implicit val getCollectionsQueryDecoder: Decoder[GetCollectionsQuery] = deriveDecoder
+    implicit val getCollectionsResultDecoder: Decoder[CollectionsResult] = deriveDecoder
 
-    val collection2 = new TdrCollection(
-      "Id2",
-      "Name 2",
-      "Crown Copyright",
-      "true",
-      "Legal Status")
+    val accessToken = request.attrs.get(TDRAttributes.OAuthAccessTokenKey).get.accessToken
+    val header = RawHeader("Authorization", accessToken)
 
-    val collections: List[TdrCollection]  = List(
-     collection1,
-     collection2)
+    val appSyncClient = TDRGraphQLClient.appSyncClient(List(header))
 
-    Ok(views.html.getCollection(collections))
+    val getCollectionsDoc =
+      graphql"""
+           query MyQuery {
+               getCollections {
+                    collections {
+                      id, name, legalStatus, closure, copyright
+                   }
+                }
+           }
+           """
+
+
+    appSyncClient.query[CollectionsResult](getCollectionsDoc).result.map(result => result match {
+      case Right(r) => Ok(views.html.getCollection(r.data.getCollections.collections))
+      case Left(ex) => InternalServerError(ex.errors.toString())
+    })
+
+
   }
 }
