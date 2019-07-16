@@ -9,6 +9,7 @@ GET     /dashboard                          controllers.DashboardController.inde
 GET     /upload                             controllers.UploadController.index
 GET     /authenticate/cognito               controllers.AuthController.authenticate
 GET     /viewCollections                    controllers.ViewCollectionsController.index
+GET     /createCollection                   controllers.CreateCollectionController.index
 
 
 # Map static resources from the /public folder to the /assets URL path

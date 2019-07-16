@@ -21,6 +21,4 @@ object TDRGraphQLClient {
   val flow: Flow[HttpRequest, HttpResponse, Future[OutgoingConnection]] = http.outgoingConnectionHttps(uri.authority.host.address(), uri.effectivePort)
 
   def appSyncClient (oathHeaders: Seq[HttpHeader]) = GraphQLClient(uri, flow, clientOptions = ClientOptions.Default, oathHeaders)
-
-
 }

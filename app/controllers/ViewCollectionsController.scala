@@ -15,13 +15,14 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class ViewCollectionsController @Inject()(
-                                           controllerComponents: ControllerComponents,
-                                           configuration: Configuration)(
-                                           implicit val ex: ExecutionContext) extends AbstractController(controllerComponents) {
-  def index() = Action.async { implicit request: Request[AnyContent] =>
+  controllerComponents: ControllerComponents,
+  configuration: Configuration)(
+  implicit val ex: ExecutionContext) extends AbstractController(controllerComponents) {
 
+  def index() = Action.async { implicit request: Request[AnyContent] =>
     case class GetCollectionsQuery(collections: Seq[TdrCollection])
     case class CollectionsResult(getCollections: GetCollectionsQuery)
+
     implicit val tdrCollectionDecoder: Decoder[TdrCollection] = deriveDecoder
     implicit val getCollectionsQueryDecoder: Decoder[GetCollectionsQuery] = deriveDecoder
     implicit val getCollectionsResultDecoder: Decoder[CollectionsResult] = deriveDecoder
@@ -42,12 +43,9 @@ class ViewCollectionsController @Inject()(
            }
            """
 
-
     appSyncClient.query[CollectionsResult](getCollectionsDoc).result.map(result => result match {
       case Right(r) => Ok(views.html.getCollection(r.data.getCollections.collections))
       case Left(ex) => InternalServerError(ex.errors.toString())
     })
-
-
   }
 }
