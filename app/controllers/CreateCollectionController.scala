@@ -36,7 +36,9 @@ class CreateCollectionController @Inject()(
   def submit() = Action.async { implicit request: Request[AnyContent] =>
 
     val collectionData = userForm.bindFromRequest.get
-    val userDefinedCollectionName = collectionData.collectionName
+    var userDefinedCollectionName = collectionData.collectionName
+
+    case class Variables(collectionName: String)
 
     case class CreateCollectionMutation(createdCollection: TdrCollection)
     case class CreateCollectionResult(createCollection: TdrCollection)
@@ -55,9 +57,9 @@ class CreateCollectionController @Inject()(
     val appSyncClient = TDRGraphQLClient.appSyncClient(List(header))
 
     val createCollectionsDoc =
-      graphql"""
+      gql"""
            mutation {
-               createCollection(name: "PlayMVCTest", copyright: "copyright", closure: "closure", legalStatus: "legalStatus") {
+               createCollection(name: $$collectionName, copyright: "copyright", closure: "closure", legalStatus: "legalStatus") {
                   id
                   name
                   copyright
@@ -67,9 +69,9 @@ class CreateCollectionController @Inject()(
            }
            """
 
-    val collectionName = Map("collectionName" -> userDefinedCollectionName)
+    val variables = Variables(userDefinedCollectionName)
 
-    appSyncClient.query[CreateCollectionResult](createCollectionsDoc).result.map(result => result match {
+    appSyncClient.query[CreateCollectionResult, Variables](createCollectionsDoc, variables).result.map(result => result match {
       case Right(r) => Redirect(routes.UploadController.index())
       case Left(ex) => InternalServerError(ex.errors.toString())})
   }
