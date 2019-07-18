@@ -58,7 +58,7 @@ class CreateCollectionController @Inject()(
 
     val createCollectionsDoc =
       gql"""
-           mutation {
+           mutation($$collectionName: String!) {
                createCollection(name: $$collectionName, copyright: "copyright", closure: "closure", legalStatus: "legalStatus") {
                   id
                   name
