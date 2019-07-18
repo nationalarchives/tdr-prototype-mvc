@@ -1,13 +1,13 @@
-@()
+@(userForm: Form[model.CreateCollectionData])
 
 @main("CreateCollection") {
 @defining(play.core.PlayVersion.current) { version =>
 
 <div className="govuk-grid-row">
     <div className="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl">Create Collection</h1
+        <h1 class="govuk-heading-xl">Create Collection</h1>
         <form
-                action={`${process.env.API_URL}/collections`}
+                action="@routes.CreateCollectionController.submit()"
                 method="POST"
         >
             <div className="govuk-form-group">

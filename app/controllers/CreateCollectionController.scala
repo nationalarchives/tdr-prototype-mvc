@@ -5,11 +5,14 @@ import graphQL.TDRGraphQLClient
 import io.circe.Decoder
 import io.circe.generic.semiauto.deriveDecoder
 import javax.inject.{Inject, Singleton}
-import model.TdrCollection
+import model.{CreateCollectionData, TdrCollection}
 import modules.TDRAttributes
 import play.api.Configuration
 import play.api.mvc.{AbstractController, AnyContent, ControllerComponents, Request}
+import play.api.data._
+import play.api.data.Forms._
 import sangria.macros._
+import io.circe._, io.circe.generic.auto._
 
 import scala.concurrent.ExecutionContext
 
@@ -19,7 +22,21 @@ class CreateCollectionController @Inject()(
   configuration: Configuration)(
   implicit val ex: ExecutionContext) extends AbstractController(controllerComponents) {
 
-  def index() = Action.async { implicit request: Request[AnyContent] =>
+  val userForm = Form(
+    mapping(
+      "collectionName" -> text
+    )(CreateCollectionData.apply)(CreateCollectionData.unapply)
+  )
+
+  def index() = Action { implicit request: Request[AnyContent] =>
+
+    Ok(views.html.createCollection(userForm ))
+  }
+
+  def submit() = Action.async { implicit request: Request[AnyContent] =>
+
+    val collectionData = userForm.bindFromRequest.get
+    val userDefinedCollectionName = collectionData.collectionName
 
     case class CreateCollectionMutation(createdCollection: TdrCollection)
     case class CreateCollectionResult(createCollection: TdrCollection)
@@ -40,7 +57,7 @@ class CreateCollectionController @Inject()(
     val createCollectionsDoc =
       graphql"""
            mutation {
-               createCollection(name: "PlayMVCTest1", copyright: "copyright", closure: "closure", legalStatus: "legalStatus") {
+               createCollection(name: "PlayMVCTest", copyright: "copyright", closure: "closure", legalStatus: "legalStatus") {
                   id
                   name
                   copyright
@@ -50,8 +67,10 @@ class CreateCollectionController @Inject()(
            }
            """
 
+    val collectionName = Map("collectionName" -> userDefinedCollectionName)
+
     appSyncClient.query[CreateCollectionResult](createCollectionsDoc).result.map(result => result match {
-      case Right(r) => Ok(views.html.createCollection())
+      case Right(r) => Redirect(routes.UploadController.index())
       case Left(ex) => InternalServerError(ex.errors.toString())})
   }
 }
