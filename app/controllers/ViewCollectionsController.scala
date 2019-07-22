@@ -44,7 +44,7 @@ class ViewCollectionsController @Inject()(
            """
 
     appSyncClient.query[CollectionsResult](getCollectionsDoc).result.map(result => result match {
-      case Right(r) => Ok(views.html.getCollection(r.data.getCollections.collections))
+      case Right(r) => Ok(views.html.showCollections(r.data.getCollections.collections))
       case Left(ex) => InternalServerError(ex.errors.toString())
     })
   }
