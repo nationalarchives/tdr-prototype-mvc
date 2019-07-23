@@ -2,14 +2,14 @@ language: scala
 dist: trusty
 jdk: oraclejdk8
 
+services:
+  - docker
+
 scala:
   - 2.12.8
 
 script:
   - sbt dist
-
-services:
-  - docker
 
 deploy:
   provider: script
