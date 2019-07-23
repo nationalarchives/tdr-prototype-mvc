@@ -8,7 +8,8 @@ scala:
 script:
   - sbt dist
 
-before_deploy:
-  - docker login $DOCKER_USERNAME $DOCKER_PASSWORD
-  - docker build -t nationalarchives/prototype-play-app .
-  - docker push nationalarchives/prototype-play-app
+deploy:
+  provider: script
+  script: bash deploy.sh
+  on:
+branch: master
