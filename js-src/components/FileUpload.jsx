@@ -36,6 +36,7 @@ class FileUpload extends Component {
         uploadFiles(files).then(() => {
             this.setState({ uploadedFileCount: files.length })
         }).catch(error => {
+            this.setState({ uploadError: error });
             console.log("Error uploading file");
             console.log(error);
         });
@@ -43,7 +44,9 @@ class FileUpload extends Component {
 
     render() {
         if (!this.state.userAuthenticated) {
-            return "Authenticating user..."
+            return "Authenticating user...";
+        } else if (this.state.uploadError) {
+            return "Error uploading files";
         } else if (this.state.uploadedFileCount > 0) {
             return `Uploaded ${this.state.uploadedFileCount} files`;
         }

@@ -19,9 +19,7 @@ export const uploadFiles = (files) => {
             }
         });
 
-        const uploads = Array.from(files).map(file => {
-            uploadFile(s3, file.name, file)
-        });
+        const uploads = Array.from(files).map(file => uploadFile(s3, file.name, file));
 
         // If any uploads fail, this will only return the first error. We should handle ALL errors, not just the first.
         return Promise.all(uploads);
@@ -49,8 +47,7 @@ const uploadFile = (s3, name, content) => {
         s3.upload(
             {
                 Key: `tmp-play-app/${name}`,
-                Body: content,
-                Bucket: "tdr-files"
+                Body: content
             },
             {},
             function(err) {
