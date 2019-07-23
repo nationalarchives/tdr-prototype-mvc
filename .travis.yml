@@ -8,6 +8,9 @@ scala:
 script:
   - sbt dist
 
+services:
+  - docker
+
 deploy:
   provider: script
   script: bash deploy.sh
