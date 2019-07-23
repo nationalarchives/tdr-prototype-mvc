@@ -1,12 +1,26 @@
-import React, {Component} from "react";
+import * as React from "react";
 
 import {authenticateUser} from "../aws/auth";
 
 import {uploadFiles} from "../aws/s3Upload";
-import FileForm from "./FileForm.jsx";
+import FileForm, {SelectedFile} from "./FileForm";
 
-class FileUpload extends Component {
-    constructor(props) {
+export interface FileUploadProps {}
+
+interface FileUploadState {
+    userAuthenticated: boolean,
+    uploadedFileCount: number,
+    uploadError?: any
+}
+
+export interface FileList {
+    readonly length: number;
+    item(index: number): SelectedFile | null;
+    [index: number]: SelectedFile;
+}
+
+export class FileUpload extends React.Component<FileUploadProps, FileUploadState> {
+    constructor(props: FileUploadProps) {
         super(props);
 
         this.state = {
@@ -32,10 +46,10 @@ class FileUpload extends Component {
         });
     }
 
-    handleUpload(files) {
+    handleUpload(files: FileList) {
         uploadFiles(files).then(() => {
             this.setState({ uploadedFileCount: files.length })
-        }).catch(error => {
+        }).catch((error: any) => {
             this.setState({ uploadError: error });
             console.log("Error uploading file");
             console.log(error);
@@ -54,5 +68,3 @@ class FileUpload extends Component {
         return <FileForm onUpload={this.handleUpload} />
     }
 }
-
-export default FileUpload;
