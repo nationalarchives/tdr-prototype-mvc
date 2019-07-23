@@ -49,8 +49,7 @@ const uploadFile = (s3, name, content) => {
         s3.upload(
             {
                 Key: `tmp-play-app/${name}`,
-                Body: content,
-                Bucket: "tdr-files"
+                Body: content
             },
             {},
             function(err) {
