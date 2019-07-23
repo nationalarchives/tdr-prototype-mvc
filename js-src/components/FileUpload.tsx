@@ -29,16 +29,21 @@ export class FileUpload extends React.Component<FileUploadProps, FileUploadState
     componentDidMount() {
         const url = window.location.href;
         const codeRegex = /.*?code\=([\w-]+)/;
-        // Remove authentication code from page URL
-        window.history.replaceState(null, null, window.location.pathname);
-        const awsCode = codeRegex.exec(url)[1];
+        let matches = codeRegex.exec(url);
 
-        authenticateUser(awsCode).then(() => {
-            this.setState({ userAuthenticated: true })
-        }).catch(error => {
-            console.log("Error authenticating user");
-            console.log(error);
-        });
+        // Remove authentication code from page URL
+        window.history.replaceState(null, "File upload", window.location.pathname);
+
+        if (matches && matches[1]) {
+            const awsCode = matches[1];
+
+            authenticateUser(awsCode).then(() => {
+                this.setState({ userAuthenticated: true })
+            }).catch(error => {
+                console.log("Error authenticating user");
+                console.log(error);
+            });
+        }
     }
 
     handleUpload(files: FileList) {

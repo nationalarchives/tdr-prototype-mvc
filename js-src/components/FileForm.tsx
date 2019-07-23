@@ -33,13 +33,18 @@ class FileForm extends React.Component<FileFormProps, FileFormState> {
     handleFileSelect(event: ChangeEvent) {
         const files = (event.target as HTMLInputElement).files;
 
-        this.setState({ files });
+        if (files) {
+            this.setState({ files });
+        }
     }
 
     handleUpload(event: FormEvent) {
         event.preventDefault();
 
-        this.props.onUpload(this.state.files);
+        const currentFiles = this.state.files;
+        if (currentFiles) {
+            this.props.onUpload(currentFiles);
+        }
     }
 
     render() {

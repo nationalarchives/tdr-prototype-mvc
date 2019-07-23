@@ -35,6 +35,11 @@ function getSession(): Promise<CognitoUserSession> {
 
     const currentUser = userPool.getCurrentUser();
 
+    if (!currentUser) {
+        // Placeholder error handling. In Beta, we should reauthenticate the user.
+        return Promise.reject("No current user");
+    }
+
     return new Promise<CognitoUserSession>((resolve, reject) => {
         currentUser.getSession((err: any, session: CognitoUserSession) => {
             if (err) {
