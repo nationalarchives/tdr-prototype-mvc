@@ -1,6 +1,6 @@
 import * as React from "react";
 import {ChangeEvent, FormEvent} from "react";
-import {FileList} from "./FileUpload";
+import {FileList} from "../models/File";
 
 export interface FileFormProps {
     onUpload: (files: FileList) => void
@@ -18,8 +18,6 @@ function DirectoryInput(inputProps: React.DetailedHTMLProps<React.InputHTMLAttri
     };
     return <input {...directoryProps} />;
 }
-
-export interface SelectedFile {}
 
 class FileForm extends React.Component<FileFormProps, FileFormState> {
 

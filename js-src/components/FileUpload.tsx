@@ -3,7 +3,8 @@ import * as React from "react";
 import {authenticateUser} from "../aws/auth";
 
 import {uploadFiles} from "../aws/s3Upload";
-import FileForm, {SelectedFile} from "./FileForm";
+import FileForm from "./FileForm";
+import {FileList} from "../models/File";
 
 export interface FileUploadProps {}
 
@@ -11,12 +12,6 @@ interface FileUploadState {
     userAuthenticated: boolean,
     uploadedFileCount: number,
     uploadError?: any
-}
-
-export interface FileList {
-    readonly length: number;
-    item(index: number): SelectedFile | null;
-    [index: number]: SelectedFile;
 }
 
 export class FileUpload extends React.Component<FileUploadProps, FileUploadState> {
