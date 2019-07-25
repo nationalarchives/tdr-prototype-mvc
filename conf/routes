@@ -8,7 +8,9 @@ GET     /                                   controllers.HomeController.index
 GET     /dashboard                          controllers.DashboardController.index
 GET     /upload                             controllers.UploadController.index
 GET     /authenticate/cognito               controllers.AuthController.authenticate
-
+GET     /viewCollections                    controllers.ViewCollectionsController.index
+GET     /createCollection                   controllers.CreateCollectionController.index
+POST    /createCollection/submit            controllers.CreateCollectionController.submit()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

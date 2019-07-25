@@ -9,6 +9,7 @@ class DashboardController @Inject()(
 )extends AbstractController(cc) {
 
   def index() = Action { implicit request: Request[AnyContent] =>
+
     Ok(views.html.dashboard())
   }
 }

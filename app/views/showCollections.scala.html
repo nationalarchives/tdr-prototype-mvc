@@ -1,0 +1,19 @@
+@(collections:Seq[model.TdrCollection])
+
+@main("ViewCollections") {
+@defining(play.core.PlayVersion.current) { version =>
+<h1 class="govuk-heading-xl">View Collections</h1>
+
+<div>
+    <ul>
+        @for(collection <- collections) {
+            <li>
+                <p>Name: @collection.name</p>
+                <p>Copyright: @collection.copyright</p>
+                <p>LegalStatus: @collection.legalStatus</p> }
+            </li>
+    </ul>
+</div>
+
+}
+}

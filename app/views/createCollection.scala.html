@@ -1,0 +1,33 @@
+@(userForm: Form[model.CreateCollectionData])
+
+@main("CreateCollection") {
+@defining(play.core.PlayVersion.current) { version =>
+
+<div className="govuk-grid-row">
+    <div className="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">Create Collection</h1>
+        <form
+                action="@routes.CreateCollectionController.submit()"
+                method="POST"
+        >
+            <div className="govuk-form-group">
+                <label className="govuk-label" htmlFor={props.id}>
+                    Collection Name
+                </label>
+                <input
+                        className={`govuk-input govuk-!-width-one-third`}
+                        id="collectionName"
+                        name="collectionName"
+                />
+            </div>
+            <div className="govuk-form-group">
+                <button className="govuk-button" type="submit">
+                    Create Collection
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+}
+}
