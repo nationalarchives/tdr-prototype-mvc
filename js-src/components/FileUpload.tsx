@@ -1,12 +1,21 @@
-import React, {Component} from "react";
+import * as React from "react";
 
 import {authenticateUser} from "../aws/auth";
 
 import {uploadFiles} from "../aws/s3Upload";
-import FileForm from "./FileForm.jsx";
+import FileForm from "./FileForm";
+import {FileList} from "../models/File";
 
-class FileUpload extends Component {
-    constructor(props) {
+export interface FileUploadProps {}
+
+interface FileUploadState {
+    userAuthenticated: boolean,
+    uploadedFileCount: number,
+    uploadError?: any
+}
+
+export class FileUpload extends React.Component<FileUploadProps, FileUploadState> {
+    constructor(props: FileUploadProps) {
         super(props);
 
         this.state = {
@@ -20,22 +29,27 @@ class FileUpload extends Component {
     componentDidMount() {
         const url = window.location.href;
         const codeRegex = /.*?code\=([\w-]+)/;
-        // Remove authentication code from page URL
-        window.history.replaceState(null, null, window.location.pathname);
-        const awsCode = codeRegex.exec(url)[1];
+        let matches = codeRegex.exec(url);
 
-        authenticateUser(awsCode).then(() => {
-            this.setState({ userAuthenticated: true })
-        }).catch(error => {
-            console.log("Error authenticating user");
-            console.log(error);
-        });
+        // Remove authentication code from page URL
+        window.history.replaceState(null, "File upload", window.location.pathname);
+
+        if (matches && matches[1]) {
+            const awsCode = matches[1];
+
+            authenticateUser(awsCode).then(() => {
+                this.setState({ userAuthenticated: true })
+            }).catch(error => {
+                console.log("Error authenticating user");
+                console.log(error);
+            });
+        }
     }
 
-    handleUpload(files) {
+    handleUpload(files: FileList) {
         uploadFiles(files).then(() => {
             this.setState({ uploadedFileCount: files.length })
-        }).catch(error => {
+        }).catch((error: any) => {
             this.setState({ uploadError: error });
             console.log("Error uploading file");
             console.log(error);
@@ -54,5 +68,3 @@ class FileUpload extends Component {
         return <FileForm onUpload={this.handleUpload} />
     }
 }
-
-export default FileUpload;

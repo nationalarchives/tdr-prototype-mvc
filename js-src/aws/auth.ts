@@ -6,17 +6,19 @@ import {
     CognitoUserSession
 } from "amazon-cognito-identity-js";
 
-const baseUrl = TDR_BASE_URL;
-const appClientId = UPLOAD_APP_CLIENT_ID;
+declare var TDR_BASE_URL: string;
+declare var UPLOAD_APP_CLIENT_ID: string;
 
 const poolData = {
     UserPoolId: "eu-west-2_6Mn0M2i9C",
-    ClientId: appClientId
+    ClientId: UPLOAD_APP_CLIENT_ID
 };
 
-export const getUserPool = () => { return new CognitoUserPool(poolData) };
+export function getUserPool(): CognitoUserPool {
+    return new CognitoUserPool(poolData)
+}
 
-export const authenticateUser = authenticationCode => {
+export function authenticateUser(authenticationCode: string): Promise<void> {
     const userPool = getUserPool();
 
     const tokenEndpoint = "https://tdr.auth.eu-west-2.amazoncognito.com/oauth2/token";
@@ -26,7 +28,7 @@ export const authenticateUser = authenticationCode => {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: `grant_type=authorization_code&scope=profile&client_id=${appClientId}&redirect_uri=${baseUrl}/upload&code=${authenticationCode}`
+        body: `grant_type=authorization_code&scope=profile&client_id=${UPLOAD_APP_CLIENT_ID}&redirect_uri=${TDR_BASE_URL}/upload&code=${authenticationCode}`
     }).then(res => {
         return res.json();
     }).then(json => {
@@ -48,4 +50,4 @@ export const authenticateUser = authenticationCode => {
         });
         user.setSignInUserSession(session);
     });
-};
+}
