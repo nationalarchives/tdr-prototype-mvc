@@ -7,13 +7,6 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 scalaVersion := "2.12.8"
 
-resolvers += "Atlassian Releases" at "https://maven.atlassian.com/public/"
-resolvers += Resolver.bintrayRepo("jarlakxen", "maven")
-
-resolvers += "Apollo Bintray" at "https://dl.bintray.com/apollographql/maven/"
-resolvers += "Acccc" at "https://mvnrepository.com/artifact/"
-resolvers += Resolver.jcenterRepo
-
 crossScalaVersions := Seq("2.12.8", "2.11.12")
 
 libraryDependencies += guice

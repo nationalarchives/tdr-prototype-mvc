@@ -15,6 +15,8 @@ object TDRGraphQLClient {
 
   implicit val system = ActorSystem()
   implicit val materializer: ActorMaterializer = ActorMaterializer()
+
+  //TODO: this should be placed in application configuration
   val uri: Uri = Uri(s"https://qad2wpgi3befniyihgl42yvfea.appsync-api.eu-west-2.amazonaws.com/graphql")
 
   val http: HttpExt = Http()
