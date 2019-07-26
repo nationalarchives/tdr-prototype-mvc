@@ -9,6 +9,9 @@ scalaVersion := "2.12.8"
 
 crossScalaVersions := Seq("2.12.8", "2.11.12")
 
+resolvers += "Atlassian Releases" at "https://maven.atlassian.com/public/"
+resolvers += Resolver.bintrayRepo("jarlakxen", "maven")
+
 libraryDependencies += guice
 libraryDependencies += "com.iheart" %% "ficus" % "1.4.3"
 libraryDependencies += "com.mohiva" %% "play-silhouette" % "5.0.7"
