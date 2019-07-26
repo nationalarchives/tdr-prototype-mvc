@@ -8,9 +8,11 @@ import {
 
 declare var TDR_BASE_URL: string;
 declare var UPLOAD_APP_CLIENT_ID: string;
+declare var TDR_AUTH_URL: string;
+declare var TDR_USER_POOL_ID: string;
 
 const poolData = {
-    UserPoolId: "eu-west-2_6Mn0M2i9C",
+    UserPoolId: TDR_USER_POOL_ID,
     ClientId: UPLOAD_APP_CLIENT_ID
 };
 
@@ -21,7 +23,7 @@ export function getUserPool(): CognitoUserPool {
 export function authenticateUser(authenticationCode: string): Promise<void> {
     const userPool = getUserPool();
 
-    const tokenEndpoint = "https://tdr.auth.eu-west-2.amazoncognito.com/oauth2/token";
+    const tokenEndpoint = TDR_AUTH_URL + "/oauth2/token";
 
     return fetch(tokenEndpoint, {
         method: 'POST',

@@ -4,13 +4,16 @@ import {CognitoUserSession} from "amazon-cognito-identity-js";
 import {FileList, SelectedFile} from "../models/File";
 import * as S3 from "aws-sdk/clients/s3";
 
+declare var TDR_USER_POOL_ID: string;
+declare var TDR_IDENTITY_POOL_ID: string;
+
 export const uploadFiles = (files: FileList) => {
     return getSession().then(session => {
-        const cognitoLoginId = "cognito-idp.eu-west-2.amazonaws.com/eu-west-2_6Mn0M2i9C";
+        const cognitoLoginId = "cognito-idp.eu-west-2.amazonaws.com" + TDR_USER_POOL_ID;
 
         config.region = "eu-west-2";
         config.credentials = new CognitoIdentityCredentials({
-            IdentityPoolId: "eu-west-2:4b26364a-3070-4f98-8e86-1e33a1b54d85",
+            IdentityPoolId: TDR_IDENTITY_POOL_ID,
             Logins: {
                 [cognitoLoginId]: session.getIdToken().getJwtToken()
             }
