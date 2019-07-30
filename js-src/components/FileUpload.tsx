@@ -3,6 +3,7 @@ import * as React from "react";
 import {authenticateUser} from "../aws/auth";
 
 import {uploadFiles} from "../aws/s3Upload";
+import {uploadFileMetadata} from "../aws/MetadataUpload"
 import FileForm from "./FileForm";
 import {FileList} from "../models/File";
 
@@ -45,6 +46,12 @@ export class FileUpload extends React.Component<FileUploadProps, FileUploadState
             });
         }
     }
+
+
+    // handleUpload(files: FileList) {
+    //     uploadFileMetadata(files).then(() =>
+    //         this.setState({ uploadedFileCount: files.length }))
+    // }
 
     handleUpload(files: FileList) {
         uploadFiles(files).then(() => {
