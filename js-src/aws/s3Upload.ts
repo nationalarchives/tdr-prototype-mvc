@@ -9,7 +9,7 @@ declare var TDR_IDENTITY_POOL_ID: string;
 
 export const uploadFiles = (files: FileList) => {
     return getSession().then(session => {
-        const cognitoLoginId = "cognito-idp.eu-west-2.amazonaws.com" + TDR_USER_POOL_ID;
+        const cognitoLoginId = "cognito-idp.eu-west-2.amazonaws.com/" + TDR_USER_POOL_ID;
 
         config.region = "eu-west-2";
         config.credentials = new CognitoIdentityCredentials({
