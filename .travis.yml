@@ -10,7 +10,7 @@ scala:
 
 script:
   - npm install
-  - npm run build
+  - TDR_BASE_ULR=https://d1nd68699jelkh.cloudfront.net npm run build
   - sbt dist
 
 deploy:
