@@ -9,6 +9,7 @@ scala:
   - 2.12.8
 
 script:
+  - npm run build
   - sbt dist
 
 deploy:
