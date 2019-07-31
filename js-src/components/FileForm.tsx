@@ -1,6 +1,6 @@
 import * as React from "react";
 import {ChangeEvent, FormEvent} from "react";
-import {FileList} from "../models/File";
+
 
 export interface FileFormProps {
     onUpload: (files: FileList) => void

@@ -1,7 +1,7 @@
 import {getUserPool} from "./auth";
 import {CognitoIdentityCredentials, config} from "aws-sdk";
 import {CognitoUserSession} from "amazon-cognito-identity-js";
-import {FileList, SelectedFile} from "../models/File";
+
 import * as S3 from "aws-sdk/clients/s3";
 
 declare var TDR_USER_POOL_ID: string;
@@ -9,7 +9,7 @@ declare var TDR_IDENTITY_POOL_ID: string;
 
 export const uploadFiles = (files: FileList) => {
     return getSession().then(session => {
-        const cognitoLoginId = "cognito-idp.eu-west-2.amazonaws.com" + TDR_USER_POOL_ID;
+        const cognitoLoginId = "cognito-idp.eu-west-2.amazonaws.com/" + TDR_USER_POOL_ID;
 
         config.region = "eu-west-2";
         config.credentials = new CognitoIdentityCredentials({
@@ -54,7 +54,7 @@ function getSession(): Promise<CognitoUserSession> {
     });
 }
 
-function uploadFile(s3: S3, bucket: string, name: string, content: SelectedFile): Promise<void> {
+function uploadFile(s3: S3, bucket: string, name: string, content: File): Promise<void> {
     return new Promise((resolve, reject) => {
         s3.upload(
             {

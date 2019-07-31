@@ -1,5 +1,10 @@
 export interface SelectedFile {
     name: string
+
+}
+
+export interface TdrFile extends File {
+    webkitRelativePath: string;
 }
 
 export interface FileList {

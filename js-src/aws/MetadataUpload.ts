@@ -1,6 +1,10 @@
-import uuid4 from "uuid";
 
-export const uploadFileMetadata = (files) => {
+
+interface TdrFile extends File {
+    webkitRelativePath: string;
+}
+
+export const uploadFileMetadata = (files:FileList) => {
 
     const uploads = Array.from(files).map(async file => {
         await uploadMetadata( file.name, file)
@@ -10,14 +14,14 @@ export const uploadFileMetadata = (files) => {
 
 };
 
-const uploadMetadata =  async ( name, content) => {
-    const fileInfo = await getFileInfo(content);
+const uploadMetadata =  async ( name:String, content:File) => {
+    const fileInfo = await getFileInfo(<TdrFile>content);
     console.log(fileInfo);
     return fileInfo
 
 };
 
-const hexString = buffer => {
+const hexString = (buffer:ArrayBuffer) => {
     const byteArray = new Uint8Array(buffer);
 
     const hexCodes = [...byteArray].map(value => {
@@ -29,7 +33,7 @@ const hexString = buffer => {
 };
 
 
-const generateHash = file => {
+const generateHash = (file:File) => {
     const crypto = self.crypto.subtle;
     const fileReader = new FileReader();
     fileReader.readAsArrayBuffer(file);
@@ -44,11 +48,9 @@ const generateHash = file => {
     });
 };
 
-const getFileInfo = async file => {
-    const fileId = uuid4();
+const getFileInfo = async (file:TdrFile) => {
     const checksum = await generateHash(file);
     const fileInfo = {
-        id:fileId,
         checksum:checksum,
         size: file.size,
         path:file.webkitRelativePath,
