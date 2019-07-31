@@ -15,7 +15,7 @@ deploy:
   - provider: script
     script: bash deploy.sh dev
     on:
-      branch: dev
+      branch: tkAddEnvVarToDocker
   - provider: script
     script: bash deploy.sh master
     on:
