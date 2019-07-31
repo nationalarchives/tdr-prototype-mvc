@@ -12,7 +12,11 @@ script:
   - sbt dist
 
 deploy:
-  provider: script
-  script: bash deploy.sh
-  on:
-    all_branches: true
+  - provider: script
+    script: bash deploy.sh dev
+    on:
+      branch: dev
+  - provider: script
+    script: bash deploy.sh master
+    on:
+      branch: master
