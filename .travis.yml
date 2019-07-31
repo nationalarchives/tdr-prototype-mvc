@@ -9,8 +9,7 @@ scala:
   - 2.12.8
 
 script:
-  - mkdir -p target/universal
-  - touch target/universal/transfer-digital-records-1.0.1-SNAPSHOT.zip
+  - sbt dist
 
 deploy:
   provider: script
