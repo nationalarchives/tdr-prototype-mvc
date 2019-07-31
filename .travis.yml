@@ -10,3 +10,9 @@ scala:
 
 script:
   - sbt dist
+
+deploy:
+  provider: script
+  script: bash deploy.sh
+  on:
+branch: master
