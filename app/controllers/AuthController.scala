@@ -20,6 +20,7 @@ class AuthController @Inject() (
 ) extends AbstractController(components) {
 
   def authenticate = Action.async { implicit request: Request[AnyContent] =>
+    print("hello")
     cognitoProvider.authenticate().flatMap {
       case Left(result) => Future.successful(result)
       case Right(authInfo) => {
