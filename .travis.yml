@@ -13,10 +13,12 @@ script:
 
 deploy:
   - provider: script
+    skip_cleanup: true
     script: bash deploy.sh dev
     on:
       branch: tkAddEnvVarToDocker
   - provider: script
-    script: bash deploy.sh master
+    skip_cleanup: true
+    script: bash deploy.sh latest
     on:
       branch: master
