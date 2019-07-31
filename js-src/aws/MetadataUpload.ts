@@ -1,20 +1,19 @@
 
-
 interface TdrFile extends File {
     webkitRelativePath: string;
 }
-
+// Not uploading data just logging data to prove File api works
 export const uploadFileMetadata = (files:FileList) => {
 
     const uploads = Array.from(files).map(async file => {
-        await uploadMetadata( file.name, file)
+        await getFileMetadata( file.name, file)
     });
 
     return Promise.all(uploads);
 
 };
 
-const uploadMetadata =  async ( name:String, content:File) => {
+const getFileMetadata =  async ( name:String, content:File) => {
     const fileInfo = await getFileInfo(<TdrFile>content);
     console.log(fileInfo);
     return fileInfo
