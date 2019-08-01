@@ -18,8 +18,9 @@ deploy:
   - provider: script
     skip_cleanup: true
     script: bash deploy.sh dev
-    #on:
-      #branch: dev
+    on:
+      all_branches: true
+  #    branch: dev
   #- provider: script
   #  skip_cleanup: true
   #  script: bash deploy.sh test
