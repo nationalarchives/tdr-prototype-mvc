@@ -7,16 +7,22 @@ services:
 
 scala:
   - 2.12.8
-jobs:
-  include:
-    - stage: "Build"
-      script:
-        - npm install
-        - npm run build
-        - sbt dist
-    - stage: "Run Test Server"
-      script: docker-compose up -d
-    - stage: "Run Cypress Tests"
-      script:
-        - npm run wait
-        - npm run cypress:ci
+
+before_cache:
+  # Cleanup the cached directories to avoid unnecessary cache updates
+  - rm -fv $HOME/.ivy2/.sbt.ivy.lock
+  - find $HOME/.ivy2/cache -name "ivydata-*.properties" -print -delete
+  - find $HOME/.sbt        -name "*.lock"               -print -delete
+
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt
+
+script:
+  - npm install
+  - npm run build
+  - sbt dist
+  - docker-compose up -d
+  - npm run wait
+  - npm run cypress:ci
