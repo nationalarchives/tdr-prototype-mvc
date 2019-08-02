@@ -1,4 +1,5 @@
 # Transfer Digital Records: MVC prototype
+[![Build Status](https://travis-ci.org/nationalarchives/tdr-prototype-mvc.svg?branch=master)](https://travis-ci.org/nationalarchives/tdr-prototype-mvc)
 
 ## Purpose
 
