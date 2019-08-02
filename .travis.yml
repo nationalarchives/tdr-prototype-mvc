@@ -10,6 +10,7 @@ scala:
 jobs:
   include:
     - stage: test
+      script: scripts/run_cypress_tests.sh
 
 script:
   - npm install
