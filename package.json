@@ -5,7 +5,9 @@
   "private": true,
   "scripts": {
     "build": "webpack --config webpack.config.js",
-    "watch": "webpack --config webpack.config.js --watch"
+    "watch": "webpack --config webpack.config.js --watch",
+    "wait": "wait-on http://localhost:9000",
+    "cypress:ci": "cypress run --record --key $CYPRESS_KEY"
   },
   "repository": {
     "type": "git",
@@ -21,12 +23,15 @@
     "@babel/core": "^7.5.0",
     "@babel/preset-env": "^7.5.0",
     "@babel/preset-react": "^7.0.0",
+    "@cypress/webpack-preprocessor": "^4.1.0",
     "@types/node": "^12.6.8",
     "@types/react": "^16.8.23",
     "@types/react-dom": "^16.8.4",
     "babel-loader": "^8.0.6",
+    "cypress": "^3.4.1",
     "ts-loader": "^6.0.4",
     "typescript": "^3.5.3",
+    "wait-on": "^3.3.0",
     "webpack": "^4.35.0",
     "webpack-cli": "^3.3.5"
   },
