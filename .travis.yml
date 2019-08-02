@@ -16,7 +16,7 @@ jobs:
         - sbt dist
     - stage: "Run Test Server"
       script: docker-compose up -d
-    - stage: "Run Cypress Tests"2
+    - stage: "Run Cypress Tests"
       script:
         - npm run wait
         - npm run cypress:ci
