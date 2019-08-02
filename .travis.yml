@@ -9,10 +9,14 @@ scala:
   - 2.12.8
 jobs:
   include:
-    - stage: test
-      script: scripts/run_cypress_tests.sh
-
-script:
-  - npm install
-  - npm run build
-  - sbt dist
+    - stage: "Run Test Server"
+      script: docker-compose up -d
+    - stage: "Build"
+      script:
+        - npm install
+        - npm run build
+        - sbt dist
+    - stage: "Run Cypress Tests"2
+      script:
+        - npm run wait
+        - npm run cypress:ci
