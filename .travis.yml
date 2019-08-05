@@ -27,16 +27,7 @@ stages:
 
 jobs:
   - stage: test
-    script: 
-      - npm i
-      - npm t
-      - sbt test
+    script: scripts/run_tests.sh
 
   - stage: cypress
-    script: 
-      - npm install
-      - npm run build
-      - sbt dist
-      - docker-compose up -d
-      - npm run wait
-      - npm run cypress:ci
+    script: scripts/run_cypress_tests.sh
