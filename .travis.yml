@@ -20,14 +20,13 @@ cache:
     - $HOME/.sbt
     - $HOME/node_modules
 
-stages:
-  - runtests
-  - name: cypress
-    if: branch = develop
+script: echo "Running tests"
 
 jobs:
-  - stage: runtests
-    script: npm install
+  include:
+    - stage: runtests
+      script: scripts/run_tests.sh
 
-  - stage: cypress
-    script: scripts/run_cypress_tests.sh
+    - stage: cypress
+      script: scripts/run_cypress_tests.sh
+      if: branch = develop
