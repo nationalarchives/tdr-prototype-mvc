@@ -24,19 +24,22 @@ script: echo "Running tests"
 
 jobs:
   include:
-    - stage: runtests
-      script: scripts/run_tests.sh
+    # - stage: runtests
+    #   script: scripts/run_tests.sh
 
     - stage: cypress
       script: scripts/run_cypress_tests.sh
       if: branch = develop
       #NOTE: Currently master branch will deploy to the development AWS environment for the purposes of Alpha
-      deploy:
-        - provider: script
-          skip_cleanup: true
-          script: bash deploy.sh dev
-          on:
-            branch: TravisWithCypress
+    - stage: deploy
+      script: scripts/deploy.sh
+      if: branch = TravisWithCypress
+      # deploy:
+      #   - provider: script
+      #     skip_cleanup: true
+      #     script: bash deploy.sh dev
+      #     on:
+      #       branch: TravisWithCypress
         #    branch: dev
         #- provider: script
         #  skip_cleanup: true
