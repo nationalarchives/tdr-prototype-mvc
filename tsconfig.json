@@ -1,14 +1,16 @@
 {
   "compilerOptions": {
     "outDir": "./dist/",
-    "module": "es6",
+    "module": "commonjs",
     "target": "es5",
     "jsx": "react",
-    "allowJs": false,
-    "moduleResolution": "node",
-
     "noImplicitReturns": true,
     "noUnusedLocals": true,
-    "strict": true
-  }
+    "strict": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": [
+    "js-src/**/*.tsx",
+    "js-src/**/*.ts"
+  ]
 }

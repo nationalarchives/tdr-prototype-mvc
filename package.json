@@ -7,7 +7,9 @@
     "build": "webpack --config webpack.config.js",
     "watch": "webpack --config webpack.config.js --watch",
     "wait": "wait-on http://localhost:9000",
-    "cypress:ci": "cypress run --record --key $CYPRESS_KEY"
+    "cypress:ci": "cypress run --record --key $CYPRESS_KEY",
+    "test": "jest --watch",
+    "test:ci": "jest"
   },
   "repository": {
     "type": "git",
@@ -24,11 +26,15 @@
     "@babel/preset-env": "^7.5.0",
     "@babel/preset-react": "^7.0.0",
     "@cypress/webpack-preprocessor": "^4.1.0",
+    "@testing-library/react": "^8.0.7",
+    "@types/jest": "^24.0.16",
     "@types/node": "^12.6.8",
     "@types/react": "^16.8.23",
     "@types/react-dom": "^16.8.4",
     "babel-loader": "^8.0.6",
     "cypress": "^3.4.1",
+    "jest": "^24.8.0",
+    "ts-jest": "^24.0.2",
     "ts-loader": "^6.0.4",
     "typescript": "^3.5.3",
     "wait-on": "^3.3.0",

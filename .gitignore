@@ -4,6 +4,7 @@ logs
 target
 project/target
 node_modules
+cypress/videos
 
 # Generated files
 public/javascripts/main.js
