@@ -9,4 +9,25 @@ scala:
   - 2.12.8
 
 script:
+  - npm install
+  - npm run build
   - sbt dist
+
+#NOTE: Currently master branch will deploy to the development AWS environment for the purposes of Alpha
+deploy:
+  - provider: script
+    skip_cleanup: true
+    script: bash deploy.sh dev
+    on:
+      branch: master
+  #    branch: dev
+  #- provider: script
+  #  skip_cleanup: true
+  #  script: bash deploy.sh test
+  #  on:
+  #    branch: test
+  #- provider: script
+  #  skip_cleanup: true
+  #  script: bash deploy.sh latest
+  #  on:
+  #    branch: master
