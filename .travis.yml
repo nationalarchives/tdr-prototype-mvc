@@ -19,24 +19,24 @@ cache:
     - $HOME/.ivy2/cache
     - $HOME/.sbt
     - $HOME/node_modules
-jobs:
-  include:
-    - stage: cypress
-      script: npm -i
-        # - npm i
-        # - npm t
-        # - sbt test
-
-    - stage: cypress
-      script: 
-        - npm install
-        # - npm run build
-        # - sbt dist
-        # - docker-compose up -d
-        # - npm run wait
-        # - npm run cypress:ci
 
 stages:
   - test
   - name: cypress
     if: branch = develop
+
+jobs:
+  - stage: test
+    script: 
+      - npm i
+      - npm t
+      - sbt test
+
+  - stage: cypress
+    script: 
+      - npm install
+      - npm run build
+      - sbt dist
+      - docker-compose up -d
+      - npm run wait
+      - npm run cypress:ci
