@@ -21,13 +21,13 @@ cache:
     - $HOME/node_modules
 
 stages:
-  - test
+  - runtests
   - name: cypress
     if: branch = develop
 
 jobs:
-  - stage: test
-    script: scripts/run_tests.sh
+  - stage: runtests
+    script: npm install
 
   - stage: cypress
     script: scripts/run_cypress_tests.sh
