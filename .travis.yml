@@ -30,3 +30,21 @@ jobs:
     - stage: cypress
       script: scripts/run_cypress_tests.sh
       if: branch = develop
+      #NOTE: Currently master branch will deploy to the development AWS environment for the purposes of Alpha
+      deploy:
+        - provider: script
+          skip_cleanup: true
+          script: bash deploy.sh dev
+          on:
+            branch: TravisWithCypress
+        #    branch: dev
+        #- provider: script
+        #  skip_cleanup: true
+        #  script: bash deploy.sh test
+        #  on:
+        #    branch: test
+        #- provider: script
+        #  skip_cleanup: true
+        #  script: bash deploy.sh latest
+        #  on:
+        #    branch: master
