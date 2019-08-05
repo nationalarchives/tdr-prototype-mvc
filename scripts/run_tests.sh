@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 npm i
-npm t
+npm run test:ci 
 sbt test
