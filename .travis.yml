@@ -24,16 +24,15 @@ script: echo "Running tests"
 
 jobs:
   include:
-    - stage: runtests
+    - stage: "Run tests"
       script: scripts/run_tests.sh
-
-    - stage: cypress
+    - stage: "Run cypress tests"
       script: scripts/run_cypress_tests.sh
-      if: branch = develop
-      #NOTE: Currently master branch will deploy to the development AWS environment for the purposes of Alpha
-    - stage: deploy_dev
-      script: scripts/deploy.sh dev
       if: branch = TravisWithCypress
+      #NOTE: Currently master branch will deploy to the development AWS environment for the purposes of Alpha
+    - stage: "Deploy dev"
+      script: scripts/deploy.sh dev
+      if: branch = develop
     # - stage: deploytest
     #   script: scripts/deploy.sh test
     #   if: branch = test

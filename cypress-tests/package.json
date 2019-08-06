@@ -9,9 +9,12 @@
     "cypress": "^3.4.1",
     "ts-loader": "^6.0.4",
     "typescript": "^3.5.3",
-    "webpack": "^4.38.0"
+    "webpack": "^4.38.0",
+    "wait-on": "^3.3.0"
   },
   "scripts": {
-    "ci": "cypress run --record --key $CYPRESS_KEY"
+    "ci": "cypress run --record --key $CYPRESS_KEY",
+    "wait": "wait-on http://localhost:9000",
+    "cypress:ci": "cypress run --record --key $CYPRESS_KEY"
   }
 }

@@ -6,8 +6,6 @@
   "scripts": {
     "build": "webpack --config webpack.config.js",
     "watch": "webpack --config webpack.config.js --watch",
-    "wait": "wait-on http://localhost:9000",
-    "cypress:ci": "cypress run --record --key $CYPRESS_KEY",
     "test": "jest --watch",
     "test:ci": "jest"
   },
@@ -35,7 +33,6 @@
     "ts-jest": "^24.0.2",
     "ts-loader": "^6.0.4",
     "typescript": "^3.5.3",
-    "wait-on": "^3.3.0",
     "webpack": "^4.35.0",
     "webpack-cli": "^3.3.5"
   },
