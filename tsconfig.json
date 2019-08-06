@@ -6,11 +6,9 @@
     "jsx": "react",
     "noImplicitReturns": true,
     "noUnusedLocals": true,
-    "strict": true,
-    "allowSyntheticDefaultImports": true
+    "strict": true
   },
-  "include": [
-    "js-src/**/*.tsx",
-    "js-src/**/*.ts"
+  "exclude": [
+    "cypress-tests"
   ]
 }
