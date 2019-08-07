@@ -93,7 +93,7 @@ AUTHENTICATOR_SIGNER_KEY=changeme \
 AUTHENTICATOR_CRYPTER_KEY=changeme \
 CSRF_SIGNER_KEY=changeme \
 SOCIAL_STATE_SIGNER_KEY=changeme \
-TDR_AUTH_URL=https://tdr.auth.eu-west-2.amazoncognito.com
+TDR_AUTH_URL=https://tdr.auth.eu-west-2.amazoncognito.com \
 sbt run
 ```
 
