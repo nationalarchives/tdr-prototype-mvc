@@ -166,5 +166,6 @@ unzip transfer-digital-records-<version>.zip
   -DUSER_DB_TOKENS_TABLE=dynamo_db_tokens_table \
   -DTDR_BASE_URL=https://some-tdr-domain.com \
   -DTDR_AUTH_URL=https://tdr-{environment}.auth.eu-west-2.amazoncognito.com
+  -DTDR_GRAPHQL_URI=URI for graphQl
   -Dhttp.port=8080
 ```
