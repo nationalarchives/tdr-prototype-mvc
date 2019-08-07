@@ -15,6 +15,7 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class ViewCollectionsController @Inject()(
+  client: TDRGraphQLClient,
   controllerComponents: ControllerComponents,
   configuration: Configuration)(
   implicit val ex: ExecutionContext) extends AbstractController(controllerComponents) {
@@ -30,7 +31,7 @@ class ViewCollectionsController @Inject()(
     val accessToken = request.attrs.get(TDRAttributes.OAuthAccessTokenKey).get.accessToken
     val header = RawHeader("Authorization", accessToken)
 
-    val appSyncClient = TDRGraphQLClient.appSyncClient(List(header))
+    val appSyncClient = client.appSyncClient(List(header))
 
     val getCollectionsDoc =
       graphql"""
