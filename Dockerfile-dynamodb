@@ -1,0 +1,12 @@
+FROM python:rc-buster
+RUN apt-get update && apt-get install -y default-jre && \
+                  wget https://s3.ap-south-1.amazonaws.com/dynamodb-local-mumbai/dynamodb_local_latest.tar.gz && \
+                  tar -xzf dynamodb_local_latest.tar.gz && \
+                  pip install awscli && \
+                  aws configure set aws_access_key_id test && \
+                  aws configure set aws_secret_access_key test && \
+                  aws configure set default.region us-west-2
+COPY scripts/create_user_db.sh /
+CMD nohup java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb > out.log 2>&1 </dev/null & \
+    /create_user_db.sh && \
+    tail -f out.log

@@ -1,0 +1,6 @@
+{
+    "chromeWebSecurity": false,
+    "baseUrl": "https://d1nd68699jelkh.cloudfront.net",
+    "projectId": "fe7yj8",
+    "defaultCommandTimeout": 30000
+}

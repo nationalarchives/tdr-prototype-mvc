@@ -1,0 +1,32 @@
+version: "3"
+services:
+  play:
+    build: .
+    image: nationalarchives/prototype-play-app
+    container_name: play
+    depends_on:
+      - dynamodb
+      - appsync
+    ports:
+      - "9000:9000"
+    environment:
+      - ACCESS_KEY_ID=test
+      - SECRET_ACCESS_KEY=test
+      - PLAY_SECRET_KEY=$TEST_PLAY_SECRET
+      - AUTHENTICATOR_SIGNER_KEY=authsignerkey
+      - AUTHENTICATOR_CRYPTER_KEY=authcrypterkey
+      - CSRF_SIGNER_KEY=csrfsignerkey
+      - SOCIAL_STATE_SIGNER_KEY=socialstatesignerkey
+      - COGNITO_CLIENT_ID=$TEST_CLIENT_ID
+      - COGNITO_CLIENT_SECRET=$TEST_CLIENT_SECRET
+      - COGNITO_UPLOAD_CLIENT_ID=$TEST_UPLOAD_CLIENT_ID
+      - USER_DB_ENDPOINT=http://dynamodb:8000
+      - USER_DB_USERS_TABLE=Users
+      - USER_DB_TOKENS_TABLE=UserTokens
+      - TDR_BASE_PATH=http://localhost:9000
+      - AWS_REGION=eu-west-2
+      - TDR_AUTH_URL=https://tdr.auth.eu-west-2.amazoncognito.com/
+  dynamodb:
+    image: nationalarchives/mvc-app-dynamodb
+  appsync:
+    image: nationalarchives/prototype-appsync

@@ -1,12 +1,12 @@
 import * as React from "react";
 
-import {authenticateUser} from "../aws/auth";
+import { authenticateUser } from "../aws/auth";
 
-import {uploadFiles} from "../aws/s3Upload";
+import { uploadFiles } from "../aws/s3Upload";
 import FileForm from "./FileForm";
-import {FileList} from "../models/File";
+import { FileList } from "../models/File";
 
-export interface FileUploadProps {}
+export interface FileUploadProps { }
 
 interface FileUploadState {
     userAuthenticated: boolean,

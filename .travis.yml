@@ -8,26 +8,34 @@ services:
 scala:
   - 2.12.8
 
-script:
-  - npm install
-  - npm run build
-  - sbt dist
+before_cache:
+  # Cleanup the cached directories to avoid unnecessary cache updates
+  - rm -fv $HOME/.ivy2/.sbt.ivy.lock
+  - find $HOME/.ivy2/cache -name "ivydata-*.properties" -print -delete
+  - find $HOME/.sbt        -name "*.lock"               -print -delete
 
-#NOTE: Currently master branch will deploy to the development AWS environment for the purposes of Alpha
-deploy:
-  - provider: script
-    skip_cleanup: true
-    script: bash deploy.sh dev
-    on:
-      branch: master
-  #    branch: dev
-  #- provider: script
-  #  skip_cleanup: true
-  #  script: bash deploy.sh test
-  #  on:
-  #    branch: test
-  #- provider: script
-  #  skip_cleanup: true
-  #  script: bash deploy.sh latest
-  #  on:
-  #    branch: master
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt
+    - $HOME/node_modules
+
+script: echo "Running tests"
+
+jobs:
+  include:
+    - stage: "Run tests"
+      script: scripts/run_tests.sh
+    - stage: "Run cypress tests"
+      script: scripts/run_cypress_tests.sh
+      if: branch = TravisWithCypress
+      #NOTE: Currently master branch will deploy to the development AWS environment for the purposes of Alpha
+    - stage: "Deploy dev"
+      script: scripts/deploy.sh dev
+      if: branch = develop
+    # - stage: deploytest
+    #   script: scripts/deploy.sh test
+    #   if: branch = test
+    # - stage: deployprod
+    #   script: scripts/deploy.sh latest
+    #   if: branch = master
