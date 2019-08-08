@@ -37,9 +37,11 @@
     "webpack-cli": "^3.3.5"
   },
   "dependencies": {
+    "@types/uuid": "^3.4.5",
     "amazon-cognito-identity-js": "^3.0.13",
     "aws-sdk": "^2.481.0",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react-dom": "^16.8.6",
+    "uuid": "^3.3.2"
   }
 }
