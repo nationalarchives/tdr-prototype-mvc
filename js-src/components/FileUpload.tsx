@@ -48,7 +48,8 @@ export class FileUpload extends React.Component<FileUploadProps, FileUploadState
     }
 
 
-    handleUpload(files:FileList) {
+    handleUpload(files:File[]) {
+        console.log("files size  " + files.length);
         uploadFileMetadata(files).then(() =>
             uploadFiles(files).then(() => {
                 this.setState({ uploadedFileCount: files.length })

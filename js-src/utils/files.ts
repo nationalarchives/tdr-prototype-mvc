@@ -1,9 +1,3 @@
-export interface IFileInfo {
-    entry: IWebkitEntry;
-    shaHash: string;
-    file: File;
-  }
-
   export interface IReader {
     readEntries: (callbackFunction: (entry: IWebkitEntry[]) => void) => void;
   }

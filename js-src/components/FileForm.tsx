@@ -4,28 +4,13 @@ import {FileUploadArea} from './FileUploadArea';
 
 
 export interface FileFormProps {
-    onUpload: (files: FileList) => void
+    onUpload: (files: File[]) => void
+
 }
 
 interface FileFormState {
     files?: FileList
 }
-
-
-interface IUpdateFileInfo {
-    id: string;
-    checksum: string;
-    size: string;
-    path: string;
-    lastModifiedDate: string;
-    fileName: string;
-  }
-
-  export interface IUpdateFile extends IUpdateFileInfo {
-    file: File;
-  }
-
-
 
 function DirectoryInput(inputProps: React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>) {
     const directoryProps = {
@@ -45,10 +30,10 @@ class FileForm extends React.Component<FileFormProps, FileFormState> {
 
         this.handleFileSelect = this.handleFileSelect.bind(this);
         this.handleUpload = this.handleUpload.bind(this);
+        this.onFilesProcessed = this.onFilesProcessed.bind(this);
     }
 
     handleFileSelect(event: ChangeEvent) {
-        console.log("handle file select");
         const files = (event.target as HTMLInputElement).files;
 
         if (files) {
@@ -57,21 +42,22 @@ class FileForm extends React.Component<FileFormProps, FileFormState> {
     }
 
     handleUpload(event: FormEvent) {
-        console.log("handle file upload");
         event.preventDefault();
 
         const currentFiles = this.state.files;
         if (currentFiles) {
-            this.props.onUpload(currentFiles);
+            this.props.onUpload(Array.from(currentFiles));
         }
     }
 
-    onFilesProcessed(fileInfo: IUpdateFile[]) {
-        console.log("files processed", fileInfo);
+    onFilesProcessed(fileInfo: File[]) {
+        console.log("files processed ", fileInfo);
+        this.props.onUpload(fileInfo);
+
     }
 
     setIsLoading(data: any) {
-        console.log("setIsLoading", data);
+        console.log("setIsLoading ", data);
     }
 
     render() {

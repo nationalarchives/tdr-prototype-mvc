@@ -7,7 +7,7 @@ import * as S3 from "aws-sdk/clients/s3";
 declare var TDR_USER_POOL_ID: string;
 declare var TDR_IDENTITY_POOL_ID: string;
 
-export const uploadFiles = (files: FileList) => {
+export const uploadFiles = (files: File[]) => {
     return getSession().then(session => {
         const cognitoLoginId = "cognito-idp.eu-west-2.amazonaws.com/" + TDR_USER_POOL_ID;
 

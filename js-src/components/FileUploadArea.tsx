@@ -1,51 +1,33 @@
 import * as React from "react";
-//import "Gov.css";
-import { IWebkitEntry } from "../utils/files";
-import { useGetFileInfo } from "../utils/useGetFileInfo";
-
-interface IUpdateFileInfo {
-  id: string;
-  checksum: string;
-  size: string;
-  path: string;
-  lastModifiedDate: string;
-  fileName: string;
-}
-
-export interface IUpdateFile extends IUpdateFileInfo {
-  file: File;
-}
+import { getAllFileEntries } from "../utils/FileInfo";
 
 interface IFileUploadAreaProps {
-  onFilesProcessed: (fileInfo: IUpdateFile[]) => void;
+  onFilesProcessed: (files: File[]) => void;
   setIsLoading: React.Dispatch<boolean>;
 }
 
 const FileUploadArea: React.FunctionComponent<IFileUploadAreaProps> = props => {
-  const [dataTransferItems, setDataTransferItems]: [
-    IWebkitEntry[],
-    React.Dispatch<IWebkitEntry[]>
-  ] = React.useState<IWebkitEntry[]>([]);
 
   const [isDragging, setIsDragging]: [
     boolean,
     React.Dispatch<boolean>
   ] = React.useState<boolean>(false);
 
-  const onDrop: (event: React.DragEvent<HTMLDivElement>) => void = event => {
-    console.log("on drop");
+  const onDrop: (event: React.DragEvent<HTMLDivElement>) => void = async (event )=> {
+    console.log("on drop! ");
     event.preventDefault();
     event.stopPropagation();
     setIsDragging(false);
     props.setIsLoading(true);
 
-    const dataTransferItemList: IWebkitEntry[] = [];
+    //const dataTransferItemList: IWebkitEntry[] = [];
 
-    for (let index = 0; index < event.dataTransfer.items.length; index++) {
-      const element = event.dataTransfer.items[index];
-      dataTransferItemList.push(element.webkitGetAsEntry());
-    }
-    setDataTransferItems(dataTransferItemList);
+    const items: File[] = await getAllFileEntries(event.dataTransfer.items);
+    console.log("items " + items);
+
+      if (items.length > 0) {
+          props.onFilesProcessed(items);
+      }
 
   };
 
@@ -57,13 +39,9 @@ const FileUploadArea: React.FunctionComponent<IFileUploadAreaProps> = props => {
   };
 
   const onDragLeave: () => void = () => {
-      console.log("on drag leave");
+    console.log("on drag leave");
     setIsDragging(false);
   };
-  const files: IUpdateFile[] = useGetFileInfo(dataTransferItems);
-  if (files.length > 0) {
-    props.onFilesProcessed(files);
-  }
 
   return (
     <div
