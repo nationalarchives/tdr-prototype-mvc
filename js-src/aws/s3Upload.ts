@@ -1,6 +1,6 @@
-import {getUserPool} from "./auth";
+import {getCurrentUser} from "./auth";
 import {CognitoIdentityCredentials, config} from "aws-sdk";
-import {CognitoUserSession} from "amazon-cognito-identity-js";
+import {CognitoUserSession, CognitoUser} from "amazon-cognito-identity-js";
 import {FileList, SelectedFile} from "../models/File";
 import * as S3 from "aws-sdk/clients/s3";
 import * as uuidv4 from "uuid";
@@ -10,7 +10,14 @@ declare var TDR_IDENTITY_POOL_ID: string;
 declare var S3_UPLOAD_BUCKET: string;
 
 export const uploadFiles = (files: FileList) => {
-    return getSession().then(session => {
+    const currentUser = getCurrentUser();
+    
+    if(!currentUser) {        
+        // Placeholder error handling. In Beta, we should reauthenticate the user.
+        return Promise.reject("No current user");        
+    }
+
+    return getSession(currentUser).then(session => {
         const cognitoLoginId = "cognito-idp.eu-west-2.amazonaws.com/" + TDR_USER_POOL_ID;
 
         config.region = "eu-west-2";
@@ -19,17 +26,9 @@ export const uploadFiles = (files: FileList) => {
             Logins: {
                 [cognitoLoginId]: session.getIdToken().getJwtToken()
             }
-        });
-
-        const currentUser = getCurrentUser();
-
-        var userName = "noUser";
-
-        if(currentUser)
-        {
-            userName = currentUser.getUsername();
-        }
-
+        });        
+       
+        const userName = currentUser.getUsername();
         const bucket = S3_UPLOAD_BUCKET;
         const s3Uploadkey = `${userName}-` + uuidv4();
         const s3 = new S3({
@@ -45,24 +44,7 @@ export const uploadFiles = (files: FileList) => {
     });
 };
 
-function getCurrentUser() {
-    const userPool = getUserPool();
-
-    const currentUser = userPool.getCurrentUser();
-
-    return currentUser;
-};
-
-function getSession(): Promise<CognitoUserSession> {
-    const userPool = getUserPool();
-
-    const currentUser = userPool.getCurrentUser();
-
-    if (!currentUser) {
-        // Placeholder error handling. In Beta, we should reauthenticate the user.
-        return Promise.reject("No current user");
-    }
-
+function getSession(currentUser: CognitoUser): Promise<CognitoUserSession> {    
     return new Promise<CognitoUserSession>((resolve, reject) => {
         currentUser.getSession((err: any, session: CognitoUserSession) => {
             if (err) {
