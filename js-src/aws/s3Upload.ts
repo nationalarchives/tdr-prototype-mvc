@@ -21,19 +21,36 @@ export const uploadFiles = (files: FileList) => {
             }
         });
 
+        const currentUser = getCurrentUser();
+
+        var userName = "noUser";
+
+        if(currentUser)
+        {
+            userName = currentUser.getUsername();
+        }
+
         const bucket = S3_UPLOAD_BUCKET;
-        const uuid = uuidv4();
+        const s3Uploadkey = `${userName}-` + uuidv4();
         const s3 = new S3({
             params: {
                 Bucket: bucket
             }
         });
 
-        const uploads = Array.from(files).map(file => uploadFile(s3, bucket, file.name, uuid, file));
+        const uploads = Array.from(files).map(file => uploadFile(s3, bucket, file.name, s3Uploadkey, file));
 
         // If any uploads fail, this will only return the first error. We should handle ALL errors, not just the first.
         return Promise.all(uploads);
     });
+};
+
+function getCurrentUser() {
+    const userPool = getUserPool();
+
+    const currentUser = userPool.getCurrentUser();
+
+    return currentUser;
 };
 
 function getSession(): Promise<CognitoUserSession> {
