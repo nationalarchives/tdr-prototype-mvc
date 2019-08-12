@@ -32,7 +32,7 @@ jobs:
       #NOTE: Currently master branch will deploy to the development AWS environment for the purposes of Alpha
     - stage: "Deploy dev"
       script: scripts/deploy.sh dev
-      if: branch = develop
+      if: branch = master
     # - stage: deploytest
     #   script: scripts/deploy.sh test
     #   if: branch = test
