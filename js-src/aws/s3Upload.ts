@@ -19,6 +19,7 @@ export const uploadFiles = (files: File[]) => {
             }
         });
 
+        // S3 bucket where files get uploaded into
         const bucket = "tdr-files";
         const s3 = new S3({
             params: {
@@ -58,6 +59,7 @@ function uploadFile(s3: S3, bucket: string, name: string, content: File): Promis
     return new Promise((resolve, reject) => {
         s3.upload(
             {
+                // Folder in bucket where files get uploaded into
                 Key: `tmp-play-app/${name}`,
                 Bucket: bucket,
                 Body: content

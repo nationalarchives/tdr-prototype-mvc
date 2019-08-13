@@ -50,11 +50,11 @@ const generateHash = (file:File) => {
 const getFileInfo = async (file:TdrFile) => {
     const checksum = await generateHash(file);
     const fileInfo = {
-        checksum:checksum,
+        checksum: checksum,
         size: file.size,
-        path:file.webkitRelativePath,
-        latModifiedDate: file.lastModified,
-        fileName:file.name
+        path: file.webkitRelativePath,
+        lastModifiedDate: file.lastModified,
+        fileName: file.name
     };
 
     return new Promise(resolve =>{

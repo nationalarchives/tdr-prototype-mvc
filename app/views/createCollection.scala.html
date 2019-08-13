@@ -5,14 +5,14 @@
 
 <div className="govuk-grid-row">
     <div className="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl">Create Collection</h1>
+        <h1 class="govuk-heading-xl">Create Batch</h1>
         <form
                 action="@routes.CreateCollectionController.submit()"
                 method="POST"
         >
             <div className="govuk-form-group">
                 <label className="govuk-label" htmlFor={props.id}>
-                    Collection Name
+                    Batch Name
                 </label>
                 <input
                         className={`govuk-input govuk-!-width-one-third`}
@@ -22,7 +22,7 @@
             </div>
             <div className="govuk-form-group">
                 <button className="govuk-button" type="submit">
-                    Create Collection
+                    Create Batch
                 </button>
             </div>
         </form>
