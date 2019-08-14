@@ -53,7 +53,7 @@ const getFileInfo = async (file:TdrFile) => {
         checksum:checksum,
         size: file.size,
         path:file.webkitRelativePath,
-        latModifiedDate: file.lastModified,
+        lastModifiedDate: file.lastModified,
         fileName:file.name
     };
 
