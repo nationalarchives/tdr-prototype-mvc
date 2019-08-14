@@ -8,3 +8,72 @@ html {
 body {
  font-family: Arial, sans-serif;
 }
+
+/* Drag and Drop initial */
+.govuk-file-drop {
+  padding: 10%;
+  justify-content: center;
+  text-align: center;
+  margin: 20px 0;
+  align-items: center;
+  background-color: #ecf4fc;
+  outline: 2px dashed #1d70b8;
+  outline-offset: -10px;
+
+  font-size: 28px;
+}
+
+/* Drag and Drop on drag over */
+.govuk-file-drop-drag {
+    padding: 10%;
+    justify-content: center;
+    text-align: center;
+    margin: 20px 0;
+    align-items: center;
+    background-color: #fdfeff;
+    outline: 2px dashed #1d70b8;
+    outline-offset: -20px;
+
+    font-size: 28px;
+  }
+  
+  .govuk-file-upload {
+    font-family: "nta", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 400;
+    font-size: 16px;
+    font-size: 1rem;
+    line-height: 1.25;
+    color: #0b0c0c;
+  }
+
+  .govuk-form-group {
+    margin-bottom: 20px;
+  }
+  
+  .govuk-form-group:after {
+    content: "";
+    display: block;
+    clear: both;
+  }
+  
+  @media (min-width: 40.0625em) {
+    .govuk-form-group {
+      margin-bottom: 30px;
+    }
+  }
+  
+  .govuk-form-group .govuk-form-group:last-of-type {
+    margin-bottom: 0;
+  }
+  
+  .govuk-form-group--error {
+    padding-left: 15px;
+    border-left: 5px solid #b10e1e;
+  }
+  
+  .govuk-form-group--error .govuk-form-group {
+    padding: 0;
+    border: 0;
+  }

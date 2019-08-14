@@ -48,7 +48,7 @@ export class FileUpload extends React.Component<FileUploadProps, FileUploadState
     }
 
 
-    handleUpload(files: FileList) {
+    handleUpload(files: File[]) {
         uploadFileMetadata(files).then(() => {
             return uploadFiles(files)
         })
@@ -68,7 +68,15 @@ export class FileUpload extends React.Component<FileUploadProps, FileUploadState
         } else if (this.state.uploadError) {
             return "Error uploading files";
         } else if (this.state.uploadedFileCount > 0) {
-            return `Uploaded ${this.state.uploadedFileCount} files`;
+            // PL TODO: Add the uploaded filenames? Add button to return to dashboard?
+            return (
+                    <div>
+                        <p>Thank you!<br/>{this.state.uploadedFileCount} files were uploaded</p>
+                        <form>
+                            <button type="submit" className="govuk-button">Dashboard</button>
+                        </form>
+                    </div>
+                    );
         }
 
         return <FileForm onUpload={this.handleUpload} />

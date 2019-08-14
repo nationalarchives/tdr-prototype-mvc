@@ -8,7 +8,7 @@ declare var TDR_USER_POOL_ID: string;
 declare var TDR_IDENTITY_POOL_ID: string;
 declare var S3_UPLOAD_BUCKET: string;
 
-export const uploadFiles = (files: FileList) => {
+export const uploadFiles = (files: File[]) => {
     const currentUser = getCurrentUser();
     
     if(!currentUser) {        
@@ -36,7 +36,7 @@ export const uploadFiles = (files: FileList) => {
             }
         });
 
-        const uploads = Array.from(files).map(file => uploadFile(s3, bucket, file.name, s3Uploadkey, file));
+        const uploads = files.map(file => uploadFile(s3, bucket, file.name, s3Uploadkey, file));
 
         // If any uploads fail, this will only return the first error. We should handle ALL errors, not just the first.
         return Promise.all(uploads);
