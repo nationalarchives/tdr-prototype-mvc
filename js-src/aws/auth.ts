@@ -20,6 +20,10 @@ export function getUserPool(): CognitoUserPool {
     return new CognitoUserPool(poolData)
 }
 
+export function getCurrentUser() {    
+    return getUserPool().getCurrentUser();
+}
+
 export function authenticateUser(authenticationCode: string): Promise<void> {
     const userPool = getUserPool();
 

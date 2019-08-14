@@ -11,7 +11,8 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "strict": true
-  }
-
-
+  },
+  "exclude": [
+    "cypress-tests"
+  ]
 }

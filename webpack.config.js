@@ -17,7 +17,7 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: [ '.tsx', '.ts', '.js' ]
+        extensions: ['.tsx', '.ts', '.js']
     },
     plugins: [
         new webpack.DefinePlugin({
@@ -25,7 +25,8 @@ module.exports = {
             TDR_AUTH_URL: JSON.stringify(process.env.TDR_AUTH_URL || "https://tdr.auth.eu-west-2.amazoncognito.com"),
             TDR_USER_POOL_ID: JSON.stringify(process.env.TDR_USER_POOL_ID || "eu-west-2_6Mn0M2i9C"),
             TDR_IDENTITY_POOL_ID: JSON.stringify(process.env.TDR_IDENTITY_POOL_ID || "eu-west-2:4b26364a-3070-4f98-8e86-1e33a1b54d85"),
-            UPLOAD_APP_CLIENT_ID: JSON.stringify(process.env.UPLOAD_APP_CLIENT_ID || "2u2clbhcqnjaj3fn0jaid078ao")
+            UPLOAD_APP_CLIENT_ID: JSON.stringify(process.env.UPLOAD_APP_CLIENT_ID || "2u2clbhcqnjaj3fn0jaid078ao"),
+            S3_UPLOAD_BUCKET: JSON.stringify(process.env.S3_UPLOAD_BUCKET || "tdr-files")
         })
     ]
 };

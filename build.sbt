@@ -20,5 +20,11 @@ libraryDependencies += "com.mohiva" %% "play-silhouette-persistence" % "5.0.7"
 libraryDependencies += "net.codingwell" %% "scala-guice" % "4.1.0"
 libraryDependencies += "software.amazon.awssdk" % "aws-sdk-java" % "2.7.11"
 
-libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.2" % Test
 libraryDependencies +=  "com.github.jarlakxen" %% "drunk" % "2.5.0"
+libraryDependencies ++= Seq(
+  "com.mohiva" %% "play-silhouette-testkit" % "5.0.7" % "test"
+)
+libraryDependencies ++= Seq(
+  "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.2" % "test"
+)
+javaOptions in Test += "-Dconfig.file=conf/application.test.conf"

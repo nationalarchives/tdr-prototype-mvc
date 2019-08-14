@@ -1,4 +1,5 @@
 # Transfer Digital Records: MVC prototype
+[![Build Status](https://travis-ci.org/nationalarchives/tdr-prototype-mvc.svg?branch=master)](https://travis-ci.org/nationalarchives/tdr-prototype-mvc)
 
 ## Purpose
 
@@ -93,6 +94,7 @@ AUTHENTICATOR_SIGNER_KEY=changeme \
 AUTHENTICATOR_CRYPTER_KEY=changeme \
 CSRF_SIGNER_KEY=changeme \
 SOCIAL_STATE_SIGNER_KEY=changeme \
+TDR_AUTH_URL=https://tdr.auth.eu-west-2.amazoncognito.com \
 sbt run
 ```
 
@@ -164,5 +166,7 @@ unzip transfer-digital-records-<version>.zip
   -DUSER_DB_USERS_TABLE=dynamo_db_users_table \
   -DUSER_DB_TOKENS_TABLE=dynamo_db_tokens_table \
   -DTDR_BASE_URL=https://some-tdr-domain.com \
+  -DTDR_AUTH_URL=https://tdr-{environment}.auth.eu-west-2.amazoncognito.com
+  -DTDR_GRAPHQL_URI=URI for graphQl
   -Dhttp.port=8080
 ```

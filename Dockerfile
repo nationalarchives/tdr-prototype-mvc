@@ -1,7 +1,7 @@
 FROM openjdk:8-slim
 WORKDIR play
 COPY target/universal/transfer-digital-records-1.0.1-SNAPSHOT.zip .
-RUN apt-get update && apt-get install unzip && unzip target/universal/transfer-digital-records-1.0.1-SNAPSHOT.zip
+RUN apt-get update && apt-get install unzip && unzip -qq transfer-digital-records-1.0.1-SNAPSHOT.zip
 CMD AWS_ACCESS_KEY_ID=$ACCESS_KEY_ID \
       AWS_SECRET_ACCESS_KEY=$SECRET_ACCESS_KEY \
       transfer-digital-records-1.0.1-SNAPSHOT/bin/transfer-digital-records \
@@ -17,4 +17,5 @@ CMD AWS_ACCESS_KEY_ID=$ACCESS_KEY_ID \
       -DUSER_DB_USERS_TABLE=$USER_DB_USERS_TABLE \
       -DUSER_DB_TOKENS_TABLE=$USER_DB_TOKENS_TABLE \
       -DTDR_BASE_URL=$TDR_BASE_PATH \
+      -DTDR_AUTH_URL=$TDR_AUTH_PATH \
       -Dhttp.port=9000
