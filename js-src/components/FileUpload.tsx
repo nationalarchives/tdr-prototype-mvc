@@ -48,16 +48,18 @@ export class FileUpload extends React.Component<FileUploadProps, FileUploadState
     }
 
 
-    handleUpload(files:FileList) {
-        const metadtata =  uploadFileMetadata(files);
-        const fileUpload = uploadFiles(files).then(() => {
-                this.setState({ uploadedFileCount: files.length })
+    handleUpload(files: FileList) {
+        uploadFileMetadata(files).then(() => {
+            return uploadFiles(files)
+        })
+            .then(() => {
+                this.setState({uploadedFileCount: files.length})
             }).catch((error: any) => {
-                this.setState({ uploadError: error });
-                console.log("Error uploading file");
-                console.log(error);
-            });
-        Promise.all([metadtata, fileUpload])
+            this.setState({uploadError: error});
+            console.log("Error uploading file");
+            console.log(error);
+        });
+
     }
 
     render() {
