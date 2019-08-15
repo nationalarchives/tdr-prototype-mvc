@@ -15,7 +15,6 @@ const FileUploadArea: React.FunctionComponent<IFileUploadAreaProps> = props => {
 
   // Dropping the folder 
   const onDrop: (event: React.DragEvent<HTMLDivElement>) => void = async (event )=> {
-    console.log("on drop!");
     event.preventDefault();
     event.stopPropagation();
     setIsDragging(false);
@@ -34,7 +33,6 @@ const FileUploadArea: React.FunctionComponent<IFileUploadAreaProps> = props => {
 
   // Dragging folder in the upload area
   const onDragOver: ( event: React.DragEvent<HTMLDivElement>) => void = event => {
-    console.log("on drag over");
     event.preventDefault();
     event.stopPropagation();
     setIsDragging(true);
@@ -42,8 +40,7 @@ const FileUploadArea: React.FunctionComponent<IFileUploadAreaProps> = props => {
 
   // Dragging folder out of the upload area
   const onDragLeave: () => void = () => {
-    console.log("on drag leave");
-    setIsDragging(false);
+     setIsDragging(false);
   };
 
   return (

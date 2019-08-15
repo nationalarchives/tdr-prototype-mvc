@@ -52,7 +52,7 @@ class FileForm extends React.Component<FileFormProps, FileFormState> {
 
     onFilesProcessed(fileInfo: File[]) {
         console.log("Processing ... ", fileInfo);
-        this.props.onUpload(fileInfo);
+         this.props.onUpload(fileInfo);
 
     }
 
@@ -73,16 +73,14 @@ class FileForm extends React.Component<FileFormProps, FileFormState> {
                 name="upload-files"
                 onChange={this.handleFileSelect}
               />
-
+             <button type="submit" className="govuk-button">
+              Upload
+            </button>
               <FileUploadArea
                 onFilesProcessed={this.onFilesProcessed}
                 setIsLoading={this.setIsLoading}
               />
             </div>
-
-            {/* <button type="submit" className="govuk-button">
-              Upload
-            </button> */}
           </form>
         );
     }
