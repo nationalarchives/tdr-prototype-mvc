@@ -48,6 +48,21 @@ body {
     color: #0b0c0c;
   }
 
+  /* Drag and Drop svg image */
+  svg {
+      width: 100%;
+      fill: #92b0b3;
+      display: block;
+      margin-bottom: 20px;
+  }
+
+    /* Drag and Drop span */
+  .draganddrop {
+      color: #92b0b3;
+  }
+
+  /*---------------------------------------------------------------------------------------------------*/
+  /* TODO: Are those classes below needed? */
   .govuk-form-group {
     margin-bottom: 20px;
   }
