@@ -3,6 +3,10 @@ import {ChangeEvent, FormEvent} from "react";
 import {FileUploadArea} from './FileUploadArea';
 
 
+
+
+
+
 export interface FileFormProps {
     onUpload: (files: File[]) => void
 
@@ -31,10 +35,13 @@ class FileForm extends React.Component<FileFormProps, FileFormState> {
         this.handleFileSelect = this.handleFileSelect.bind(this);
         this.handleUpload = this.handleUpload.bind(this);
         this.onFilesProcessed = this.onFilesProcessed.bind(this);
+
+
     }
 
     handleFileSelect(event: ChangeEvent) {
         const files = (event.target as HTMLInputElement).files;
+
 
         if (files) {
             this.setState({ files });
@@ -56,13 +63,14 @@ class FileForm extends React.Component<FileFormProps, FileFormState> {
 
     }
 
-    setIsLoading(data: any) {
-        console.log("Uploading... ", data);
+    setIsLoading(data1: any) {
+        console.log("Uploading... ", data1);
+
     }
 
     render() {
         return (
-          <form onSubmit={this.handleUpload}>
+           <form onSubmit={this.handleUpload}>
             <div className="govuk-form-group">
               <label className="govuk-label" htmlFor="upload-files">
                 Upload a folder

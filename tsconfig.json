@@ -7,12 +7,13 @@
     "jsx": "react",
     "allowJs": false,
     "moduleResolution": "node",
-    "lib" : ["dom"] ,
+    "lib" : ["dom","es6", "es2017", "esnext.asynciterable"] ,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "strict": true
   },
-  "exclude": [
+   "include":["js-src/qraphql"],
+   "exclude": [
     "cypress-tests"
   ]
 }

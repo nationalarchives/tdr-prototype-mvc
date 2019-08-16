@@ -6,6 +6,19 @@ import {uploadFiles} from "../aws/s3Upload";
 import {uploadFileMetadata} from "../aws/MetadataUpload"
 import FileForm from "./FileForm";
 
+import ApolloClient from 'apollo-boost'
+import { ApolloProvider } from "react-apollo";
+import pokemonQuery from '../qraphql/queries/pokemonQuery'
+import { Pokemons, PokemonsVariables } from '../qraphql/queries/types/Pokemons'
+import { useQuery } from '@apollo/react-hooks';
+
+
+const clienta = new ApolloClient({
+    uri: 'https://graphql-pokemon.now.sh/'
+});
+
+
+
 
 export interface FileUploadProps {}
 
@@ -14,6 +27,18 @@ interface FileUploadState {
     uploadedFileCount: number,
     uploadError?: any
 }
+
+function  Data () {
+    try {
+        const {data} = useQuery<Pokemons, PokemonsVariables>(
+            pokemonQuery, {variables: {first: 10}}
+        );
+     return (<h2>hello {JSON.stringify(data, null, 2)}</h2>)
+    } catch(err){
+       return <h2> {err.message} </h2>
+    }
+}
+
 
 export class FileUpload extends React.Component<FileUploadProps, FileUploadState> {
     constructor(props: FileUploadProps) {
@@ -62,7 +87,10 @@ export class FileUpload extends React.Component<FileUploadProps, FileUploadState
 
     }
 
+
+
     render() {
+
         if (!this.state.userAuthenticated) {
             return "Authenticating user...";
         } else if (this.state.uploadError) {
@@ -71,6 +99,7 @@ export class FileUpload extends React.Component<FileUploadProps, FileUploadState
             // PL TODO: Add the uploaded filenames? Add button to return to dashboard?
             return (
                     <div>
+                         <Data/>
                         <p>Thank you!<br/>{this.state.uploadedFileCount} files were uploaded</p>
                         <form>
                             <button type="submit" className="govuk-button">Dashboard</button>
@@ -79,6 +108,10 @@ export class FileUpload extends React.Component<FileUploadProps, FileUploadState
                     );
         }
 
-        return <FileForm onUpload={this.handleUpload} />
+      return(
+          <ApolloProvider client={clienta}>
+           <FileForm onUpload={this.handleUpload} />
+         </ApolloProvider>)
+
     }
 }
