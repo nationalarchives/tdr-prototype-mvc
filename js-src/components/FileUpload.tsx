@@ -1,12 +1,13 @@
 import * as React from "react";
 
-import { authenticateUser } from "../aws/auth";
+import {authenticateUser} from "../aws/auth";
 
-import { uploadFiles } from "../aws/s3Upload";
+import {uploadFiles} from "../aws/s3Upload";
+import {uploadFileMetadata} from "../aws/MetadataUpload"
 import FileForm from "./FileForm";
-import { FileList } from "../models/File";
 
-export interface FileUploadProps { }
+
+export interface FileUploadProps {}
 
 interface FileUploadState {
     userAuthenticated: boolean,
@@ -46,14 +47,19 @@ export class FileUpload extends React.Component<FileUploadProps, FileUploadState
         }
     }
 
-    handleUpload(files: FileList) {
-        uploadFiles(files).then(() => {
-            this.setState({ uploadedFileCount: files.length })
-        }).catch((error: any) => {
-            this.setState({ uploadError: error });
+
+    handleUpload(files: File[]) {
+        uploadFileMetadata(files).then(() => {
+            return uploadFiles(files)
+        })
+            .then(() => {
+                this.setState({uploadedFileCount: files.length})
+            }).catch((error: any) => {
+            this.setState({uploadError: error});
             console.log("Error uploading file");
             console.log(error);
         });
+
     }
 
     render() {
@@ -62,7 +68,15 @@ export class FileUpload extends React.Component<FileUploadProps, FileUploadState
         } else if (this.state.uploadError) {
             return "Error uploading files";
         } else if (this.state.uploadedFileCount > 0) {
-            return `Uploaded ${this.state.uploadedFileCount} files`;
+            // PL TODO: Add the uploaded filenames? Add button to return to dashboard?
+            return (
+                    <div>
+                        <p>Thank you!<br/>{this.state.uploadedFileCount} files were uploaded</p>
+                        <form>
+                            <button type="submit" className="govuk-button">Dashboard</button>
+                        </form>
+                    </div>
+                    );
         }
 
         return <FileForm onUpload={this.handleUpload} />

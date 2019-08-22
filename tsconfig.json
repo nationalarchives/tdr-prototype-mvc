@@ -1,9 +1,13 @@
 {
   "compilerOptions": {
     "outDir": "./dist/",
-    "module": "commonjs",
+    "module": "es6",
     "target": "es5",
+    "downlevelIteration": true,
     "jsx": "react",
+    "allowJs": false,
+    "moduleResolution": "node",
+    "lib" : ["dom"] ,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "strict": true
