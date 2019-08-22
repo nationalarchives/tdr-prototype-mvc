@@ -1,7 +1,47 @@
+//import { useMutation } from '@apollo/react-hooks';
+import fileMutation from '../graphql/mutations/fileMutation'
+import { Files, FilesVariables } from '../graphql/types/Files'
+
+import ApolloClient from 'apollo-boost'
 
 interface TdrFile extends File {
     webkitRelativePath: string;
 }
+
+declare var APOLLO_CLIENT_URI: string;
+
+//Creating new client to get mutation to work as useMutation hook does not appear to work
+const apolloClient = new ApolloClient(
+    {
+        uri: APOLLO_CLIENT_URI
+    }
+);
+
+//Hardcoded consignment id
+function AddFile(path: String) {
+    try {        
+        apolloClient.mutate<Files, FilesVariables>(
+            {
+                variables: {
+                    path: `${path}`,
+                    id: 1
+                },
+                mutation: fileMutation                
+            }
+        )
+        
+        //useMutation hook does not fire off the request to the graphql server
+        /* const [, {data}] = useMutation<Files, FilesVariables>(
+            fileMutation, {variables: {path: "a/test/filepath/file1.txt", id: 1}}
+        ); */
+        
+        console.log("Complete")
+            
+    } catch(err){
+       return (err.message)
+    }
+}
+
 // Not uploading data just logging data to prove File api works
 export const uploadFileMetadata = (files:File[]) => {
 
@@ -10,14 +50,12 @@ export const uploadFileMetadata = (files:File[]) => {
     });
 
     return Promise.all(uploads);
-
 };
 
 const getFileMetadata =  async ( name:String, content:File) => {
     const fileInfo = await getFileInfo(<TdrFile>content);
     console.log(fileInfo);
     return fileInfo
-
 };
 
 const hexString = (buffer:ArrayBuffer) => {
@@ -56,6 +94,8 @@ const getFileInfo = async (file:TdrFile) => {
         lastModifiedDate: file.lastModified,
         fileName:file.name
     };
+
+    AddFile(file.webkitRelativePath)
 
     return new Promise(resolve =>{
         resolve(fileInfo)

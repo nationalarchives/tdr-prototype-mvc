@@ -12,6 +12,9 @@
     "noUnusedLocals": true,
     "strict": true
   },
+  "include":[
+    "js-src/graphql"
+  ],
   "exclude": [
     "cypress-tests"
   ]
