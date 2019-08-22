@@ -5,7 +5,9 @@ import {authenticateUser} from "../aws/auth";
 import {uploadFiles} from "../aws/s3Upload";
 import {uploadFileMetadata} from "../aws/MetadataUpload"
 import FileForm from "./FileForm";
-
+import fileQuery from '../graphql/queries/fileQuery'
+import { Files } from '../graphql/types/Files'
+import { useQuery } from '@apollo/react-hooks';
 
 export interface FileUploadProps {}
 
@@ -13,6 +15,18 @@ interface FileUploadState {
     userAuthenticated: boolean,
     uploadedFileCount: number,
     uploadError?: any
+}
+
+//Function to show use of a query and to display what files are in the database for development purposes
+function RetrieveUploadedFiles () {
+    try {
+        const {data} = useQuery<Files>(
+            fileQuery
+        );
+     return (<p><b>Uploaded Files:</b> {JSON.stringify(data, null, 2)}</p>)
+    } catch(err){
+       return <p> {err.message} </p>
+    }
 }
 
 export class FileUpload extends React.Component<FileUploadProps, FileUploadState> {
@@ -47,9 +61,8 @@ export class FileUpload extends React.Component<FileUploadProps, FileUploadState
         }
     }
 
-
     handleUpload(files: File[]) {
-        uploadFileMetadata(files).then(() => {
+        uploadFileMetadata(files).then(() => {            
             return uploadFiles(files)
         })
             .then(() => {
@@ -59,7 +72,6 @@ export class FileUpload extends React.Component<FileUploadProps, FileUploadState
             console.log("Error uploading file");
             console.log(error);
         });
-
     }
 
     render() {
@@ -71,6 +83,7 @@ export class FileUpload extends React.Component<FileUploadProps, FileUploadState
             // PL TODO: Add the uploaded filenames? Add button to return to dashboard?
             return (
                     <div>
+                        <RetrieveUploadedFiles />                                                                       
                         <p>Thank you!<br/>{this.state.uploadedFileCount} files were uploaded</p>
                         <form>
                             <button type="submit" className="govuk-button">Dashboard</button>
