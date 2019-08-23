@@ -68,7 +68,7 @@ $ sudo chown -R [user name]:[user name] dynamo/
 java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb
 ```
 
-Create the user tables by running the create_user_db.sh script.
+Go into the scripts directory and create the user tables by running the create_user_db.sh script.
 
 [localdb]: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html
 [aws-cli]: https://aws.amazon.com/cli/
