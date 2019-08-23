@@ -3,6 +3,8 @@ import fileMutation from '../graphql/mutations/fileMutation'
 import { Files, FilesVariables } from '../graphql/types/Files'
 
 import ApolloClient from 'apollo-boost'
+import {getCurrentUser} from "./auth";
+import {CognitoUser, CognitoUserSession} from "amazon-cognito-identity-js";
 
 interface TdrFile extends File {
     webkitRelativePath: string;
@@ -13,9 +15,39 @@ declare var APOLLO_CLIENT_URI: string;
 //Creating new client to get mutation to work as useMutation hook does not appear to work
 const apolloClient = new ApolloClient(
     {
-        uri: APOLLO_CLIENT_URI
+        uri: APOLLO_CLIENT_URI,
+        request: async operation => {
+            const currentUser = getCurrentUser();
+
+            if(!currentUser) {
+                // Placeholder error handling. In Beta, we should reauthenticate the user.
+                throw "Cannot call GraphQL because there is no logged-in Cognito user"
+            }
+
+            const session = await getSession(currentUser);
+
+            const token = session.getIdToken().getJwtToken();
+            operation.setContext({
+                headers: {
+                    authorization: token
+                }
+            });
+        }
     }
 );
+
+// TODO: Commonise with s3Upload
+function getSession(currentUser: CognitoUser): Promise<CognitoUserSession> {
+    return new Promise<CognitoUserSession>((resolve, reject) => {
+        currentUser.getSession((err: any, session: CognitoUserSession) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(session)
+            }
+        });
+    });
+}
 
 //Hardcoded consignment id
 function AddFile(path: String) {
@@ -28,8 +60,7 @@ function AddFile(path: String) {
                 },
                 mutation: fileMutation                
             }
-        )
-        
+        );
         //useMutation hook does not fire off the request to the graphql server
         /* const [, {data}] = useMutation<Files, FilesVariables>(
             fileMutation, {variables: {path: "a/test/filepath/file1.txt", id: 1}}
