@@ -31,16 +31,15 @@ const apolloClient = new ApolloClient(
     }
 );
 
-function AddFiles(fileInputs: CreateFileInput[]) {    
-    return Promise.resolve(
-        apolloClient.mutate<Files, MultipleFilesVariables>(
+function AddFiles(fileInputs: CreateFileInput[]) {
+    return apolloClient.mutate<Files, MultipleFilesVariables>(
         {
             variables: {
                 inputs: fileInputs
             },
             mutation: CreateMultipleFiles
         }        
-    ))
+    )
 };
 
 export const uploadFileMetadata = async (files:File[]) => {
@@ -51,7 +50,7 @@ export const uploadFileMetadata = async (files:File[]) => {
         }
     )
     const p = await Promise.all(filesInfo);
-    return Promise.resolve(AddFiles(p))
+    return AddFiles(p)
 };
 
 const hexString = (buffer:ArrayBuffer) => {
@@ -91,7 +90,5 @@ const getFileInfo = async (file:TdrFile): Promise<CreateFileInput> => {
         fileName:file.name
     };
 
-    return new Promise(resolve =>{
-        resolve(fileInfo)
-    })
+    return fileInfo
 };
