@@ -24,6 +24,18 @@ export function getCurrentUser() {
     return getUserPool().getCurrentUser();
 }
 
+export function getSession(currentUser: CognitoUser): Promise<CognitoUserSession> {
+    return new Promise<CognitoUserSession>((resolve, reject) => {
+        currentUser.getSession((err: any, session: CognitoUserSession) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(session)
+            }
+        });
+    });
+}
+
 export function authenticateUser(authenticationCode: string): Promise<void> {
     const userPool = getUserPool();
 

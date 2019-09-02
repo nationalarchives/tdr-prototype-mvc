@@ -1,14 +1,20 @@
 import { gql } from 'apollo-boost'
 
-export default gql`
-  mutation CreateFile($path: String!, $id: Int!) {
-    createFile(path: $path, id: $id) {
+export const CreateFile = gql`
+  mutation CreateFile($input: CreateFileInput!) {
+    createFile(createFileInput: $input) {
         path,
         id,
-        consignment {
-            id,
-            name
-        } 
+        consignmentId 
+    }
+  }
+`
+export const CreateMultipleFiles =  gql`
+  mutation CreateMultipleFiles($inputs: [CreateFileInput!]!) {
+    createMultipleFiles(createFileInputs: $inputs) {
+        path,
+        id,
+        consignmentId 
     }
   }
 `

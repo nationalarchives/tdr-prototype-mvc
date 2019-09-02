@@ -1,6 +1,5 @@
-import {getCurrentUser} from "./auth";
+import {getCurrentUser, getSession} from "./auth";
 import {CognitoIdentityCredentials, config} from "aws-sdk";
-import {CognitoUserSession, CognitoUser} from "amazon-cognito-identity-js";
 import * as S3 from "aws-sdk/clients/s3";
 import * as uuidv4 from "uuid";
 
@@ -42,18 +41,6 @@ export const uploadFiles = (files: File[]) => {
         return Promise.all(uploads);
     });
 };
-
-function getSession(currentUser: CognitoUser): Promise<CognitoUserSession> {    
-    return new Promise<CognitoUserSession>((resolve, reject) => {
-        currentUser.getSession((err: any, session: CognitoUserSession) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(session)
-            }
-        });
-    });
-}
 
 function uploadFile(s3: S3, bucket: string, name: string, s3UploadKey: string, content: File): Promise<void> {
     return new Promise((resolve, reject) => {

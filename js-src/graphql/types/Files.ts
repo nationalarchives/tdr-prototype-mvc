@@ -1,7 +1,5 @@
 import { Consignments } from "./Consignments";
 
-/* tslint:disable */
-
 // ====================================================
 // GraphQL query operation: Files
 // ====================================================
@@ -26,7 +24,19 @@ export interface Files_files {
     files: (Files_files | null)[] | null;
   }
 
-  export interface FilesVariables{
-    path: string
-    id: number
+  export interface CreateFileInput {    
+    consignmentId: number;    
+    path: string | null;
+    fileSize: number;
+    lastModifiedDate: string;
+    clientSideChecksum: unknown;
+    fileName: string;
+  }
+
+  export interface FilesVariables {    
+    input: CreateFileInput
+  }
+
+  export interface MultipleFilesVariables {
+    inputs: CreateFileInput[]
   }

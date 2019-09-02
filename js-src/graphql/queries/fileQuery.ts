@@ -5,10 +5,7 @@ export default gql`
     getFiles {
         path,
         id,
-        consignment {
-            id,
-            name
-        }
+        consignmentId
     }
   }
 `
