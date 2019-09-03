@@ -6,7 +6,6 @@ import {uploadFiles} from "../aws/s3Upload";
 import {uploadFileMetadata} from "../aws/MetadataUpload"
 import FileForm from "./FileForm";
 
-
 export interface FileUploadProps {}
 
 interface FileUploadState {
@@ -47,9 +46,8 @@ export class FileUpload extends React.Component<FileUploadProps, FileUploadState
         }
     }
 
-
     handleUpload(files: File[]) {
-        uploadFileMetadata(files).then(() => {
+        uploadFileMetadata(files).then(() => {          
             return uploadFiles(files)
         })
             .then(() => {
@@ -59,7 +57,6 @@ export class FileUpload extends React.Component<FileUploadProps, FileUploadState
             console.log("Error uploading file");
             console.log(error);
         });
-
     }
 
     render() {
