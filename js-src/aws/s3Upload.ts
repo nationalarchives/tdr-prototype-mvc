@@ -20,7 +20,7 @@ export const uploadFiles = (files: UploadableFile[]) => {
         return Promise.reject("No current user");        
     }
 
-    return getSession(currentUser).then(session => {
+    return getSession(currentUser).then(async session => {
         const cognitoLoginId = "cognito-idp.eu-west-2.amazonaws.com/" + TDR_USER_POOL_ID;
 
         config.region = "eu-west-2";
@@ -41,10 +41,11 @@ export const uploadFiles = (files: UploadableFile[]) => {
             }
         });
 
-        const uploads = files.map(fileDetails => uploadFile(s3, bucket, fileDetails.id, parentFolder, fileDetails.file));
-
-        // If any uploads fail, this will only return the first error. We should handle ALL errors, not just the first.
-        return Promise.all(uploads);
+        for (const fileDetails of files) {
+            // Await so that files are uploaded one-by-one, rather than in parallel. Parallel uploads crash the browser
+            // when the files are very large.
+            await uploadFile(s3, bucket, fileDetails.id, parentFolder, fileDetails.file);
+        }
     });
 };
 
