@@ -44,14 +44,14 @@ function AddFiles(fileInputs: CreateFileInput[]) {
 }
 
 export const uploadFileMetadata = async (files: File[]): Promise<UploadableFile[]> => {
-    //Retrieve the necessary file info
-    const filesInfo = files.map(
-        async file => {
-            return await getFileInfo(<TdrFile>file)
-        }
-    );
-    const p = await Promise.all(filesInfo);
-    const metadataUploadResponse = (await AddFiles(p)).data;
+    const filesInfo = [];
+
+    for (const file of files) {
+        const fileInfo = await getFileInfo(<TdrFile>file);
+        filesInfo.push(fileInfo);
+    }
+
+    const metadataUploadResponse = (await AddFiles(filesInfo)).data;
 
     if (!metadataUploadResponse) {
         throw "No data in metadata upload response";
