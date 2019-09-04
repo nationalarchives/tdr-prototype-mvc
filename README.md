@@ -115,9 +115,13 @@ Note: Intellij may fail to build the project successfully. If this occurs compil
 
 # Deployment
 
-This project is a prototype, so the deployment steps are currently quite manual and can be run on a development machine.
+## Automated deployment
 
-## Prerequisites
+Currently, Travis automatically deploys the master branch by running the scripts/deploy.sh script.
+
+## Manual deployment
+
+### Prerequisites
 
 Deployment requires a server such as an EC2 instance with:
 
@@ -125,9 +129,9 @@ Deployment requires a server such as an EC2 instance with:
 - A web server such as nginx, configured to proxy HTTP and/or HTTPS requests to whatever port you will be running TDR on 
 - Ports 80 and/or 443 open
 
-## Build a production distribution
+### Build a production distribution
 
-Build the frontend, replacing the values of the environment variables:
+On your dev machine, build the frontend, replacing the values of the environment variables:
 
 ```
 TDR_BASE_URL=https://example.com \
@@ -143,7 +147,7 @@ sbt clean dist
 
 This should create a zip file in the target/universal directory.
 
-## Deploy the application
+### Deploy the application
 
 scp the zip file from target/universal to the deployment machine.
 
