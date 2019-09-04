@@ -43,12 +43,14 @@ function AddFiles(fileInputs: CreateFileInput[]) {
     );
 }
 
-export const uploadFileMetadata = async (files: File[]): Promise<UploadableFile[]> => {
+export const uploadFileMetadata = async (files: File[], incrementFileCount: () => void): Promise<UploadableFile[]> => {
     const filesInfo = [];
 
     for (const file of files) {
         const fileInfo = await getFileInfo(<TdrFile>file);
         filesInfo.push(fileInfo);
+
+        incrementFileCount();
     }
 
     const metadataUploadResponse = (await AddFiles(filesInfo)).data;

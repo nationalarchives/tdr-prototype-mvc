@@ -12,7 +12,7 @@ export interface UploadableFile {
     file: File
 }
 
-export const uploadFiles = (files: UploadableFile[]) => {
+export const uploadFiles = (files: UploadableFile[], incrementFileCount: () => void) => {
     const currentUser = getCurrentUser();
     
     if(!currentUser) {
@@ -45,6 +45,8 @@ export const uploadFiles = (files: UploadableFile[]) => {
             // Await so that files are uploaded one-by-one, rather than in parallel. Parallel uploads crash the browser
             // when the files are very large.
             await uploadFile(s3, bucket, fileDetails.id, parentFolder, fileDetails.file);
+
+            incrementFileCount();
         }
     });
 };
