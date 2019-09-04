@@ -47,12 +47,11 @@ export class FileUpload extends React.Component<FileUploadProps, FileUploadState
     }
 
     handleUpload(files: File[]) {
-        uploadFileMetadata(files).then(() => {          
-            return uploadFiles(files)
-        })
-            .then(() => {
-                this.setState({uploadedFileCount: files.length})
-            }).catch((error: any) => {
+        uploadFileMetadata(files).then((filesWithIds) => {
+            return uploadFiles(filesWithIds);
+        }).then(() => {
+            this.setState({uploadedFileCount: files.length})
+        }).catch((error: any) => {
             this.setState({uploadError: error});
             console.log("Error uploading file");
             console.log(error);

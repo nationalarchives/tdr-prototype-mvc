@@ -1,8 +1,9 @@
 import { CreateMultipleFiles } from '../graphql/mutations/fileMutation'
-import { Files, CreateFileInput, MultipleFilesVariables } from '../graphql/types/Files'
+import {Files, CreateFileInput, MultipleFilesVariables, Files_files} from '../graphql/types/Files'
 
 import ApolloClient from 'apollo-boost'
 import {getCurrentUser, getSession}  from "./auth";
+import {UploadableFile} from "./s3Upload";
 
 interface TdrFile extends File {
     webkitRelativePath: string;
@@ -39,18 +40,39 @@ function AddFiles(fileInputs: CreateFileInput[]) {
             },
             mutation: CreateMultipleFiles
         }        
-    )
-};
+    );
+}
 
-export const uploadFileMetadata = async (files:File[]) => {
+export const uploadFileMetadata = async (files: File[]): Promise<UploadableFile[]> => {
     //Retrieve the necessary file info
     const filesInfo = files.map(
         async file => {
             return await getFileInfo(<TdrFile>file)
         }
-    )
+    );
     const p = await Promise.all(filesInfo);
-    return AddFiles(p)
+    const metadataUploadResponse = (await AddFiles(p)).data;
+
+    if (!metadataUploadResponse) {
+        throw "No data in metadata upload response";
+    }
+
+    return matchFilesAndIds(<TdrFile[]>files, metadataUploadResponse.createMultipleFiles);
+};
+
+const matchFilesAndIds = (files: TdrFile[], metadataUploadResponse: Files_files[]): UploadableFile[] => {
+    return files.map(file => {
+        const matchingFile = metadataUploadResponse.find(response => response.path === file.webkitRelativePath);
+
+        if (!matchingFile) {
+            throw `Could not find file with path '${file.webkitRelativePath}' in API response`;
+        }
+
+        return {
+            id: matchingFile.id,
+            file: file
+        };
+    });
 };
 
 const hexString = (buffer:ArrayBuffer) => {
@@ -62,7 +84,7 @@ const hexString = (buffer:ArrayBuffer) => {
     return hexCodes.join("");
 };
 
-export const generateHash = (file:File) => {
+export const generateHash = (file: File) => {
     const crypto = self.crypto.subtle;
     const fileReader = new FileReader();
     fileReader.readAsArrayBuffer(file);
@@ -77,9 +99,9 @@ export const generateHash = (file:File) => {
     });
 };
 
-const getFileInfo = async (file:TdrFile): Promise<CreateFileInput> => {
-     const checksum = await generateHash(file);
-     const fileInfo: CreateFileInput = {
+const getFileInfo = async (file: TdrFile): Promise<CreateFileInput> => {
+    const checksum = await generateHash(file);
+    const fileInfo: CreateFileInput = {
         //Hardcoded consignment id
         consignmentId: 1,
         clientSideChecksum: checksum,
@@ -90,5 +112,5 @@ const getFileInfo = async (file:TdrFile): Promise<CreateFileInput> => {
         fileName:file.name
     };
 
-    return fileInfo
+    return fileInfo;
 };
