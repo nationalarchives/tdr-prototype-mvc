@@ -59,7 +59,15 @@ function uploadFile(s3: S3, bucket: string, name: string, parentFolder: string, 
                 Bucket: bucket,
                 Body: content
             },
-            {},
+            // Throttle upload of parts of large files. The AWS S3 SDK splits large files into smaller parts, and
+            // uploads each part separately. The 'queueSize' option controls how many parts are uploaded in parallel.
+            // The default is 4. This often causes Firefox to crash when uploading very large files. Reducing it to 1
+            // seems to prevent the crashes.
+            // TODO: Tune the 'queueSize' and 'partSize' options to see if we can improve the performance without
+            // causing browser crashes.
+            {
+                queueSize: 1
+            },
             function(err: any) {
                 if (err) {
                     reject(err);
