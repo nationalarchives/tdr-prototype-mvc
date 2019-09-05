@@ -10,8 +10,17 @@ export interface FileUploadProps {}
 
 interface FileUploadState {
     userAuthenticated: boolean,
+    metadataFileCount: number,
     uploadedFileCount: number,
+    totalFiles: number,
+    uploadProgress: UploadProgress,
     uploadError?: any
+}
+
+enum UploadProgress {
+    NotStarted,
+    InProgress,
+    Finished
 }
 
 export class FileUpload extends React.Component<FileUploadProps, FileUploadState> {
@@ -20,10 +29,15 @@ export class FileUpload extends React.Component<FileUploadProps, FileUploadState
 
         this.state = {
             userAuthenticated: false,
+            uploadProgress: UploadProgress.NotStarted,
+            totalFiles: 0,
+            metadataFileCount: 0,
             uploadedFileCount: 0
         };
 
         this.handleUpload = this.handleUpload.bind(this);
+        this.incrementMetadataCount = this.incrementMetadataCount.bind(this);
+        this.incrementUploadCount = this.incrementUploadCount.bind(this);
     }
 
     componentDidMount() {
@@ -46,11 +60,35 @@ export class FileUpload extends React.Component<FileUploadProps, FileUploadState
         }
     }
 
+    incrementMetadataCount(): void {
+        this.setState(prevState => {
+           return {
+               metadataFileCount: prevState.metadataFileCount + 1
+           }
+        });
+    }
+
+    incrementUploadCount(): void {
+        this.setState(prevState => {
+            return {
+                uploadedFileCount: prevState.uploadedFileCount + 1
+            }
+        });
+    }
+
     handleUpload(files: File[]) {
-        uploadFileMetadata(files).then((filesWithIds) => {
-            return uploadFiles(filesWithIds);
+        this.setState({
+            uploadProgress: UploadProgress.InProgress,
+            totalFiles: files.length
+        });
+
+        uploadFileMetadata(files, () => this.incrementMetadataCount()).then((filesWithIds) => {
+            return uploadFiles(filesWithIds, () => this.incrementUploadCount());
         }).then(() => {
-            this.setState({uploadedFileCount: files.length})
+            this.setState({
+                uploadProgress: UploadProgress.Finished,
+                uploadedFileCount: files.length
+            });
         }).catch((error: any) => {
             this.setState({uploadError: error});
             console.log("Error uploading file");
@@ -61,20 +99,20 @@ export class FileUpload extends React.Component<FileUploadProps, FileUploadState
     render() {
         if (!this.state.userAuthenticated) {
             return "Authenticating user...";
+        } else if (this.state.uploadProgress === UploadProgress.NotStarted) {
+            return <FileForm onUpload={this.handleUpload} />
         } else if (this.state.uploadError) {
             return "Error uploading files";
-        } else if (this.state.uploadedFileCount > 0) {
-            // PL TODO: Add the uploaded filenames? Add button to return to dashboard?
-            return (
-                    <div>
-                        <p>Thank you!<br/>{this.state.uploadedFileCount} files were uploaded</p>
-                        <form>
-                            <button type="submit" className="govuk-button">Dashboard</button>
-                        </form>
-                    </div>
-                    );
         }
 
-        return <FileForm onUpload={this.handleUpload} />
+        const progressMessage = (this.state.uploadProgress === UploadProgress.Finished) ? "Upload finished" : "Upload in progress";
+
+        return (
+          <div>
+              <p>{progressMessage}</p>
+              <p>Metadata extraction: {this.state.metadataFileCount} of {this.state.totalFiles}</p>
+              <p>Uploaded files: {this.state.uploadedFileCount} of {this.state.totalFiles}</p>
+          </div>
+        );
     }
 }
