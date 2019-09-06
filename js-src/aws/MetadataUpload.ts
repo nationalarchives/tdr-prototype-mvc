@@ -39,7 +39,7 @@ function AddFiles(fileInputs: CreateFileInput[]) {
                 inputs: fileInputs
             },
             mutation: CreateMultipleFiles
-        }        
+        }
     );
 }
 
@@ -109,8 +109,7 @@ const getFileInfo = async (file: TdrFile): Promise<CreateFileInput> => {
         clientSideChecksum: checksum,
         fileSize: file.size,
         path:file.webkitRelativePath,
-        //Need consistent format for storing date information
-        lastModifiedDate: file.lastModified.toString(),
+        lastModifiedDate: new Date(file.lastModified),
         fileName:file.name
     };
 

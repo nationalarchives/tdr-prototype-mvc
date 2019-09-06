@@ -17,16 +17,16 @@ export interface Files_files {
      */
     consignmentId: number;
   }
-  
+
   export interface Files {
     createMultipleFiles: (Files_files)[];
   }
 
-  export interface CreateFileInput {    
-    consignmentId: number;    
+  export interface CreateFileInput {
+    consignmentId: number;
     path: string | null;
     fileSize: number;
-    lastModifiedDate: string;
+    lastModifiedDate: Date;
     clientSideChecksum: unknown;
     fileName: string;
   }
