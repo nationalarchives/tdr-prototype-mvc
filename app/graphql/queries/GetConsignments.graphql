@@ -1,0 +1,11 @@
+query getConsignments {
+    getConsignments {
+        name,
+        id,
+        series {
+            id,
+            name,
+            description
+        }
+    }
+}

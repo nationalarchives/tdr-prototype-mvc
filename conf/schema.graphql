@@ -1,0 +1,59 @@
+type Consignment {
+  id: Int!
+  name: String!
+  series: Series!
+}
+
+input CreateFileInput {
+  path: String!
+  consignmentId: Int!
+  fileSize: Int!
+  lastModifiedDate: String!
+  fileName: String!
+  clientSideChecksum: String!
+}
+
+type File {
+  id: UUID!
+  path: String!
+  consignmentId: Int!
+  fileStatus: FileStatus!
+  pronomId: String
+  fileSize: Int!
+  lastModifiedDate: String!
+  fileName: String!
+}
+
+type FileStatus {
+  id: Int!
+  clientSideChecksum: String!
+  serverSideChecksum: String!
+  fileFormatVerified: Boolean!
+  fileId: UUID!
+  antivirusStatus: String!
+}
+
+type Mutation {
+  createConsignment(name: String!, seriesId: Int!): Consignment!
+  createFile(createFileInput: CreateFileInput!): File!
+  updateServerSideFileChecksum(id: UUID!, checksum: String!): Boolean!
+  updateClientSideFileChecksum(id: UUID!, checksum: String!): Boolean!
+  updateVirusCheck(id: UUID!, status: String!): Boolean!
+  updateFileFormat(id: UUID!, pronomId: String!): Boolean!
+  createMultipleFiles(createFileInputs: [CreateFileInput!]!): [File!]!
+}
+
+type Query {
+  getConsignments: [Consignment!]!
+  getConsignment(id: Int!): Consignment
+  getFile(id: UUID!): File
+  getFiles: [File!]!
+}
+
+type Series {
+  id: Int!
+  name: String!
+  description: String!
+}
+
+scalar UUID
