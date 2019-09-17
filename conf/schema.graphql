@@ -8,7 +8,7 @@ input CreateFileInput {
   path: String!
   consignmentId: Int!
   fileSize: Int!
-  lastModifiedDate: String!
+  lastModifiedDate: Instant!
   fileName: String!
   clientSideChecksum: String!
 }
@@ -20,7 +20,7 @@ type File {
   fileStatus: FileStatus!
   pronomId: String
   fileSize: Int!
-  lastModifiedDate: String!
+  lastModifiedDate: Instant!
   fileName: String!
 }
 
@@ -32,6 +32,8 @@ type FileStatus {
   fileId: UUID!
   antivirusStatus: String!
 }
+
+scalar Instant
 
 type Mutation {
   createConsignment(name: String!, seriesId: Int!): Consignment!

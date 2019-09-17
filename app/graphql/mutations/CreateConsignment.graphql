@@ -1,4 +1,4 @@
-mutation createCon ($name: String!, $seriesId: Int!){
+mutation createConsignment ($name: String!, $seriesId: Int!){
     createConsignment(name:$name, seriesId:$seriesId) {
         name,
         id,

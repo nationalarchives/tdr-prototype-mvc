@@ -19,7 +19,7 @@ graphqlSchemas += GraphQLSchema(
 graphqlCodegenStyle := Apollo
 graphqlCodegenJson := JsonCodec.Circe
 graphqlCodegenSchema := graphqlRenderSchema.toTask("tdr").value
-graphqlCodegenImports ++= List("java.time._")
+graphqlCodegenImports ++= List("java.time._","java.util.UUID" )
 
 scalaVersion := "2.12.8"
 

@@ -164,13 +164,10 @@ class TdrGraphQLClient(backend: TdrBackendClient)  {
       .flatMap {
         case (_, json) => Future.fromTry(IntrospectionParser.parse(json))
       }
-
-
 }
 
 
 object TdrGraphQLClient {
-
 
   def apply(configuration: Configuration) = new TdrGraphQLClient(new TdrSignRequestClient(configuration))
 
@@ -189,7 +186,6 @@ object TdrGraphQLClient {
       case _ => None
     }
   }
-
 
   type GraphQLResponse[Res] = Either[GraphQLResponseError, GraphQLResponseData[Res]]
 
