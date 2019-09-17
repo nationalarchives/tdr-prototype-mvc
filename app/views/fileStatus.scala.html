@@ -1,0 +1,13 @@
+@import graphql.codegen.GetFileStatus.getFileChecksStatus.GetFileChecksStatus
+@(status: GetFileChecksStatus)
+
+@main("FileStatus") {
+@defining(play.core.PlayVersion.current) { version =>
+
+<h1 class="govuk-heading-xl">Transfer Digital Records</h1>
+<div class="file-status">
+    <progress value="@status.totalComplete" max="@status.totalFiles"></progress>
+    <p>Files @status.totalComplete of @status.totalFiles</p>
+</div>
+}
+}
