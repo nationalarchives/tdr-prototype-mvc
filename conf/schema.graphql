@@ -33,6 +33,12 @@ type FileStatus {
   antivirusStatus: String!
 }
 
+type FileProgress {
+  totalComplete: Int!
+  totalFiles: Int!
+  error: Boolean!
+}
+
 scalar Instant
 
 type Mutation {
@@ -50,6 +56,7 @@ type Query {
   getConsignment(id: Int!): Consignment
   getFile(id: UUID!): File
   getFiles: [File!]!
+  getFileChecksStatus(id: Int!): FileProgress!
 }
 
 type Series {
