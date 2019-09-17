@@ -79,7 +79,7 @@ Go into the scripts directory and create the user tables by running the create_u
 
 Update conf/schema.graphl 
 
-Create graphql queries or mutations in /home/ihoyle/git/tdr-prototype-mvc/app/graphql
+Create graphql queries or mutations in /app/graphql
 
 Run sbt graphqlCodegen
 
