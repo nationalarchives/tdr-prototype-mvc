@@ -74,6 +74,18 @@ Go into the scripts directory and create the user tables by running the create_u
 [aws-cli]: https://aws.amazon.com/cli/
 [cli-config]: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
 
+
+### Generate GraphQL Objects from GraphQL schema
+
+Update conf/schema.graphl 
+
+Create graphql queries or mutations in /home/ihoyle/git/tdr-prototype-mvc/app/graphql
+
+Run sbt graphqlCodegen
+
+Examples of use app/controllers/ViewCollectionsController.scala
+
+
 ### Build the JavaScript components
 
 Run `npm install` the first time to install dependencies.

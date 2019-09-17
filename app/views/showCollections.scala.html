@@ -1,4 +1,5 @@
-@(collections:Seq[model.TdrCollection])
+@import graphql.codegen.GetConsignments.getConsignments.GetConsignments
+@(collections:Seq[GetConsignments])
 
 @main("ViewCollections") {
 @defining(play.core.PlayVersion.current) { version =>
@@ -6,11 +7,11 @@
 
 <div>
     <ul>
-        @for(collection <- collections) {
+        @for(consignment <- collections) {
             <li>
-                <p>Batch Name: @collection.name</p>
-                <p>Copyright: @collection.copyright</p>
-                <p>LegalStatus: @collection.legalStatus</p> }
+                <p>Consignment Name: @consignment.name</p>
+                <p>Consignment Id : @consignment.id</p>
+                <p>Series: @consignment.series.description</p> }
             </li>
     </ul>
 </div>
