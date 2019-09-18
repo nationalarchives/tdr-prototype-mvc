@@ -11,6 +11,6 @@ window.onload = function () {
     }
     const fileStatusContainer: HTMLDivElement | null = document.querySelector(".file-status")
     if (fileStatusContainer) {
-        updateFileStatuses(fileStatusContainer)
+        updateFileStatuses()
     }
 };
