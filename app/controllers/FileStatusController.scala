@@ -14,12 +14,12 @@ class FileStatusController @Inject()(client: GraphQLClientProvider,
                                       cc: ControllerComponents
                                     )(implicit val ex: ExecutionContext) extends AbstractController(cc) {
 
-  def getFileStatus() = Action.async  { implicit request: Request[AnyContent] =>
+  def getFileStatus(consignmentId: Int) = Action.async  { implicit request: Request[AnyContent] =>
 
     val accessToken = request.attrs.get(TDRAttributes.OAuthAccessTokenKey).get.accessToken
     val header = RawHeader("Authorization", accessToken)
     val appSyncClient = client.graphqlClient(List(header))
-    appSyncClient.query[Data, Variables](document,Variables(1)).result.map {
+    appSyncClient.query[Data, Variables](document,Variables(consignmentId)).result.map {
         case Right(r) => Ok(views.html.fileStatus(r.data.getFileChecksStatus))
         case Left(ex) => InternalServerError(ex.errors.toString())
       }
