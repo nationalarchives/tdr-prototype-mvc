@@ -6,6 +6,7 @@
 # An example controller showing a sample home page
 GET     /                                   controllers.HomeController.index
 GET     /dashboard                          controllers.DashboardController.index
+GET     /seriesDetails                      controllers.SeriesDetailsController.index
 GET     /upload                             controllers.UploadController.index
 GET     /authenticate/cognito               controllers.AuthController.authenticate
 GET     /viewCollections                    controllers.ViewCollectionsController.index
