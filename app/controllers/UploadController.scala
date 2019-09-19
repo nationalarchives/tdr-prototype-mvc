@@ -1,19 +1,29 @@
 package controllers
 
-import java.nio.file.Paths
-
+import com.amazonaws.auth.{AWSStaticCredentialsProvider, BasicAWSCredentials}
+import com.amazonaws.services.s3.AmazonS3ClientBuilder
+import com.amazonaws.services.s3.model.PutObjectRequest
+import graphql.GraphQLClientProvider
+import graphql.codegen.CreateMultipleFiles.createMultipleFiles.{Data, Variables, document}
+import graphql.codegen.types.CreateFileInput
 import javax.inject._
 import play.api.Configuration
+import play.api.libs.json.{Json, _}
 import play.api.mvc._
-import play.api.libs.json._
-import play.api.libs.functional.syntax._
 
+import scala.collection.immutable
+import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.duration.Duration
 
 @Singleton
 class UploadController @Inject()(
+  client: GraphQLClientProvider,
   controllerComponents: ControllerComponents,
-  configuration: Configuration
-) extends AbstractController(controllerComponents) {
+  config: Configuration
+)(implicit val ex: ExecutionContext) extends AbstractController(controllerComponents) {
+
+  private val accessKeyID : String =  config.get[String]("aws.access.key.id")
+  private val accessKeySecret : String =  config.get[String]("aws.secret.access.key")
 
   def index(consignmentId: Int) = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.upload())
@@ -30,46 +40,48 @@ class UploadController @Inject()(
 //    }
   }
   def upload = Action(parse.multipartFormData) { request =>
+    val a: String = request.body.dataParts("file-id-data").head
+    //Convert this to an object to do the file mapping and make the s3 upload async
     request.body
       .files
-      .map { picture =>
-        // only get the last part of the filename
-        // otherwise someone can send a path like ../../home/foo/bar.txt to write to other files on the system
-        val filename    = Paths.get(picture.filename).getFileName
-        val fileSize    = picture.fileSize
-        val contentType = picture.contentType
+      .map { file  =>
+        val s3Client = AmazonS3ClientBuilder.standard()
+          .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKeyID, accessKeySecret)))
+          .withRegion("eu-west-2")
+          .build()
 
-//        picture.ref.copyTo(Paths.get(s"/tmp/picture/$filename"), replace = true)
-        Ok("File uploaded")
+        val request = new PutObjectRequest("tdr-files-test", file.filename, file.ref)
+        s3Client.putObject(request)
       }
       Ok("File uploaded")
 
   }
 
-
-  case class FileData(data: List[FileInfo])
-  case class FileInfo(consignmentId: Int, path: String, fileSize: Int, lastModifiedDate: String, clientSideChecksum: String, fileName: String)
-  implicit val fileInfoReads: Reads[FileInfo] = Json.reads[FileInfo]
-  implicit val fileDataReads: Reads[FileData] = Json.reads[FileData]
+  case class FileInputs(data: List[CreateFileInput])
+  implicit val createFileInputReads: Reads[CreateFileInput] = Json.reads[CreateFileInput]
+  implicit val fileInputReads: Reads[FileInputs] = Json.reads[FileInputs]
 
 
-
-  def saveFileData = Action(parse.json) { request =>
-
-//    implicit val tdrCollectionDecoder: Decoder[FileInfo] = deriveDecoder
-    val result = request.body.validate[FileData]
+  def saveFileData = Action.async(parse.json) { request =>
+    val result = request.body.validate[FileInputs]
     result.fold(
       errors => {
-        BadRequest(Json.obj("status" -> "KO", "message" -> JsError.toJson(errors)))
+        Future.apply(InternalServerError(errors.toString()))
       },
-      fileInfo => {
-        Ok(Json.obj("status" -> "OK", "message" -> ("FileInfo" + fileInfo.data + "' saved.")))
+      fileInputs => {
+        val appSyncClient = client.graphqlClient(List())
+        appSyncClient.query[Data, Variables](document,Variables(fileInputs.data)).result.map {
+          case Right(r) =>
+            Ok(Json.toJson(r.data.createMultipleFiles.map {
+              f => Map("id" -> f.id.toString, "path" -> f.path.toString)
+            }))
+          case Left(ex) => InternalServerError(ex.errors.toString())
+        }
+
       }
     )
-    Ok
 
   }
-
 }
 
 case class CognitoUploadConfig(

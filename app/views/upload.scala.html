@@ -6,6 +6,7 @@
         
     @helper.form(action = routes.UploadController.upload, 'enctype -> "multipart/form-data") {
     <div class="upload-form">
+        <input type="hidden" class="file-id-data" name="file-id-data"/>
         <input type="file" id="file-upload" name="files" class="govuk-file-upload" webkitdirectory>
         <div class="govuk-file-drop">
             <svg width="50" height="43" viewBox="0 0 50 43">

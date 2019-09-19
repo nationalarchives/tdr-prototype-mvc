@@ -1,4 +1,4 @@
-import { IReader } from "../utils/files";
+import Axios from "axios";
 
 interface HTMLInputTarget extends EventTarget {
     files?: File[]
@@ -154,19 +154,12 @@ const onDrop: (e: DragEvent) => void = async e => {
 
 
 const postResultToApi: (fileResult: FileResult) => void = (fileResult) => {
-    var xmlhttp = new XMLHttpRequest(); // new HttpRequest instance 
-    console.log(JSON.stringify(fileResult));
-    xmlhttp.open("POST", "http://localhost:9000/filedata");
-    xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xmlhttp.send(JSON.stringify(fileResult));
-    xmlhttp.onreadystatechange = () => {
-        if (xmlhttp.readyState === 4) {
-            const submit: HTMLInputElement | null = document.querySelector("#upload-submit");
-            if (submit) {
-                submit.disabled = false;
-            }
-        }
-    };
+    Axios.post("/filedata", fileResult).then(data => {
+        const hiddenInput: HTMLInputElement | null = document.querySelector(".file-id-data")
+        hiddenInput!.value = JSON.stringify(data)
+        const submit: HTMLInputElement | null = document.querySelector("#upload-submit");
+        submit!.disabled = false;
+    });
 }
 
 const getFileInfo: (tdrFile: TdrFile) => Promise<CreateFileInput> = async (tdrFile) => {
@@ -184,7 +177,6 @@ const getFileInfo: (tdrFile: TdrFile) => Promise<CreateFileInput> = async (tdrFi
     return fileInfo;
 }
 
-export { upload }
 
 const uploadChangeListener: (e: Event) => void = async (e) => {
     const target: HTMLInputTarget | null = e.currentTarget;
@@ -201,3 +193,5 @@ const uploadChangeListener: (e: Event) => void = async (e) => {
     const fileResult: FileResult = { data: fileInfoList };
     postResultToApi(fileResult);
 }
+
+export { upload }
