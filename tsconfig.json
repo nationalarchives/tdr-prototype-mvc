@@ -7,10 +7,13 @@
     "jsx": "react",
     "allowJs": false,
     "moduleResolution": "node",
-    "lib" : ["dom"] ,
+    "lib": [
+      "dom"
+    ],
     "noImplicitReturns": true,
     "noUnusedLocals": true,
-    "strict": true
+    "strict": true,
+    "sourceMap": true
   },
   "exclude": [
     "cypress-tests"

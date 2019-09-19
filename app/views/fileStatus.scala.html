@@ -6,9 +6,9 @@
 
 @defining(if(status.error) "" else " hide") { errorClass =>
 
-@defining(if (status.totalComplete == status.totalFiles && !status.error) "" else " hide") { completeClass =>
+@defining(if (status.totalComplete == status.totalFiles && !status.error && status.totalComplete > 0) "" else " hide") { completeClass =>
 
-@defining(if (status.totalComplete != status.totalFiles && !status.error) "" else " hide") { progressBarClass =>
+@defining(if ((status.totalComplete != status.totalFiles && !status.error) || status.totalComplete == 0) "" else " hide") { progressBarClass =>
 
 <h3 class="govuk-heading-m">Upload and processing</h3>
 <div class="file-status">
@@ -18,7 +18,7 @@
             <span class="iconify complete-tick" data-icon="ic-round-check-circle-outline" data-inline="false"></span>
             <div class="complete-text">
                 <h4>Upload was successful</h4>
-                <span>@status.totalComplete files have been successfully uploaded</span>
+                <span class="completeMessage">@status.totalComplete files have been successfully uploaded</span>
                 <span>Please click 'Save and Continue' to proceed this transfer</span>
             </div>
 
@@ -31,7 +31,7 @@
 
     <div class="progress-container @progressBarClass">
         <progress class="status-progress" value="@status.totalComplete" max="@status.totalFiles"></progress>
-        <p class="status-progress-label">Files @status.totalComplete of @status.totalFiles</p>
+        <span class="status-progress-label">Files @status.totalComplete of @status.totalFiles</span>
     </div>
 
 

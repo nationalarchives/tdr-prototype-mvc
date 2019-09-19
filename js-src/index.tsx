@@ -1,13 +1,10 @@
-import * as React from "react";
-import * as ReactDOM from "react-dom";
-
-import { FileUpload } from "./components/FileUpload";
 import { updateFileStatuses } from "./fileStatus"
+import { upload } from "./upload"
 
 window.onload = function () {
-    const fileUploadContainer = document.querySelector('#file_upload_container');
-    if (fileUploadContainer) {
-        ReactDOM.render(<FileUpload />, fileUploadContainer);
+    const uploadContainer: HTMLDivElement | null = document.querySelector(".upload-form")
+    if (uploadContainer) {
+        upload()
     }
     const fileStatusContainer: HTMLDivElement | null = document.querySelector(".file-status")
     if (fileStatusContainer) {
