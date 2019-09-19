@@ -26,13 +26,13 @@ class CreateCollectionController @Inject()(
 
   val userForm = Form(
     mapping(
-      "collectionName" -> text
+      "consignmentName" -> text
     )(CreateCollectionData.apply)(CreateCollectionData.unapply)
   )
 
-  def index() = Action { implicit request: Request[AnyContent] =>
+  def index(seriesId: Int) = Action { implicit request: Request[AnyContent] =>
 
-    Ok(views.html.createCollection(userForm ))
+    Ok(views.html.createCollection(userForm, seriesId))
   }
 
   def submit() = Action.async { implicit request: Request[AnyContent] =>

@@ -3,17 +3,9 @@
 @main("Dashboard") {
 @defining(play.core.PlayVersion.current) { version =>
     <h1 class="govuk-heading-xl">Dashboard</h1>
-
+    <p>Start a new records transfer</p>
     <a href="@routes.SeriesDetailsController.index" role="button" draggable="false" class="govuk-button govuk-button--start">
-        Begin Upload
-    </a>
-    <br/>
-    <a href="@routes.ViewCollectionsController.index" role="button" draggable="false" class="govuk-button govuk-button--start">
-        View Upload history
-    </a>
-    <br/>
-    <a href="@routes.CreateCollectionController.index" role="button" draggable="false" class="govuk-button govuk-button--start">
-        Create Batch
+        Start
     </a>
 }
 }
