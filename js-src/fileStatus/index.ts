@@ -5,12 +5,12 @@ const updateFileStatuses: () => void = () => {
     const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
     const consignmentId = urlParams.get('consignmentId');
     const checkStatus: () => void = () => {
-        Axios.get(`${consignmentId}`)
+        Axios.get(`/fileStatusApi?consignmentId=${consignmentId}`)
             .then(data => {
-                console.log(data.data.getFileChecksStatus)
+                console.log(data.data)
                 const statusProgress: HTMLProgressElement | null = document.querySelector(".status-progress")
                 const statusProgressLabel: HTMLProgressElement | null = document.querySelector(".status-progress-label")
-                const { totalComplete, totalFiles } = data.data.getFileChecksStatus
+                const { totalComplete, totalFiles } = data.data
                 if (statusProgress !== null && statusProgressLabel !== null) {
                     statusProgress.value = totalComplete
                     statusProgressLabel.innerText = `File ${totalComplete} of ${totalFiles}`

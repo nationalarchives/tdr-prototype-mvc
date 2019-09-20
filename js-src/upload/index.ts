@@ -156,7 +156,7 @@ const onDrop: (e: DragEvent) => void = async e => {
 const postResultToApi: (fileResult: FileResult) => void = (fileResult) => {
     Axios.post("/filedata", fileResult).then(data => {
         const hiddenInput: HTMLInputElement | null = document.querySelector(".file-id-data")
-        hiddenInput!.value = JSON.stringify(data)
+        hiddenInput!.value = JSON.stringify(data.data)
         const submit: HTMLInputElement | null = document.querySelector("#upload-submit");
         submit!.disabled = false;
     });
