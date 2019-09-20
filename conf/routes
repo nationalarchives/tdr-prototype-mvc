@@ -4,10 +4,12 @@
 # ~~~~
 
 # An example controller showing a sample home page
+GET     /login                              controllers.AuthController.login
+GET     /logout                             controllers.AuthController.logout
+POST    /processLoginAttempt                controllers.AuthController.processLoginAttempt
 GET     /                                   controllers.HomeController.index
 GET     /dashboard                          controllers.DashboardController.index
 GET     /upload                             controllers.UploadController.index
-GET     /authenticate/cognito               controllers.AuthController.authenticate
 GET     /viewCollections                    controllers.ViewCollectionsController.index
 GET     /createCollection                   controllers.CreateCollectionController.index
 POST    /createCollection/submit            controllers.CreateCollectionController.submit()
