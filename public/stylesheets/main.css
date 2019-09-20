@@ -164,12 +164,9 @@ body {
   .hide {
     display: none;
   }
-<<<<<<< Updated upstream
-=======
 
   .upload-form {
       display: flex;
       flex-direction: column;
       font-size: 15px;
    }
->>>>>>> Stashed changes
