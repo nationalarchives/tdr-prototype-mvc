@@ -1,10 +1,9 @@
 package controllers
 
-import akka.http.scaladsl.model.headers.RawHeader
 import graphql.GraphQLClientProvider
-import graphql.codegen.GetFileStatus.getFileChecksStatus.{Data, Variables, document}
+import graphql.codegen.GetFileStatus.getFileChecksStatus.{Data, GetFileChecksStatus, Variables, document}
 import javax.inject.{Inject, Singleton}
-import modules.TDRAttributes
+import play.api.libs.json.Json
 import play.api.mvc.{AbstractController, AnyContent, ControllerComponents, Request}
 
 import scala.concurrent.ExecutionContext
@@ -21,4 +20,15 @@ class FileStatusController @Inject()(client: GraphQLClientProvider,
         case Left(ex) => InternalServerError(ex.errors.toString())
       }
   }
+
+  implicit val writes = Json.writes[GetFileChecksStatus]
+
+  def getFileStatusApi(consignmentId: Int) = Action.async  { implicit request: Request[AnyContent] =>
+    val appSyncClient = client.graphqlClient(List())
+    appSyncClient.query[Data, Variables](document,Variables(consignmentId)).result.map {
+      case Right(r) => println(Json.toJson(r.data.getFileChecksStatus)); Ok(Json.toJson(r.data.getFileChecksStatus))
+      case Left(ex) => InternalServerError(ex.errors.toString())
+    }
+  }
+
 }
