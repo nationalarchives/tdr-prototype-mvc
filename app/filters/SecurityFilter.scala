@@ -33,7 +33,7 @@ class SecurityFilter @Inject()(
       val Assets = "(/assets/.*)".r
 
       request.path match {
-        case "/" | "/filedata" | "/authenticate/cognito" | Assets(_) => next(request)
+        case "/" | "/authenticate/cognito" | Assets(_) => next(request)
         case _ => isRequestAuthenticated(r).flatMap {
           case Some(user) => {
 
