@@ -1,18 +1,15 @@
 package controllers
 
-import akka.http.scaladsl.model.headers.RawHeader
 import graphql.GraphQLClientProvider
 import io.circe.Decoder
 import io.circe.generic.semiauto.deriveDecoder
 import javax.inject.{Inject, Singleton}
 import model.{CreateCollectionData, TdrCollection}
-import modules.TDRAttributes
 import play.api.Configuration
 import play.api.mvc.{AbstractController, AnyContent, ControllerComponents, Request}
 import play.api.data._
 import play.api.data.Forms._
 import sangria.macros._
-import io.circe._
 import io.circe.generic.auto._
 
 import scala.concurrent.ExecutionContext
@@ -53,10 +50,7 @@ class CreateCollectionController @Inject()(
 
     implicit val createdCollectionDecoder: Decoder[CreatedCollection] = deriveDecoder
 
-    val accessToken = request.attrs.get(TDRAttributes.OAuthAccessTokenKey).get.accessToken
-    val header = RawHeader("Authorization", accessToken)
-
-    val appSyncClient = client.graphqlClient(List(header))
+    val appSyncClient = client.graphqlClient(List())
 
     val createCollectionsDoc =
       gql"""
