@@ -1,0 +1,53 @@
+@import graphql.codegen.GetAllSeries.getAllSeries.GetAllSeries
+@(allSeries:Seq[GetAllSeries], selectedSeriesForm: Form[model.SelectedSeriesData])
+
+@main("SeriesDetails") {
+@defining(play.core.PlayVersion.current) { version =>
+
+<!-- Back -->
+
+<!-- Progress indicator -->
+<span class="govuk-caption-xl">Step 1 of 4</span>
+<!-- Headline -->
+<h1 class="govuk-heading-xl">Series Information</h1>
+
+<div class="govuk-grid-row">
+
+    <!-- ONLY IF ACCRUING SERIES -->
+    <div class="govuk-form-group" id="forAccruing">
+        <h3>Accruing Series:</h3>
+
+        <form action="@routes.SeriesDetailsController.submit()" method="POST">
+            <div class="govuk-form-group">
+            <label class="govuk-label" for="seriesNo">
+                Series Number*
+            </label>
+            <select class="govuk-select" id="seriesNo" name="seriesNo">
+                <option value="placeholder" selected>Please choose...</option>
+                @for(series <- allSeries) {
+                <option value="@series.id">@series.name</option>
+                }
+            </select>
+            </div>
+            <div class="govuk-form-group">
+                <h3>Create Series:</h3>
+                <a href="@routes.CreateSeriesController.index" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                    New Series
+                </a>
+            </div>
+            <div class="govuk-form-group">
+                <a href="@routes.DashboardController.index" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                    Cancel
+                </a>
+                <button class="govuk-button" type="submit" data-module="govuk-button" role="button">
+                    Save and continue
+                </button>
+            </div>
+        </form>
+    </div>
+
+    </form>
+</div>
+</div>
+}
+}

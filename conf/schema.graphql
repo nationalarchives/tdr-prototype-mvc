@@ -13,6 +13,11 @@ input CreateFileInput {
   clientSideChecksum: String!
 }
 
+input CreateSeriesInput {
+  name: String!
+  description: String!
+}
+
 type File {
   id: UUID!
   path: String!
@@ -42,6 +47,7 @@ type FileProgress {
 scalar Instant
 
 type Mutation {
+  createSeries(createSeriesInput: CreateSeriesInput!): Series!
   createConsignment(name: String!, seriesId: Int!): Consignment!
   createFile(createFileInput: CreateFileInput!): File!
   updateServerSideFileChecksum(id: UUID!, checksum: String!): Boolean!
@@ -52,6 +58,7 @@ type Mutation {
 }
 
 type Query {
+  getAllSeries: [Series!]!
   getConsignments: [Consignment!]!
   getConsignment(id: Int!): Consignment
   getFile(id: UUID!): File
