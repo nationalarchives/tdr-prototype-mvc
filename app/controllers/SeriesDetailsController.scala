@@ -4,7 +4,6 @@ import akka.http.scaladsl.model.headers.RawHeader
 import graphql.GraphQLClientProvider
 import graphql.codegen.GetAllSeries
 import javax.inject._
-import modules.TDRAttributes
 import play.api.Configuration
 import play.api.data.Form
 import play.api.data.Forms._
@@ -36,10 +35,7 @@ class SeriesDetailsController @Inject()(
 
   def index() = Action.async { implicit request: Request[AnyContent] =>
 
-    val accessToken = request.attrs.get(TDRAttributes.OAuthAccessTokenKey).get.accessToken
-    val header = RawHeader("Authorization", accessToken)
-
-    val graphQlClient = client.graphqlClient(List(header))
+    val graphQlClient = client.graphqlClient(List())
 
     graphQlClient.query[GetAllSeries.getAllSeries.Data](GetAllSeries.getAllSeries.document).result.map(result => result match {
       case Right(r) => Ok(views.html.seriesDetails(r.data.getAllSeries, selectedSeriesForm))

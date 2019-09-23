@@ -4,7 +4,6 @@ import akka.http.scaladsl.model.headers.RawHeader
 import graphql.GraphQLClientProvider
 import javax.inject._
 import model.CreateSeriesData
-import modules.TDRAttributes
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.mvc._
@@ -37,10 +36,7 @@ class CreateSeriesController @Inject()(
     val seriesData = createSeriesForm.bindFromRequest.get
     val createSeriesInput = CreateSeriesInput(seriesData.seriesName, seriesData.seriesDescription)
 
-    val accessToken = request.attrs.get(TDRAttributes.OAuthAccessTokenKey).get.accessToken
-    val header = RawHeader("Authorization", accessToken)
-
-    val graphQlClient = client.graphqlClient(List(header))
+    val graphQlClient = client.graphqlClient(List())
 
     graphQlClient.query[CreateSeries.CreateSeries.Data, CreateSeries.CreateSeries.Variables](CreateSeries.CreateSeries.document,
             CreateSeries.CreateSeries.Variables(createSeriesInput)).result.map(result => result match {
