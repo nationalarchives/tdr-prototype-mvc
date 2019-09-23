@@ -1,0 +1,13 @@
+mutation createConsignment ($name: String!, $seriesId: Int!, ,  $creator : String!, $transferringBody:String!){
+    createConsignment(name:$name, seriesId:$seriesId, creator: $creator, transferringBody: $transferringBody ) {
+        name,
+        id,
+        series {
+            id,
+            name,
+            description
+        },
+        creator,
+        transferringBody
+    }
+}

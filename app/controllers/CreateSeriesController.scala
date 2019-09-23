@@ -44,7 +44,7 @@ class CreateSeriesController @Inject()(
 
     graphQlClient.query[CreateSeries.CreateSeries.Data, CreateSeries.CreateSeries.Variables](CreateSeries.CreateSeries.document,
             CreateSeries.CreateSeries.Variables(createSeriesInput)).result.map(result => result match {
-            case Right(r) => Redirect(routes.CreateCollectionController.index(r.data.createSeries.id))
+            case Right(r) => Redirect(routes.CreateConsignmentController.index(r.data.createSeries.id))
             case Left(ex) => InternalServerError(ex.errors.toString())})
   }
 }

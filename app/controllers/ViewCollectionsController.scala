@@ -1,6 +1,7 @@
 package controllers
 
 import akka.http.scaladsl.model.headers.RawHeader
+import forms.ConsignmentForm
 import graphql.GraphQLClientProvider
 import graphql.codegen.GetConsignments
 import javax.inject.{Inject, _}
@@ -8,14 +9,14 @@ import modules.TDRAttributes
 import play.api.Configuration
 import play.api.mvc._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ViewCollectionsController @Inject()(
                                            client: GraphQLClientProvider,
                                            controllerComponents: ControllerComponents,
                                            configuration: Configuration)(
-                                           implicit val ex: ExecutionContext) extends AbstractController(controllerComponents) {
+                                           implicit val ex: ExecutionContext) extends AbstractController(controllerComponents) with play.api.i18n.I18nSupport {
 
   def index() = Action.async { implicit request: Request[AnyContent] =>
 
@@ -31,10 +32,16 @@ class ViewCollectionsController @Inject()(
     //
     //        })
 
-    appSyncClient.query[GetConsignments.getConsignments.Data](GetConsignments.getConsignments.document).result.map(result => result match {
-      case Right(r) => Ok(views.html.showCollections(r.data.getConsignments))
-      case Left(ex) => InternalServerError(ex.errors.toString())
-    })
+
+    Future(Ok(views.html.consignments(ConsignmentForm.form)))
+
+//    appSyncClient.query[GetConsignments.getConsignments.Data](GetConsignments.getConsignments.document).result.map(result => result match {
+//      case Right(r) => Ok(views.html.showCollections(r.data.getConsignments))
+//      case Left(ex) => InternalServerError(ex.errors.toString())
+//    }
+//    )
+
+
 
   }
 

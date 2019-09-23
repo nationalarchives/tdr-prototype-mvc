@@ -2,6 +2,8 @@ type Consignment {
   id: Int!
   name: String!
   series: Series!
+  creator: String!
+  transferringBody: String!
 }
 
 input CreateFileInput {
@@ -29,6 +31,13 @@ type File {
   fileName: String!
 }
 
+type FileCheckStatus {
+  virusPercentage: Int!
+  fileFormatPercentage: Int!
+  checksumPercentage: Int!
+  error: Boolean!
+}
+
 type FileStatus {
   id: Int!
   clientSideChecksum: String!
@@ -48,7 +57,7 @@ scalar Instant
 
 type Mutation {
   createSeries(createSeriesInput: CreateSeriesInput!): Series!
-  createConsignment(name: String!, seriesId: Int!): Consignment!
+  createConsignment(name: String!, seriesId: Int!, creator: String!, transferringBody: String!): Consignment!
   createFile(createFileInput: CreateFileInput!): File!
   updateServerSideFileChecksum(id: UUID!, checksum: String!): Boolean!
   updateClientSideFileChecksum(id: UUID!, checksum: String!): Boolean!
