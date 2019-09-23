@@ -1,9 +1,27 @@
-@()
+@(consignmentId: Int)
 
 @main("Upload") {
     @defining(play.core.PlayVersion.current) { version =>
-        <h1 class="govuk-heading-xl">Upload</h1>
+    <h1 class="govuk-heading-xl">Upload</h1>
         
-        <div id="file_upload_container"></div>
+    @helper.form(action = routes.UploadController.upload(consignmentId), 'enctype -> "multipart/form-data") {
+    <div class="upload-form">
+        <input type="hidden" class="file-id-data" name="file-id-data"/>
+        <input type="file" id="file-upload" name="files" class="govuk-file-upload" webkitdirectory>
+        <div class="govuk-file-drop">
+            <svg width="50" height="43" viewBox="0 0 50 43">
+                <path d="M48.4 26.5c-.9 0-1.7.7-1.7 1.7v11.6h-43.3v-11.6c0-.9-.7-1.7-1.7-1.7s-1.7.7-1.7 1.7v13.2c0 .9.7 1.7 1.7 1.7h46.7c.9 0 1.7-.7 1.7-1.7v-13.2c0-1-.7-1.7-1.7-1.7zm-24.5 6.1c.3.3.8.5 1.2.5.4 0 .9-.2 1.2-.5l10-11.6c.7-.7.7-1.7 0-2.4s-1.7-.7-2.4 0l-7.1 8.3v-25.3c0-.9-.7-1.7-1.7-1.7s-1.7.7-1.7 1.7v25.3l-7.1-8.3c-.7-.7-1.7-.7-2.4 0s-.7 1.7 0 2.4l10 11.6z"></path>
+            </svg>
+            <span class="draganddrop"></span>
+        </div>
+
+    </div>
+        <span class="progress-message"></span>
+        <p>
+            <button id="upload-submit" class="govuk-button govuk-button--start" type="submit" disabled>Submit</button>
+        </p>
+    </div>
+
+    }
     }
 }

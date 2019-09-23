@@ -1,0 +1,10 @@
+mutation createMultipleFiles($input: [CreateFileInput!]!) {
+    createMultipleFiles(createFileInputs: $input) {
+        path,
+        id,
+        consignmentId,
+        fileSize,
+        fileName,
+        lastModifiedDate
+    }
+}
