@@ -1,10 +1,8 @@
 package controllers
 
-import akka.http.scaladsl.model.headers.RawHeader
 import graphql.GraphQLClientProvider
 import graphql.codegen.GetConsignments
 import javax.inject.{Inject, _}
-import modules.TDRAttributes
 import play.api.Configuration
 import play.api.mvc._
 
@@ -19,10 +17,7 @@ class ViewCollectionsController @Inject()(
 
   def index() = Action.async { implicit request: Request[AnyContent] =>
 
-    val accessToken = request.attrs.get(TDRAttributes.OAuthAccessTokenKey).get.accessToken
-    val header = RawHeader("Authorization", accessToken)
-
-    val appSyncClient = client.graphqlClient(List(header))
+    val appSyncClient = client.graphqlClient(List())
 
     //        appSyncClient.query[CreateConsignment.createCon.Data, CreateConsignment.createCon.Variables](CreateConsignment.createCon.document,
     //          CreateConsignment.createCon.Variables("drunkTest", 4)).result.map(result => result match {

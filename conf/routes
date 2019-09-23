@@ -4,6 +4,9 @@
 # ~~~~
 
 # An example controller showing a sample home page
+GET     /login                              controllers.AuthController.login
+GET     /logout                             controllers.AuthController.logout
+POST    /processLoginAttempt                controllers.AuthController.processLoginAttempt
 GET     /                                   controllers.HomeController.index
 GET     /dashboard                          controllers.DashboardController.index
 GET     /seriesDetails                      controllers.SeriesDetailsController.index
