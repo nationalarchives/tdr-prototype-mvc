@@ -6,7 +6,6 @@ import graphql.GraphQLClientProvider
 import graphql.codegen.CreateConsignment.createConsignment._
 
 import javax.inject.{Inject, _}
-import modules.TDRAttributes
 import play.api.Configuration
 import play.api.mvc._
 
@@ -20,23 +19,20 @@ class CreateConsignmentController @Inject()(
                                              implicit val ex: ExecutionContext) extends AbstractController(controllerComponents) with play.api.i18n.I18nSupport {
 
   def index(seriesId:Int) = Action.async { implicit request: Request[AnyContent] =>
-    Future(Ok(views.html.consignments(ConsignmentForm.form)))
+    Future(Ok(views.html.createConsignments(ConsignmentForm.form, seriesId)))
   }
 
   def submit() = Action.async { implicit request =>
-    val accessToken = request.attrs.get(TDRAttributes.OAuthAccessTokenKey).get.accessToken
-    val header = RawHeader("Authorization", accessToken)
 
-    val appSyncClient = client.graphqlClient(List(header))
-
+    val appSyncClient = client.graphqlClient(List())
     val form = ConsignmentForm.form.bindFromRequest
-    val vars = Variables(form.get.consignmentName,form.get.series,"ian",form.get.transferringBody)
+
+    val vars = Variables(form.get.consignmentName,form.get.seriesId,request.session.get("username").get,form.get.transferringBody)
     appSyncClient.query[Data,Variables](document, vars).result.map(result => result match {
       case Right(r) => {
         Redirect(routes.UploadController.index(r.data.createConsignment.id))
       }
       case Left(ex) => InternalServerError(ex.errors.toString())
     })
-
   }
 }

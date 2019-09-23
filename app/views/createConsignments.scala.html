@@ -1,5 +1,5 @@
 @import forms.ConsignmentForm
-@(userForm: Form[ConsignmentForm])(implicit messages: Messages)
+@(userForm: Form[ConsignmentForm], seriesId: Int)(implicit messages: Messages)
     @import helper._
     @main("Consignment") {
         @defining(play.core.PlayVersion.current) { version =>
@@ -36,7 +36,7 @@
                             @inputText(userForm("transferringBody"),
                                 '_label -> null,
                                 'class -> "govuk-input")
-                            <input type="hidden" name="series" value="1" />
+                            <input type="hidden" name="seriesId" value="@seriesId" />
                         </div>
 
                     </fieldset>
