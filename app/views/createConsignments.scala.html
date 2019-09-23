@@ -1,5 +1,5 @@
-@import forms.ConsignmentForm
-@(userForm: Form[ConsignmentForm], seriesId: Int)(implicit messages: Messages)
+@import model.CreateConsignmentData
+@(userForm: Form[CreateConsignmentData], seriesId: Int)(implicit messages: Messages)
     @import helper._
     @main("Consignment") {
         @defining(play.core.PlayVersion.current) { version =>
