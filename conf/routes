@@ -14,7 +14,6 @@ POST    /seriesDetails/submit               controllers.SeriesDetailsController.
 GET     /createSeries                       controllers.CreateSeriesController.index
 POST    /createSeries/submit                controllers.CreateSeriesController.submit()
 GET     /upload                             controllers.UploadController.index(consignmentId: Int)
-GET     /authenticate/cognito               controllers.AuthController.authenticate
 GET     /viewCollections                    controllers.ViewCollectionsController.index
 GET     /createCollection                   controllers.CreateCollectionController.index(seriesId: Int)
 POST    /createCollection/submit            controllers.CreateCollectionController.submit()
