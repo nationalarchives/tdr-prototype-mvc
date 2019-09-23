@@ -76,13 +76,12 @@ class UploadController @Inject()(
         Future.apply(InternalServerError(errors.toString()))
       },
       fileInputs => {
-        val appSyncClient = client.graphqlClient(List())
-        appSyncClient.query[Data, Variables](document, Variables(fileInputs.data)).result.map {
+        val graphQLClient = client.graphqlClient(List())
+        graphQLClient.query[Data, Variables](document, Variables(fileInputs.data)).result.map {
           case Right(r) =>
             Ok(Json.toJson(r.data.createMultipleFiles map (f => f.path.toString -> f.id.toString) toMap))
           case Left(ex) => InternalServerError(ex.errors.toString())
         }
-
       }
     )
 
