@@ -9,10 +9,18 @@ GET     /logout                             controllers.AuthController.logout
 POST    /processLoginAttempt                controllers.AuthController.processLoginAttempt
 GET     /                                   controllers.HomeController.index
 GET     /dashboard                          controllers.DashboardController.index
-GET     /upload                             controllers.UploadController.index
+GET     /seriesDetails                      controllers.SeriesDetailsController.index
+POST    /seriesDetails/submit               controllers.SeriesDetailsController.submit()
+GET     /createSeries                       controllers.CreateSeriesController.index
+POST    /createSeries/submit                controllers.CreateSeriesController.submit()
+GET     /upload                             controllers.UploadController.index(consignmentId: Int)
+GET     /authenticate/cognito               controllers.AuthController.authenticate
 GET     /viewCollections                    controllers.ViewCollectionsController.index
-GET     /createCollection                   controllers.CreateCollectionController.index
+GET     /createCollection                   controllers.CreateCollectionController.index(seriesId: Int)
 POST    /createCollection/submit            controllers.CreateCollectionController.submit()
-
+GET     /fileStatus                         controllers.FileStatusController.getFileStatus(consignmentId: Int)
+GET    /fileStatusApi                       controllers.FileStatusController.getFileStatusApi(consignmentId: Int)
+POST    /upload                             controllers.UploadController.upload(consignmentId: Int)
+POST    /filedata                           controllers.UploadController.saveFileData
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

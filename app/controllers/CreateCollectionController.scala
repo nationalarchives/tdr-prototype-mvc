@@ -23,13 +23,13 @@ class CreateCollectionController @Inject()(
 
   val userForm = Form(
     mapping(
-      "collectionName" -> text
+      "consignmentName" -> text
     )(CreateCollectionData.apply)(CreateCollectionData.unapply)
   )
 
-  def index() = Action { implicit request: Request[AnyContent] =>
+  def index(seriesId: Int) = Action { implicit request: Request[AnyContent] =>
 
-    Ok(views.html.createCollection(userForm ))
+    Ok(views.html.createCollection(userForm, seriesId))
   }
 
   def submit() = Action.async { implicit request: Request[AnyContent] =>
@@ -68,7 +68,7 @@ class CreateCollectionController @Inject()(
     val variables = Variables(userDefinedCollectionName)
 
     appSyncClient.query[CreateCollectionResult, Variables](createCollectionsDoc, variables).result.map(result => result match {
-      case Right(r) => Redirect(routes.UploadController.index())
+      case Right(r) => Redirect(routes.UploadController.index(1))
       case Left(ex) => InternalServerError(ex.errors.toString())})
   }
 }

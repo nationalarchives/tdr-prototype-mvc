@@ -1,0 +1,7 @@
+mutation CreateSeries($input: CreateSeriesInput!) {
+    createSeries(createSeriesInput: $input) {
+        id,
+        name,
+        description
+    }
+}
