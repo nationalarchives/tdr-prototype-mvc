@@ -74,7 +74,7 @@ class CreateCollectionController @Inject()(
     val variables = Variables(userDefinedCollectionName)
 
     appSyncClient.query[CreateCollectionResult, Variables](createCollectionsDoc, variables).result.map(result => result match {
-      case Right(r) => Redirect(routes.UploadController.index())
+      case Right(r) => Redirect(routes.UploadController.index(1))
       case Left(ex) => InternalServerError(ex.errors.toString())})
   }
 }

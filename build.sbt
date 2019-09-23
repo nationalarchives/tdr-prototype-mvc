@@ -43,6 +43,7 @@ libraryDependencies += "com.mohiva" %% "play-silhouette-crypto-jca" % "5.0.7"
 libraryDependencies += "com.mohiva" %% "play-silhouette-persistence" % "5.0.7"
 libraryDependencies += "net.codingwell" %% "scala-guice" % "4.1.0"
 libraryDependencies += "software.amazon.awssdk" % "aws-sdk-java" % "2.7.11"
+libraryDependencies += "com.amazonaws" % "aws-java-sdk-s3" % "1.11.633"
 libraryDependencies += "ca.ryangreen" % "apigateway-generic-java-sdk" % "1.3"
 libraryDependencies +=  "com.github.jarlakxen" %% "drunk" % "2.5.0"
 libraryDependencies ++= Seq(

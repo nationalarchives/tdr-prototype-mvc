@@ -5,6 +5,6 @@ target
 project/target
 node_modules
 cypress/videos
-
+*.js.map
 # Generated files
 public/javascripts/main.js

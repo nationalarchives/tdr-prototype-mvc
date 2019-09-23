@@ -1,0 +1,7 @@
+query  getFileChecksStatus($id: Int!){
+    getFileChecksStatus(id: $id) {
+        totalComplete
+        totalFiles
+        error
+    }
+}
