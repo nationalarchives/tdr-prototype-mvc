@@ -1,17 +1,16 @@
 package controllers
 
-import java.io.ByteArrayInputStream
-import java.nio.file.Files
+import java.util.Date
 
-import actors.S3UploadActor
-import actors.S3UploadActor.S3Request
 import akka.actor.ActorSystem
-import com.amazonaws.auth.BasicAWSCredentials
-import com.amazonaws.services.s3.model.{ObjectMetadata, PutObjectRequest}
+import com.amazonaws.HttpMethod
+import com.amazonaws.auth.{AWSStaticCredentialsProvider, BasicAWSCredentials}
+import com.amazonaws.regions.Regions
+import com.amazonaws.services.s3.AmazonS3ClientBuilder
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest
 import graphql.GraphQLClientProvider
 import graphql.codegen.CreateMultipleFiles.createMultipleFiles.{Data, Variables, document}
 import graphql.codegen.types.CreateFileInput
-import io.circe.parser.decode
 import javax.inject._
 import play.api.Configuration
 import play.api.libs.json.{Json, _}
@@ -32,35 +31,23 @@ class UploadController @Inject()(
   private val accessKeyID: String = config.get[String]("aws.access.key.id")
   private val accessKeySecret: String = config.get[String]("aws.secret.access.key")
 
-  private val s3Actor = system.actorOf(S3UploadActor.props, "s3-upload-actor")
-
   def index(consignmentId: Int) = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.upload(consignmentId))
   }
 
-  def upload(consignmentId: Int) = Action(parse.multipartFormData) { request =>
-    val fileIdString: String = request.body.dataParts("file-id-data").head
+  private def generatePresignedUrl(key: String) = {
+    val s3Client = AmazonS3ClientBuilder.standard
+      .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKeyID, accessKeySecret)))
+      .withRegion(Regions.EU_WEST_2).build
 
-    val fileIdMap: Map[String, String] = decode[Map[String,String]](fileIdString) match {
-      case Right(r) => r
-      case Left(_) => Map()
-    }
+    // Set the pre-signed URL to expire after one hour.
+    val expiration = new Date()
+    var expTimeMillis = expiration.getTime
+    expTimeMillis += 1000 * 60 * 60
+    expiration.setTime(expTimeMillis)
 
-    request.body
-      .files
-      .foreach { file =>
-        fileIdMap.get(file.filename) match {
-          case Some(id) =>
-            val fileArr: Array[Byte] = Files.readAllBytes(file.ref.path)
-            val metaData: ObjectMetadata = new ObjectMetadata()
-            metaData.setContentLength(fileArr.length)
-            val request = new PutObjectRequest("tdr-files-test", s"$consignmentId/$id", new ByteArrayInputStream(fileArr), metaData)
-            s3Actor ! S3Request(request, new BasicAWSCredentials(accessKeyID, accessKeySecret))
-          case None =>
-        }
-      }
-    Redirect(routes.FileStatusController.getFileStatus(consignmentId))
-
+    val generatePresignedUrlRequest = new GeneratePresignedUrlRequest("tdr-files-test", key).withMethod(HttpMethod.PUT).withExpiration(expiration)
+    s3Client.generatePresignedUrl(generatePresignedUrlRequest).toString
   }
 
   case class FileInputs(data: List[CreateFileInput])
@@ -69,7 +56,7 @@ class UploadController @Inject()(
   implicit val fileInputReads: Reads[FileInputs] = Json.reads[FileInputs]
 
 
-  def saveFileData = Action.async(parse.json) { request =>
+  def getPresignedUrls = Action.async(parse.json) { request =>
     val result = request.body.validate[FileInputs]
     result.fold(
       errors => {
@@ -79,7 +66,7 @@ class UploadController @Inject()(
         val appSyncClient = client.graphqlClient(List())
         appSyncClient.query[Data, Variables](document, Variables(fileInputs.data)).result.map {
           case Right(r) =>
-            Ok(Json.toJson(r.data.createMultipleFiles map (f => f.path.toString -> f.id.toString) toMap))
+            Ok(Json.toJson(r.data.createMultipleFiles map (f => f.path.toString -> generatePresignedUrl(s"${f.consignmentId}/${f.id}")) toMap))
           case Left(ex) => InternalServerError(ex.errors.toString())
         }
 

@@ -1,13 +1,5 @@
 import Axios from "axios";
 
-interface HTMLInputTarget extends EventTarget {
-    files?: File[]
-}
-
-interface FileResult {
-    data: CreateFileInput[]
-}
-
 interface CreateFileInput {
     consignmentId: number;
     path: string | null;
@@ -21,6 +13,10 @@ interface TdrFile extends File {
     webkitRelativePath: string;
 }
 
+interface FilePathMap {
+    path: string;
+    file: File
+}
 
 export interface IReader {
     readEntries: (callbackFunction: (entry: IWebkitEntry[]) => void) => void;
@@ -61,10 +57,14 @@ export const generateHash: (file: File) => Promise<string> = (file) => {
 };
 
 
-const upload: () => void = () => {
+const upload: () => void = async () => {
     const uploadInput: HTMLInputElement | null = document.querySelector("#file-upload")
-    if (uploadInput) {
-        uploadInput.addEventListener("change", uploadChangeListener)
+    const uploadForm: HTMLFormElement | null = document.querySelector("#upload-submit");
+    if (uploadForm && uploadInput) {
+        uploadForm.addEventListener("click", async () => {
+            const files: FileList | null = uploadInput.files
+            await processFiles(files);
+        })
     }
     const dragAndDrop: HTMLDivElement | null = document.querySelector(".govuk-file-drop");
     if (dragAndDrop) {
@@ -136,30 +136,11 @@ const onDrop: (e: DragEvent) => void = async e => {
     e.preventDefault()
     e.stopPropagation()
     setIsDragging(false)
-    const data: CreateFileInput[] = []
     const dataTransferItems: DataTransferItemList = e.dataTransfer!.items
-    const progressMessage: HTMLSpanElement | null = document.querySelector(".progress-message");
-    let count = 1;
+
     //Assume one file in the drag and drop for now
     const files: File[] = await getAllFiles(dataTransferItems[0].webkitGetAsEntry(), [])
-    for (const file of files) {
-        const fileInfo: CreateFileInput = await getFileInfo(<TdrFile>file)
-        data.push(fileInfo)
-        progressMessage!.innerText = `Checskum ${count} of ${files.length}`;
-        count++;
-    }
-    const fileResult: FileResult = { data };
-    postResultToApi(fileResult)
-}
-
-
-const postResultToApi: (fileResult: FileResult) => void = (fileResult) => {
-    Axios.post("/filedata", fileResult).then(data => {
-        const hiddenInput: HTMLInputElement | null = document.querySelector(".file-id-data")
-        hiddenInput!.value = JSON.stringify(data.data)
-        const submit: HTMLInputElement | null = document.querySelector("#upload-submit");
-        submit!.disabled = false;
-    });
+    processFiles(files)
 }
 
 const getFileInfo: (tdrFile: TdrFile) => Promise<CreateFileInput> = async (tdrFile) => {
@@ -177,21 +158,33 @@ const getFileInfo: (tdrFile: TdrFile) => Promise<CreateFileInput> = async (tdrFi
     return fileInfo;
 }
 
-
-const uploadChangeListener: (e: Event) => void = async (e) => {
-    const target: HTMLInputTarget | null = e.currentTarget;
-    const fileInfoList: CreateFileInput[] = [];
-    const progressMessage: HTMLSpanElement | null = document.querySelector(".progress-message");
-    const files: TdrFile[] = <TdrFile[]>target!.files!;
-    let count = 1;
-    for (const file of files) {
-        const fileInfo: CreateFileInput = await getFileInfo(file);
-        progressMessage!.innerText = `Checskum ${count} of ${files.length}`;
-        fileInfoList.push(fileInfo);
-        count++;
-    }
-    const fileResult: FileResult = { data: fileInfoList };
-    postResultToApi(fileResult);
-}
-
 export { upload }
+
+async function processFiles(files: File[] | FileList | null) {
+    const fileInfoList: CreateFileInput[] = [];
+    if (files) {
+        const filePathToFile: FilePathMap[] = [];
+        for (var i = 0; i < files.length; i++) {
+            const tdrFile = <TdrFile>files[i];
+            const fileInfo: CreateFileInput = await getFileInfo(tdrFile);
+
+            fileInfoList.push(fileInfo);
+            filePathToFile.push({ path: fileInfo.path!, file: tdrFile });
+        }
+        Axios.post("/presignedUrls", { data: fileInfoList }).then(async data => {
+            for (const file of filePathToFile) {
+                const url = data.data[file.path];
+                const formData = new FormData();
+                formData.append("file", file.file);
+                await Axios.put(url, formData)
+            }
+            const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
+            const consignmentId = parseInt(urlParams.get("consignmentId")!, 10);
+            window.location.href = `/fileStatus?consignmentId=${consignmentId}`
+        }).catch(err => {
+            const error: HTMLParagraphElement | null = document.querySelector('.error')
+            error!.innerText = "There has been an error"
+        })
+
+    }
+}
