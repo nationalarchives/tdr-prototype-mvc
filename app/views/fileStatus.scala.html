@@ -12,13 +12,21 @@
 
 <h3 class="govuk-heading-m">Upload and processing</h3>
 <div class="file-status">
-    <h1 class="@errorClass">Error</h1>
+    <div class="error @errorClass">
+        <div class="progress-complete">
+            <span class="iconify" data-icon="ic:baseline-error-outline" data-inline="false"></span>
+            <div class="complete-text">
+                <h4>Upload failed</h4>
+                <span>Please try again</span>
+            </div>
+        </div>
+    </div>
     <div class="progress-complete-container @completeClass">
         <div class="progress-complete">
             <span class="iconify complete-tick" data-icon="ic-round-check-circle-outline" data-inline="false"></span>
             <div class="complete-text">
                 <h4>Upload was successful</h4>
-                <span class="completeMessage">@status.totalComplete files have been successfully uploaded</span>
+                <span class="complete-message">@status.totalComplete files have been successfully uploaded</span>
                 <span>Please click 'Save and Continue' to proceed this transfer</span>
             </div>
 
