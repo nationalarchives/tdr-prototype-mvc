@@ -5,6 +5,13 @@
 
 <div className="govuk-grid-row">
     <div className="govuk-grid-column-two-thirds">
+
+        <!-- Back -->
+        <a href="@routes.SeriesDetailsController.index()" class="govuk-back-link">Back</a>
+
+        <!-- Progress indicator -->
+        <span class="govuk-caption-xl">Step 2 of 5</span>
+
         <h1 class="govuk-heading-xl">Create Series</h1>
         <form
                 action="@routes.CreateSeriesController.submit()"
