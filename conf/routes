@@ -14,9 +14,8 @@ POST    /seriesDetails/submit               controllers.SeriesDetailsController.
 GET     /createSeries                       controllers.CreateSeriesController.index
 POST    /createSeries/submit                controllers.CreateSeriesController.submit()
 GET     /upload                             controllers.UploadController.index(consignmentId: Int)
-GET     /viewCollections                    controllers.ViewCollectionsController.index
-GET     /createCollection                   controllers.CreateCollectionController.index(seriesId: Int)
-POST    /createCollection/submit            controllers.CreateCollectionController.submit()
+GET     /createConsignment                   controllers.CreateConsignmentController.index(seriesId: Int)
+POST    /createConsignment/submit            controllers.CreateConsignmentController.submit()
 GET     /fileStatus                         controllers.FileStatusController.getFileStatus(consignmentId: Int)
 GET    /fileStatusApi                       controllers.FileStatusController.getFileStatusApi(consignmentId: Int)
 POST    /upload                             controllers.UploadController.upload(consignmentId: Int)

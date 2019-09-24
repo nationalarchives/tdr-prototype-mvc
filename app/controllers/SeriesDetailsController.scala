@@ -30,7 +30,7 @@ class SeriesDetailsController @Inject()(
     var seriesData = selectedSeriesForm.bindFromRequest.get
     var selectedSeriesId = seriesData.seriesId
 
-    Redirect(routes.CreateCollectionController.index(selectedSeriesId))
+    Redirect(routes.CreateConsignmentController.index(selectedSeriesId))
   }
 
   def index() = Action.async { implicit request: Request[AnyContent] =>
