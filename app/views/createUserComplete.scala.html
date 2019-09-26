@@ -1,0 +1,11 @@
+@()
+
+@main("User creation complete") {
+@defining(play.core.PlayVersion.current) { version =>
+<h1 class="govuk-heading-xl">User created successfully</h1>
+<p>You can now login</p>
+<a href="@routes.AuthController.login" role="button" draggable="false" class="govuk-button govuk-button--start">
+    Login
+</a>
+}
+}

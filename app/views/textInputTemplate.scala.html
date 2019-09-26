@@ -1,0 +1,17 @@
+@(elements: helper.FieldElements)
+
+<div class="@if(elements.hasErrors) {error}">
+    <div class="govuk-form-group">
+        <label class="govuk-label" for="@elements.field.name">
+            @elements.label
+        </label>
+        <input class="govuk-input" type="@elements.id" id="@elements.field.name" name="@elements.field.name"/>
+        <label class="govuk-label" for="width-20">
+            @elements.infos.mkString(", ")
+        </label>
+        <label class="govuk-error-message" style="color: red" for="width-20">
+            @elements.errors.mkString(", ")
+        </label>
+
+    </div>
+</div>

@@ -1,28 +1,28 @@
-@(userForm: Form[auth.User])
+@(userForm: Form[auth.User])(implicit messages: Messages)
+@import helper._
+@implicitField = @{ FieldConstructor(textInputTemplate.f) }
 @main("Auth") {
 @defining(play.core.PlayVersion.current) { version =>
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third">
         <h1 class="govuk-heading-xl">Log In</h1>
-        <form action="@routes.AuthController.processLoginAttempt()" method="POST">
-            <div class="govuk-form-group">
-                <label class="govuk-label" for=username>
-                    Username
-                </label>
-                <input class="govuk-input" id="username" name="username"/>
-            </div>
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="password">
-                    Password
-                </label>
-                <input class="govuk-input" type="password" id="password" name="password"/>
-            </div>
-            <div class="govuk-form-group">
+            @helper.form(action = routes.AuthController.processLoginAttempt(), 'enctype -> "multipart/form-data", 'id -> "login-form") {
+                @inputText(userForm("username"), '_label -> "Username", '_id -> "text")
+                @inputText(userForm("password"), '_label -> "Password", '_id -> "password")
+
+        @if(userForm.hasGlobalErrors) {
+        <label class="govuk-label" style="color: red" for="width-20">
+            @userForm.globalErrors(0).message
+        </label>
+        }
+
+
+        <div class="govuk-form-group">
                 <button class="govuk-button" type="submit">
                     Log In
                 </button>
             </div>
-        </form>
+        }
     </div>
 </div>
 }

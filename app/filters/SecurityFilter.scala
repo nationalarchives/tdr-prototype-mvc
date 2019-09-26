@@ -1,9 +1,10 @@
 package filters
 
 import akka.stream.Materializer
+import controllers.routes
 import javax.inject.{Inject, Singleton}
 import play.api.mvc._
-import play.api.mvc.Results.Unauthorized
+import play.api.mvc.Results.{Ok, Unauthorized, Redirect}
 
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -24,12 +25,18 @@ class SecurityFilter @Inject()(
     request: RequestHeader): Future[Result] = {
     val Assets = "(/assets/.*)".r
     request.path match {
-      case "/" | "/login" | "/processLoginAttempt" | Assets(_) => next(request)
+      case "/" =>
+        if(isRequestAuthenticated(request)) {
+          Future.successful(Ok(views.html.dashboard()))
+        }
+        Future.successful(Redirect(routes.AuthController.login()))
+      case "/login" | "/processLoginAttempt" | Assets(_) =>
+        next(request)
       case _ =>
       if(isRequestAuthenticated(request)) {
         next(request)
       } else {
-        Future.successful(Unauthorized(views.html.accessDenied(request)))
+        Future.successful(Redirect(routes.AuthController.login()))
       }
     }
   }

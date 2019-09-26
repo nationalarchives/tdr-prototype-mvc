@@ -1,0 +1,30 @@
+@(createUserForm: Form[auth.CreateUser])(implicit messages: Messages)
+@import helper._
+@implicitField = @{ FieldConstructor(textInputTemplate.f) }
+@main("Auth") {
+@defining(play.core.PlayVersion.current) { version =>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+        <h1 class="govuk-heading-xl">Create User</h1>
+        @helper.form(action = routes.AuthController.processCreateUser(), 'enctype -> "multipart/form-data", 'id -> "login-form") {
+        @inputText(createUserForm("username"), '_label -> "Username")
+        @inputText(createUserForm("name"), '_label -> "Name")
+        @inputPassword(createUserForm("password"), '_label -> "Password")(FieldConstructor(passwordInputTemplate.f), messages)
+        @inputPassword(createUserForm("confirmPassword"), '_label -> "Confirm Password")(FieldConstructor(passwordInputTemplate.f), messages)
+
+        @if(createUserForm.hasGlobalErrors) {
+            <label class="govuk-label" style="color: red" for="width-20">
+                @createUserForm.globalErrors(0).message
+            </label>
+        }
+
+        <div class="govuk-form-group">
+            <button class="govuk-button" type="submit">
+                Log In
+            </button>
+        </div>
+        }
+    </div>
+</div>
+}
+}
