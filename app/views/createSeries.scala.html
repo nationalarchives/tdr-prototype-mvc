@@ -16,7 +16,19 @@
             @form(action = routes.CreateSeriesController.submit) {
                 <fieldset class="govuk-fieldset">
                     <!-- Series Name -->
-                    <div class="govuk-form-group">
+                    @inputTextbox(
+                        createSeriesForm("seriesName"),
+                        '_label -> "Series Name",
+                        '_requiredOption -> true
+                    )
+                    <!-- Series Description -->
+                    @inputTextbox(
+                        createSeriesForm("seriesDescription"),
+                        '_label -> "Series Description"
+                    )
+
+
+                   <!-- <div class="govuk-form-group">
                         <label class="govuk-label">
                             Series Name*
                         </label>
@@ -24,9 +36,9 @@
                         '_label -> null,
                         'class -> "govuk-input",
                         '_id -> "seriesName")
-                    </div>
+                    </div> -->
                     <!-- Series Description -->
-                    <div class="govuk-form-group">
+                    <!-- <div class="govuk-form-group">
                         <label class="govuk-label">
                             Series Description
                         </label>
@@ -34,7 +46,7 @@
                         '_label -> null,
                         'class -> "govuk-input",
                         '_id -> "seriesDescription")
-                    </div>
+                    </div> -->
                 </fieldset>
                 <div class="govuk-form-group">
                     <a href="@routes.DashboardController.index" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">

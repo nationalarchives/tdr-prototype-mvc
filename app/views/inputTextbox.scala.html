@@ -1,0 +1,21 @@
+@(field: Field,
+args: (Symbol, Any)*
+)(implicit messages: Messages)
+
+@import views.html.helper._
+
+@elements = @{new FieldElements(field.id, field, null, args.toMap, messages) }
+@label = {@elements.args.get('_label)}
+
+@requiredOption() = @{
+    if(elements.args.contains('_requiredOption)) {
+        "required"
+    }
+}
+
+<div class="govuk-form-group">
+    <label class="govuk-label" for="@elements.id">
+        @label
+    </label>
+    <input @requiredOption class="govuk-input govuk-!-width-one-third" id="@elements.id" name="@elements.id">
+</div>
