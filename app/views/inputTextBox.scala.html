@@ -1,0 +1,15 @@
+@(field: Field,
+inputType: String,
+args: (Symbol, Any)*
+)(implicit messages: Messages)
+
+@import views.html.helper._
+
+@elements = @{new FieldElements(field.id, field, null, args.toMap, messages) }
+
+<div class="govuk-form-group">
+    <label class="govuk-label" for=username>
+        @elements.label
+    </label>
+    <input type="@inputType" class="govuk-input" id="@elements.id" name="@elements.id"/>
+</div>
