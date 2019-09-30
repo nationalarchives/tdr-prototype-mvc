@@ -27,7 +27,9 @@ class ServiceAgreementsController @Inject()(controllerComponents: ControllerComp
       "publicRecord" -> text,
       "crownCopyright" -> text,
       "english" -> text,
-      "digital" -> text
+      "digital" -> text,
+      "droAppraisalselection" -> text,
+      "droSensitivity" -> text
     )(ServiceAgreementsData.apply)(ServiceAgreementsData.unapply)
   )
 
@@ -43,6 +45,8 @@ class ServiceAgreementsController @Inject()(controllerComponents: ControllerComp
     println("Crown Copyright: " + formData.crownCopyright)
     println("English Language: " + formData.english)
     println("Digital: " + formData.digital)
+    println("DRO Appraisal: " + formData.droAppraisalselection)
+    println("DRO Sensitivity: " + formData.droSensitivity)
     println("++++SERVICE AGREEMENT END++++")
 
     Redirect(routes.SeriesDetailsController.index())

@@ -22,7 +22,9 @@
                             @inputRadioGroup(
                                 serviceAgreementsForm("publicRecord"),
                                 agreementOptions,
-                                '_name -> "The records are all public records"
+                                '_name -> "The records are all public records",
+                                'checked -> "Yes",
+                                'disabled -> "No"
                             )
                             @inputRadioGroup(
                                 serviceAgreementsForm("crownCopyright"),
@@ -39,7 +41,28 @@
                                 agreementOptions,
                                 '_name -> "The  records are all Digital"
                             )
-                         </fieldset>
+                        </fieldset>
+                        <fieldset class="govuk-fieldset" aria-describedby="service-agreements-checks">
+                            <!-- DRO appraisal and selection -->
+                            <div class="govuk-checkboxes govuk-checkboxes--small">
+                                <div class="govuk-checkboxes__item">
+                                    <input required class="govuk-checkboxes__input" id="droAppraisalselection" name="droAppraisalselection" type="checkbox" value="true">
+                                    <label class="govuk-label govuk-checkboxes__label" for="droAppraisalselection">
+                                        I confirm that the DRO has signed off on the appraisal and selection decision.
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- DRO sensitivity review -->
+                            <div class="govuk-checkboxes govuk-checkboxes--small">
+                                <div class="govuk-checkboxes__item">
+                                    <input required class="govuk-checkboxes__input" id="droSensitivity" name="droSensitivity" type="checkbox" value="true">
+                                    <label class="govuk-label govuk-checkboxes__label" for="droSensitivity">
+                                        I confirm that the DRO has signed off on the sensitivity review decision - including that all records in this transfer are only up to official-sensitive.
+                                    </label>
+                                </div>
+                            </div>
+                        </fieldset>
 
                         <!-- Buttons -->
                         <div>
@@ -53,7 +76,6 @@
                                 Save and continue
                             </button>
                         </div>
-
                     }
 
                 </div>
