@@ -14,52 +14,56 @@
             <h1 class="govuk-heading-xl">Service Agreements</h1>
 
             <div class="govuk-grid-row">
+
                 <div class="govuk-grid-column-two-thirds">
 
                     @form(action = routes.ServiceAgreementsController.submit) {
 
+                        <!-- Compliance -->
                         <fieldset class="govuk-fieldset" aria-describedby="service-agreements">
                             @inputRadioGroup(
                                 serviceAgreementsForm("publicRecord"),
                                 agreementOptions,
-                                '_name -> "The records are all public records"
+                                '_name -> "The records are all public records",
+                                '_disabledOption -> "no",
+                                '_requiredOption -> true
                             )
                             @inputRadioGroup(
                                 serviceAgreementsForm("crownCopyright"),
                                 agreementOptions,
-                                '_name -> "The records are all Crown Copyright"
+                                '_name -> "The records are all Crown Copyright",
+                                '_disabledOption -> "no",
+                                '_requiredOption -> true
                             )
                             @inputRadioGroup(
                                 serviceAgreementsForm("english"),
                                 agreementOptions,
-                                '_name -> "The records are all in English"
+                                '_name -> "The records are all in English",
+                                '_disabledOption -> "no",
+                                '_requiredOption -> true
                             )
                             @inputRadioGroup(
                                 serviceAgreementsForm("digital"),
                                 agreementOptions,
-                                '_name -> "The  records are all Digital"
+                                '_name -> "The  records are all Digital",
+                                '_disabledOption -> "no",
+                                '_requiredOption -> true
                             )
                         </fieldset>
+                        <!-- DRO confirmation -->
                         <fieldset class="govuk-fieldset" aria-describedby="service-agreements-checks">
-                            <!-- DRO appraisal and selection -->
-                            <div class="govuk-checkboxes govuk-checkboxes--small">
-                                <div class="govuk-checkboxes__item">
-                                    <input required class="govuk-checkboxes__input" id="droAppraisalselection" name="droAppraisalselection" type="checkbox" value="yes">
-                                    <label class="govuk-label govuk-checkboxes__label" for="droAppraisalselection">
-                                        I confirm that the DRO has signed off on the appraisal and selection decision.
-                                    </label>
-                                </div>
-                            </div>
-
-                            <!-- DRO sensitivity review -->
-                            <div class="govuk-checkboxes govuk-checkboxes--small">
-                                <div class="govuk-checkboxes__item">
-                                    <input required class="govuk-checkboxes__input" id="droSensitivity" name="droSensitivity" type="checkbox" value="yes">
-                                    <label class="govuk-label govuk-checkboxes__label" for="droSensitivity">
-                                        I confirm that the DRO has signed off on the sensitivity review decision - including that all records in this transfer are only up to official-sensitive.
-                                    </label>
-                                </div>
-                            </div>
+                            @inputSingleCheckbox(
+                                serviceAgreementsForm("droAppraisalselection"),
+                                '_label -> "I confirm that the DRO has signed off on the appraisal and selection decision.",
+                                '_value -> "yes",
+                                '_requiredOption -> true
+                            )
+                            @inputSingleCheckbox(
+                                serviceAgreementsForm("droSensitivity"),
+                                '_label -> "I confirm that the DRO has signed off on the sensitivity review decision - including that all records in this transfer are only up to official-sensitive.",
+                                '_value -> "yes",
+                                '_requiredOption -> true
+                            )
                         </fieldset>
 
                         <!-- Buttons -->
@@ -79,130 +83,3 @@
                 </div>
             </div>
 }}
-
-
-
-
-
-                 <!--   <form action="@routes.ServiceAgreementsController.submit()" method="POST" novalidate> -->
-
-            <!-- Checks for compliance -->
-            <!-- TODO pl: make radio buttons and checkboxes required -->
-            <!-- TODO future: take out the disabled attribute on input and label of No and give functionality to the no -->
-
-
-            <!-- Radio Buttons for compliance -->
-           <!-- <div class="govuk-form-group">
-                <fieldset class="govuk-fieldset" aria-describedby="service-agreements"> -->
-
-                    <!-- Public Record -->
-                  <!--  <label class="govuk-label" for="publicRecord">
-                        The records are all public records
-                    </label>
-                    <div class="govuk-radios govuk-radios--inline">
-                        <div class="govuk-radios__item">
-                            <input required class="govuk-radios__input" id="publicRecordYes" name="public-record" type="radio" value="yes">
-                            <label class="govuk-label govuk-radios__label" for="publicRecordYes">
-                                Yes
-                            </label>
-                        </div>
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="publicRecordNo" name="public-record" type="radio" value="no" disabled>
-                            <label class="govuk-label govuk-radios__label" for="publicRecordNo" disabled>
-                                No
-                            </label>
-                        </div>
-                    </div> -->
-
-
-                    <!-- Crown Copyright -->
-                   <!-- <label class="govuk-label" for="crownCopyright">
-                        The records are all Crown Copyright</label>
-                    <div class="govuk-radios govuk-radios--inline">
-                        <div class="govuk-radios__item">
-                            <input required class="govuk-radios__input" id="crown-copyright-yes" name="crown-copyright" type="radio" value="yes">
-                            <label class="govuk-label govuk-radios__label" for="crown-copyright-yes">Yes</label>
-                        </div>
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="crown-copyright-no" name="crown-copyright" type="radio" value="no" disabled>
-                            <label class="govuk-label govuk-radios__label" for="crown-copyright-no" disabled>No</label>
-                        </div>
-                    </div> -->
-
-                    <!-- Language English only -->
-                   <!-- <label class="govuk-label" for="englishOnly">
-                        The records are all in English
-                    </label>
-                    <div class="govuk-radios govuk-radios--inline">
-                        <div class="govuk-radios__item">
-                            <input required class="govuk-radios__input" id="english-only-yes" name="english-only" type="radio" value="yes">
-                            <label class="govuk-label govuk-radios__label" for="english-only-yes">
-                                Yes
-                            </label>
-                        </div>
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="english-only-no" name="english-only" type="radio" value="no" disabled>
-                            <label class="govuk-label govuk-radios__label" for="english-only-no" disabled>
-                                No
-                            </label>
-                        </div>
-                    </div> -->
-
-                    <!-- Digital records only -->
-                 <!--   <label class="govuk-label" for="digitalRecordsOnly">
-                        The  records are all Digital
-                    </label>
-                    <div class="govuk-radios govuk-radios--inline">
-                        <div class="govuk-radios__item">
-                            <input required class="govuk-radios__input" id="digital-records-yes" name="digital-records" type="radio" value="yes">
-                            <label class="govuk-label govuk-radios__label" for="digital-records-yes">
-                                Yes
-                            </label>
-                        </div>
-                        <div class="govuk-radios__item">
-                            <input class="govuk-radios__input" id="digital-records-no" name="digital-records" type="radio" value="no" disabled>
-                            <label class="govuk-label govuk-radios__label" for="digital-records-no" disabled>
-                                No
-                            </label>
-                        </div>
-                    </div> -->
-
-            <!--    </fieldset>
-            </div> -->
-
-
-            <!-- Checkboxes DRO -->
-        <!--    <div class="govuk-form-group">
-                <fieldset class="govuk-fieldset" aria-describedby="service-agreements-checks">
-
-                    <!-- DRO appraisal and selection -->
-                  <!--  <div class="govuk-checkboxes govuk-checkboxes--small">
-                        <div class="govuk-checkboxes__item">
-                            <input required class="govuk-checkboxes__input" id="DROappraisalselection" name="DROappraisalselection" type="checkbox" value="DROas">
-                            <label class="govuk-label govuk-checkboxes__label" for="DROappraisalselection">
-                                I confirm that the DRO has signed off on the appraisal and selection decision.
-                            </label>
-                        </div>
-                    </div> -->
-
-                    <!-- DRO sensitivity review -->
-                  <!--  <div class="govuk-checkboxes govuk-checkboxes--small">
-                        <div class="govuk-checkboxes__item">
-                            <input required class="govuk-checkboxes__input" id="DROsensitivity" name="DROsensitivity" type="checkbox" value="DROsr">
-                            <label class="govuk-label govuk-checkboxes__label" for="DROsensitivity">
-                                I confirm that the DRO has signed off on the sensitivity review decision - including that all records in this transfer are only up to official-sensitive.
-                            </label>
-                        </div>
-                    </div>
-
-                </fieldset>
-            </div> -->
-
-
-
-
- <!--       </form>
-    </div>
-</div> -->
-
-

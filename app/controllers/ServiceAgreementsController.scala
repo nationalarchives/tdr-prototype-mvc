@@ -14,12 +14,6 @@ class ServiceAgreementsController @Inject()(controllerComponents: ControllerComp
                                              configuration: Configuration)
                                            (implicit val ex: ExecutionContext) extends AbstractController(controllerComponents) with play.api.i18n.I18nSupport {
 
-
-//  private val questions: Seq[(String, String)] = Seq(
-//    "The records are all public records" -> "publicRecords",
-//    "The records are all Crown Copyright" -> "crownCopyright",
-//    "The records are all in English" -> "english",
-//    "The  records are all Digital" -> "digital")
   private val options: Seq[(String, String)] = Seq("Yes" -> "yes", "No" -> "no")
 
   val form = Form(
