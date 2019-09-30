@@ -7,7 +7,6 @@ args: (Symbol, Any)*
 @import views.html.helper._
 
 @elements = @{new FieldElements(field.id, field, null, args.toMap, messages) }
-@checked = {@elements.args.get('checked)}
 
 <label class="govuk-label">
     @elements.args.get('_name)
@@ -23,14 +22,10 @@ args: (Symbol, Any)*
                 name="@elements.id"
                 type="radio"
                 value="@value"
-                if(checked) {
-                    checked="checked"
-                }
             />
             <label class="govuk-label govuk-radios__label" for="@elements.id@value">
                 @label
             </label>
         </div>
     }
-
 </div>

@@ -20,16 +20,22 @@ class ServiceAgreementsController @Inject()(controllerComponents: ControllerComp
 //    "The records are all Crown Copyright" -> "crownCopyright",
 //    "The records are all in English" -> "english",
 //    "The  records are all Digital" -> "digital")
-  private val options: Seq[(String, String)] = Seq("Yes" -> "true", "No" -> "false")
+  private val options: Seq[(String, String)] = Seq("Yes" -> "yes", "No" -> "no")
 
   val form = Form(
     mapping(
-      "publicRecord" -> text,
-      "crownCopyright" -> text,
-      "english" -> text,
-      "digital" -> text,
-      "droAppraisalselection" -> text,
+      "publicRecord" -> text
+        .verifying("Must answer yes", s => hasAgreed(s)),
+      "crownCopyright" -> text
+        .verifying("Must answer yes", s => hasAgreed(s)),
+      "english" -> text
+        .verifying("Must answer yes", s => hasAgreed(s)),
+      "digital" -> text
+        .verifying("Must answer yes", s => hasAgreed(s)),
+      "droAppraisalselection" -> text
+        .verifying("Must answer yes", s => hasAgreed(s)),
       "droSensitivity" -> text
+        .verifying("Must answer yes", s => hasAgreed(s)),
     )(ServiceAgreementsData.apply)(ServiceAgreementsData.unapply)
   )
 
@@ -50,5 +56,9 @@ class ServiceAgreementsController @Inject()(controllerComponents: ControllerComp
     println("++++SERVICE AGREEMENT END++++")
 
     Redirect(routes.SeriesDetailsController.index())
+  }
+
+  private def hasAgreed(s: String): Boolean = {
+    if (s.equals("yes")) true else false
   }
 }
