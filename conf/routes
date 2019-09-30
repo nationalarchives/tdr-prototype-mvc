@@ -6,19 +6,28 @@
 # An example controller showing a sample home page
 GET     /login                              controllers.AuthController.login
 GET     /logout                             controllers.AuthController.logout
++nocsrf
 POST    /processLoginAttempt                controllers.AuthController.processLoginAttempt
 GET     /                                   controllers.HomeController.index
 GET     /dashboard                          controllers.DashboardController.index
 GET     /seriesDetails                      controllers.SeriesDetailsController.index
++nocsrf
 POST    /seriesDetails/submit               controllers.SeriesDetailsController.submit()
 GET     /createSeries                       controllers.CreateSeriesController.index
++nocsrf
 POST    /createSeries/submit                controllers.CreateSeriesController.submit()
 GET     /upload                             controllers.UploadController.index(consignmentId: Int)
 GET     /createConsignment                   controllers.CreateConsignmentController.index(seriesId: Int)
++nocsrf
 POST    /createConsignment/submit            controllers.CreateConsignmentController.submit()
 GET     /fileStatus                         controllers.FileStatusController.getFileStatus(consignmentId: Int)
 GET    /fileStatusApi                       controllers.FileStatusController.getFileStatusApi(consignmentId: Int)
++nocsrf
 POST    /upload                             controllers.UploadController.upload(consignmentId: Int)
-POST    /filedata                           controllers.UploadController.saveFileData
++nocsrf
+POST    /filedata                           controllers.UploadController.saveFileData()
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+GET         /signUp                         controllers.AuthController.signUpForm
++nocsrf
+POST        /signUp                         controllers.AuthController.signUpSubmit

@@ -35,6 +35,24 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-parser" %  "0.9.3",
   "org.sangria-graphql" %% "sangria" % "1.4.2",
 )
+
+libraryDependencies ++= Seq(
+  "com.mohiva" %% "play-silhouette" % "6.1.0",
+  "com.mohiva" %% "play-silhouette-password-bcrypt" % "6.1.0",
+  "com.mohiva" %% "play-silhouette-persistence" % "6.1.0",
+  "com.mohiva" %% "play-silhouette-crypto-jca" % "6.1.0",
+  "com.mohiva" %% "play-silhouette-testkit" % "6.1.0" % "test"
+)
+
+libraryDependencies ++= Seq(
+  "com.typesafe.play" %% "play-slick" % "4.0.2",
+  "com.typesafe.play" %% "play-slick-evolutions" % "4.0.2"
+)
+
+libraryDependencies += "com.typesafe.slick" %% "slick" % "3.3.0"
+libraryDependencies += "com.typesafe.slick" %% "slick-hikaricp" % "3.3.0"
+libraryDependencies += "org.postgresql" % "postgresql" % "42.2.5"
+
 libraryDependencies += guice
 libraryDependencies += "com.iheart" %% "ficus" % "1.4.3"
 libraryDependencies += "net.codingwell" %% "scala-guice" % "4.1.0"

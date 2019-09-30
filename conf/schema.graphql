@@ -20,6 +20,19 @@ input CreateSeriesInput {
   description: String!
 }
 
+input UserInput {
+  firstName: String!
+  lastName: String!
+  email: String!
+  providerId: String!
+}
+
+input PasswordInput {
+  providerKey: String!
+  hasher: String!
+  password: String!
+}
+
 type File {
   id: UUID!
   path: String!
@@ -53,6 +66,21 @@ type FileProgress {
   error: Boolean!
 }
 
+type User {
+  id: Int!
+  firstName: String!
+  lastName: String!
+  email: String!
+  providerId: String!
+  providerKey: String!
+}
+
+type Password {
+  hasher: String!
+  password: String!
+  salt: String
+}
+
 scalar Instant
 
 type Mutation {
@@ -64,6 +92,10 @@ type Mutation {
   updateVirusCheck(id: UUID!, status: String!): Boolean!
   updateFileFormat(id: UUID!, pronomId: String!): Boolean!
   createMultipleFiles(createFileInputs: [CreateFileInput!]!): [File!]!
+  createUser(userData: UserInput!): User
+  addPassword(passwordInput: PasswordInput!): Password
+  updatePassword(passwordInput: PasswordInput!): Int
+  removePassword(providerKey: String!): Int
 }
 
 type Query {
@@ -73,6 +105,10 @@ type Query {
   getFile(id: UUID!): File
   getFiles: [File!]!
   getFileChecksStatus(id: Int!): FileProgress!
+  getSeriesForCreator(seriesId: Int!, creator: String!): Series
+  getUser(providerKey: String!, providerId: String!): User
+  findPassword(providerKey: String!): Password
+  getConsignmentForCreator(id: Int!, creator: String!): Consignment
 }
 
 type Series {

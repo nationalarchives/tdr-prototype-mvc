@@ -1,1 +1,4 @@
 # https://www.playframework.com/documentation/latest/ScalaI18N
+createConsignment=You cannot create a consignment for this series
+upload=You cannot upload files for this consignment
+

@@ -1,0 +1,5 @@
+query getSeriesForCreator($seriesId: Int!, $creator: String!){
+  getSeriesForCreator(seriesId: $seriesId, creator: $creator) {
+    id
+  }
+}

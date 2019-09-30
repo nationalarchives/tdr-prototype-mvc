@@ -1,4 +1,4 @@
-@(userForm: Form[auth.User])
+@(userForm: Form[auth.LoginForm.LoginData])
 @main("Auth") {
 @defining(play.core.PlayVersion.current) { version =>
 <div class="govuk-grid-row">
@@ -9,13 +9,13 @@
                 <label class="govuk-label" for=username>
                     Username
                 </label>
-                <input class="govuk-input" id="username" name="username"/>
+                <input class="govuk-input" id="username" name="username" value="sam"/>
             </div>
             <div class="govuk-form-group">
                 <label class="govuk-label" for="password">
                     Password
                 </label>
-                <input class="govuk-input" type="password" id="password" name="password"/>
+                <input class="govuk-input" type="password" id="password" name="password" value="password"/>
             </div>
             <div class="govuk-form-group">
                 <button class="govuk-button" type="submit">

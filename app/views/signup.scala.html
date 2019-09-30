@@ -1,0 +1,20 @@
+
+@(createUserForm: Form[auth.SignUpForm.Data])(implicit messages: Messages)
+@import helper._
+@main("SeriesDetails") {
+@defining(play.core.PlayVersion.current) { version =>
+<div class="govuk-grid-row">
+
+    @helper.form(action = routes.AuthController.signUpSubmit(), 'enctype -> "multipart/form-data", 'id -> "login-form") {
+    @inputText(createUserForm("firstName"), '_label -> "First Name", '_value -> "First Name")
+    @inputText(createUserForm("lastName"), '_label -> "Last Name")
+    @inputText(createUserForm("email"), '_label -> "Emaild")
+    @inputPassword(createUserForm("password"), '_label -> "Password")
+    <input type="submit" value="Sign Up">
+
+    }
+
+
+</div>
+}
+}
