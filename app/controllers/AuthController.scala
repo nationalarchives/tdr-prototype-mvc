@@ -112,7 +112,7 @@ class AuthController @Inject()(controllerComponents: ControllerComponents,
               val client = AmazonSimpleEmailServiceClientBuilder.standard().withRegion(Regions.EU_WEST_1).build()
               val request = new SendEmailRequest()
                                 .withDestination(new Destination().withToAddresses(resetForm.email))
-                                .withMessage(new Message().withBody(new Body().withHtml(new Content().withCharset("UTF-8").withData(s"<h1>$token</h1>")))
+                                .withMessage(new Message().withBody(new Body().withHtml(new Content().withCharset("UTF-8").withData(s"<h1>http://localhost:9000/resetPassword?email=${resetForm.email}&token=$token</h1>")))
                                 .withSubject(new Content().withCharset("UTF-8").withData("Test"))
                                 ).withSource("noreply@tdr-prototype.co.uk")
               client.sendEmail(request)

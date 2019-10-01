@@ -1,28 +1,16 @@
-@(userForm: Form[auth.LoginForm.LoginData])
+@(loginForm: Form[auth.LoginForm.LoginData])(implicit messages: Messages)
 @main("Auth") {
 @defining(play.core.PlayVersion.current) { version =>
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third">
         <h1 class="govuk-heading-xl">Log In</h1>
-        <form action="@routes.AuthController.processLoginAttempt()" method="POST">
-            <div class="govuk-form-group">
-                <label class="govuk-label" for=username>
-                    Username
-                </label>
-                <input class="govuk-input" id="username" name="username" value="sam"/>
-            </div>
-            <div class="govuk-form-group">
-                <label class="govuk-label" for="password">
-                    Password
-                </label>
-                <input class="govuk-input" type="password" id="password" name="password" value="password"/>
-            </div>
-            <div class="govuk-form-group">
-                <button class="govuk-button" type="submit">
-                    Log In
-                </button>
-            </div>
-        </form>
+        @helper.form(action = routes.AuthController.processLoginAttempt(), 'id -> "login-form") {
+        @inputTextBox(loginForm("username"), "text", '_requiredOption -> true, '_label -> "Email", '_id -> "username")
+        @inputTextBox(loginForm("password"), "password", '_requiredOption -> true, '_label -> "Password", '_id -> "password")
+
+        <input type="submit" class="govuk-button" value="Sign Up">
+
+        }
     </div>
 </div>
 }

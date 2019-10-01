@@ -1,15 +1,17 @@
 package auth
 
+import play.api.data.Forms._
 import play.api.data.Form
 import play.api.data.Forms.{mapping, nonEmptyText}
+import auth.SignUpForm.passwordCheckConstraint
 
 object LoginForm {
 
 
   val form: Form[LoginData] = Form(
     mapping(
-      "username" -> nonEmptyText,
-      "password" -> nonEmptyText
+      "username" -> email,
+      "password" -> text.verifying(passwordCheckConstraint)
     )(LoginData.apply)(LoginData.unapply)
   )
 

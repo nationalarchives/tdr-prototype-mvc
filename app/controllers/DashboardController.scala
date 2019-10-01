@@ -12,7 +12,7 @@ class DashboardController @Inject()(
 )extends AbstractController(cc) {
 
 
-  def index() = Action { implicit request: Request[AnyContent] =>
+  def index() = silhouette.SecuredAction { implicit request: Request[AnyContent] =>
     Ok(views.html.dashboard())
   }
 }

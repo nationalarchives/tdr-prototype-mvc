@@ -8,11 +8,11 @@
         <h1 class="govuk-heading-xl">Create User</h1>
         @helper.form(action = routes.AuthController.signUpSubmit(), 'id -> "login-form") {
             @inputTextBox(createUserForm("firstName"), "text", '_requiredOption -> true, '_label -> "First Name", '_id -> "firstName")
-            @inputTextBox(createUserForm("lastName"), "text", '_requiredOption -> true, '_label -> "First Name", '_id -> "lastName")
+            @inputTextBox(createUserForm("lastName"), "text", '_requiredOption -> true, '_label -> "Last Name", '_id -> "lastName")
             @inputTextBox(createUserForm("email"), "text", '_requiredOption -> true, '_label -> "Email", '_id -> "email")
             @inputTextBox(createUserForm("password"), "password", '_requiredOption -> true, '_label -> "Password", '_id -> "password")
 
-        <input type="submit" class="govuk-button" value="Sign Up">
+            <input type="submit" class="govuk-button" value="Sign Up">
 
         }
 
