@@ -15,6 +15,7 @@ GET     /seriesDetails                      controllers.SeriesDetailsController.
 POST    /seriesDetails/submit               controllers.SeriesDetailsController.submit()
 GET     /createSeries                       controllers.CreateSeriesController.index
 POST    /createSeries/submit                controllers.CreateSeriesController.submit()
+GET     /reviewTransfer                     controllers.ReviewController.index(consignmentId: Int)
 GET     /upload                             controllers.UploadController.index(consignmentId: Int)
 GET     /createConsignment                  controllers.CreateConsignmentController.index(seriesId: Int)
 POST    /createConsignment/submit           controllers.CreateConsignmentController.submit()
