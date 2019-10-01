@@ -53,6 +53,6 @@ class ServiceAgreementsController @Inject()(controllerComponents: ControllerComp
   }
 
   private def hasAgreed(s: String): Boolean = {
-    if (s.equals("yes")) true else false
+    s.equals("yes")
   }
 }
