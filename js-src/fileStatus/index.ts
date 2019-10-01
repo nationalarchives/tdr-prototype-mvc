@@ -10,18 +10,29 @@ const updateFileStatuses: () => void = () => {
                 console.log(data.data)
                 const statusProgress: HTMLProgressElement | null = document.querySelector(".status-progress")
                 const statusProgressLabel: HTMLProgressElement | null = document.querySelector(".status-progress-label")
-                const { totalComplete, totalFiles } = data.data
+                const { totalComplete, totalFiles, error } = data.data
                 if (statusProgress !== null && statusProgressLabel !== null) {
                     statusProgress.value = totalComplete
                     statusProgressLabel.innerText = `File ${totalComplete} of ${totalFiles}`
                 }
-                if (totalComplete === totalFiles) {
-                    const progressContainer: HTMLDivElement | null = document.querySelector(".progress-container")
+                const progressContainer: HTMLDivElement | null = document.querySelector(".progress-container")
+                const errorContainer: HTMLDivElement | null = document.querySelector(".error")
+                if (totalComplete === totalFiles && !error) {
                     const progressCompleteContainer: HTMLDivElement | null = document.querySelector(".progress-complete-container")
+                    const completeMessage: HTMLSpanElement | null = document.querySelector(".complete-message")
                     if (progressContainer && progressCompleteContainer) {
                         progressCompleteContainer.classList.remove('hide')
                         progressContainer.classList.add('hide')
                     }
+                    if (errorContainer) {
+                        errorContainer.classList.add("hide")
+                    }
+                    completeMessage!.innerText = `${totalComplete} files have been successfully uploaded`
+                    clearInterval(pollingInterval)
+                }
+                if (error && errorContainer && progressContainer) {
+                    errorContainer.classList.remove("hide");
+                    progressContainer.classList.add("hide");
                     clearInterval(pollingInterval)
                 }
             })

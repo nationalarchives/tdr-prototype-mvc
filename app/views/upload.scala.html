@@ -3,8 +3,8 @@
 @main("Upload") {
     @defining(play.core.PlayVersion.current) { version =>
     <h1 class="govuk-heading-xl">Upload</h1>
-        
-    @helper.form(action = routes.UploadController.upload(consignmentId), 'enctype -> "multipart/form-data") {
+    <div class="error"></div>
+    @helper.form(action = routes.UploadController.upload(consignmentId), 'enctype -> "multipart/form-data", 'id -> "file-upload-form") {
     <div class="upload-form">
         <input type="hidden" class="file-id-data" name="file-id-data"/>
         <input type="file" id="file-upload" name="files" class="govuk-file-upload" webkitdirectory>
@@ -18,7 +18,7 @@
     </div>
         <span class="progress-message"></span>
         <p>
-            <button id="upload-submit" class="govuk-button govuk-button--start" type="submit" disabled>Submit</button>
+            <button id="upload-submit" class="govuk-button govuk-button--start" type="submit">Submit</button>
         </p>
     </div>
 

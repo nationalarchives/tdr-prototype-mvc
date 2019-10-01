@@ -32,9 +32,8 @@ type File {
 }
 
 type FileCheckStatus {
-  virusPercentage: Int!
-  fileFormatPercentage: Int!
-  checksumPercentage: Int!
+  totalComplete: Int!
+  totalFiles: Int!
   error: Boolean!
 }
 
@@ -45,12 +44,6 @@ type FileStatus {
   fileFormatVerified: Boolean!
   fileId: UUID!
   antivirusStatus: String!
-}
-
-type FileProgress {
-  totalComplete: Int!
-  totalFiles: Int!
-  error: Boolean!
 }
 
 scalar Instant
@@ -72,7 +65,7 @@ type Query {
   getConsignment(id: Int!): Consignment
   getFile(id: UUID!): File
   getFiles: [File!]!
-  getFileChecksStatus(id: Int!): FileProgress!
+  getFileChecksStatus(id: Int!): FileCheckStatus!
 }
 
 type Series {

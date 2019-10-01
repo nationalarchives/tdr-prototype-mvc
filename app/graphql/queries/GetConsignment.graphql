@@ -1,0 +1,11 @@
+query getConsignment($id: Int!) {
+    getConsignment(id: $id) {
+        name,
+        id,
+        series {
+             name
+
+        },
+        transferringBody
+    }
+}

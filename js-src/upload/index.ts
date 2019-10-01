@@ -1,11 +1,13 @@
 import Axios from "axios";
+import * as S3 from "aws-sdk/clients/s3";
+
 
 interface HTMLInputTarget extends EventTarget {
-    files?: File[]
+    files?: InputElement
 }
 
-interface FileResult {
-    data: CreateFileInput[]
+interface InputElement {
+    files?: TdrFile[]
 }
 
 interface CreateFileInput {
@@ -21,6 +23,10 @@ interface TdrFile extends File {
     webkitRelativePath: string;
 }
 
+interface FilePathMap {
+    path: string;
+    file: File
+}
 
 export interface IReader {
     readEntries: (callbackFunction: (entry: IWebkitEntry[]) => void) => void;
@@ -61,10 +67,18 @@ export const generateHash: (file: File) => Promise<string> = (file) => {
 };
 
 
-const upload: () => void = () => {
-    const uploadInput: HTMLInputElement | null = document.querySelector("#file-upload")
-    if (uploadInput) {
-        uploadInput.addEventListener("change", uploadChangeListener)
+const upload: () => void = async () => {
+    const uploadForm: HTMLFormElement | null = document.querySelector("#file-upload-form");
+    if (uploadForm) {
+        uploadForm.addEventListener("submit", async (ev) => {
+            ev.preventDefault()
+            const target: HTMLInputTarget | null = ev.currentTarget
+            console.log(target)
+            console.log(target!.files!.files)
+            const files: TdrFile[] = target!.files!.files!
+            await processFiles(files);
+            uploadForm.submit()
+        })
     }
     const dragAndDrop: HTMLDivElement | null = document.querySelector(".govuk-file-drop");
     if (dragAndDrop) {
@@ -96,10 +110,10 @@ const onDragOver: (e: DragEvent) => void = (e) => {
     setIsDragging(true)
 }
 
-const getFileFromEntry: (entry: IWebkitEntry) => Promise<File> = entry => {
-    return new Promise<File>(resolve => {
+const getFileFromEntry: (entry: IWebkitEntry) => Promise<TdrFile> = entry => {
+    return new Promise<TdrFile>(resolve => {
         entry.file(f => {
-            resolve(f);
+            resolve(<TdrFile>f);
         });
     });
 };
@@ -116,8 +130,8 @@ const getEntriesFromReader: (
 
 const getAllFiles: (
     entry: IWebkitEntry,
-    fileInfoInput: File[]
-) => Promise<File[]> = async (entry, fileInfoInput) => {
+    fileInfoInput: TdrFile[]
+) => Promise<TdrFile[]> = async (entry, fileInfoInput) => {
     const reader: IReader = entry.createReader();
     const entries: IWebkitEntry[] = await getEntriesFromReader(reader);
     for (const entry of entries) {
@@ -136,30 +150,11 @@ const onDrop: (e: DragEvent) => void = async e => {
     e.preventDefault()
     e.stopPropagation()
     setIsDragging(false)
-    const data: CreateFileInput[] = []
     const dataTransferItems: DataTransferItemList = e.dataTransfer!.items
-    const progressMessage: HTMLSpanElement | null = document.querySelector(".progress-message");
-    let count = 1;
+
     //Assume one file in the drag and drop for now
-    const files: File[] = await getAllFiles(dataTransferItems[0].webkitGetAsEntry(), [])
-    for (const file of files) {
-        const fileInfo: CreateFileInput = await getFileInfo(<TdrFile>file)
-        data.push(fileInfo)
-        progressMessage!.innerText = `Checskum ${count} of ${files.length}`;
-        count++;
-    }
-    const fileResult: FileResult = { data };
-    postResultToApi(fileResult)
-}
-
-
-const postResultToApi: (fileResult: FileResult) => void = (fileResult) => {
-    Axios.post("/filedata", fileResult).then(data => {
-        const hiddenInput: HTMLInputElement | null = document.querySelector(".file-id-data")
-        hiddenInput!.value = JSON.stringify(data.data)
-        const submit: HTMLInputElement | null = document.querySelector("#upload-submit");
-        submit!.disabled = false;
-    });
+    const files: TdrFile[] = await getAllFiles(dataTransferItems[0].webkitGetAsEntry(), [])
+    processFiles(files)
 }
 
 const getFileInfo: (tdrFile: TdrFile) => Promise<CreateFileInput> = async (tdrFile) => {
@@ -177,21 +172,66 @@ const getFileInfo: (tdrFile: TdrFile) => Promise<CreateFileInput> = async (tdrFi
     return fileInfo;
 }
 
+export { upload }
 
-const uploadChangeListener: (e: Event) => void = async (e) => {
-    const target: HTMLInputTarget | null = e.currentTarget;
-    const fileInfoList: CreateFileInput[] = [];
-    const progressMessage: HTMLSpanElement | null = document.querySelector(".progress-message");
-    const files: TdrFile[] = <TdrFile[]>target!.files!;
-    let count = 1;
-    for (const file of files) {
-        const fileInfo: CreateFileInput = await getFileInfo(file);
-        progressMessage!.innerText = `Checskum ${count} of ${files.length}`;
-        fileInfoList.push(fileInfo);
-        count++;
-    }
-    const fileResult: FileResult = { data: fileInfoList };
-    postResultToApi(fileResult);
+interface Credentials {
+    accessKeyId: string;
+    secretAccessKey: string;
+    sessionToken: string;
 }
 
-export { upload }
+interface AxiosResponse {
+    data: IFileData
+}
+
+interface IFileData {
+    pathMap: { [key: string]: string }
+    credentials: Credentials;
+    bucketName: string;
+}
+
+async function processFiles(files: TdrFile[]) {
+    const fileInfoList: CreateFileInput[] = [];
+    const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
+    const consignmentId = parseInt(urlParams.get("consignmentId")!, 10);
+    if (files) {
+        const filePathToFile: FilePathMap[] = [];
+        for (var tdrFile of files) {
+            const fileInfo: CreateFileInput = await getFileInfo(tdrFile);
+
+            fileInfoList.push(fileInfo);
+            filePathToFile.push({ path: fileInfo.path!, file: tdrFile });
+        }
+        const response: AxiosResponse | void = await Axios.post<{}, AxiosResponse>("/filedata", { data: fileInfoList })
+            .catch(err => {
+                const error: HTMLParagraphElement | null = document.querySelector('.error')
+                error!.innerText = "There has been an error"
+            })
+        if (response) {
+            const fileData = response.data
+            const { accessKeyId, secretAccessKey, sessionToken } = response.data.credentials
+            const region = "eu-west-2"
+            var s3 = new S3({ accessKeyId, secretAccessKey, sessionToken, region });
+            for (const fileInfo of filePathToFile) {
+                const { file, path } = fileInfo
+                const id = fileData.pathMap[path]
+                await uploadToS3(s3, `${consignmentId}/${id}`, fileData.bucketName, file);
+            }
+        }
+    }
+}
+function uploadToS3(s3: S3, key: string, bucketName: string, file: File) {
+    return new Promise((resolve, reject) => {
+        s3.upload({
+            Key: key,
+            Bucket: bucketName,
+            Body: file,
+        }, function (err, data) {
+            if (err) {
+                reject(err)
+            }
+            resolve(data)
+        });
+    })
+}
+
