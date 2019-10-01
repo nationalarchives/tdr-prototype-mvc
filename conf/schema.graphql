@@ -81,6 +81,11 @@ type Password {
   salt: String
 }
 
+type PasswordResetToken {
+  email: String!
+  token: String!
+}
+
 scalar Instant
 
 type Mutation {
@@ -96,6 +101,7 @@ type Mutation {
   addPassword(passwordInput: PasswordInput!): Password
   updatePassword(passwordInput: PasswordInput!): Int
   removePassword(providerKey: String!): Int
+  createPasswordResetToken(email: String!): PasswordResetToken
 }
 
 type Query {
@@ -109,6 +115,7 @@ type Query {
   getUser(providerKey: String!, providerId: String!): User
   findPassword(providerKey: String!): Password
   getConsignmentForCreator(id: Int!, creator: String!): Consignment
+  isPasswordTokenValid(email: String!, token: String!): Boolean!
 }
 
 type Series {

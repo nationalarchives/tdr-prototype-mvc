@@ -31,3 +31,9 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 GET         /signUp                         controllers.AuthController.signUpForm
 +nocsrf
 POST        /signUp                         controllers.AuthController.signUpSubmit
+GET     /resetPasswordEmail                 controllers.AuthController.resetPasswordEmail
++nocsrf
+POST    /sendResetPasswordEmail             controllers.AuthController.sendResetPasswordEmail
+GET     /resetPassword                      controllers.AuthController.resetPassword(email: String, token: String)
++nocsrf
+POST    /submitResetPassword                controllers.AuthController.submitResetPassword(email: String)

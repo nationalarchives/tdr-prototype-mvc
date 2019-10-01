@@ -1,24 +1,31 @@
 package controllers
 
 import auth.LoginForm.LoginData
-import auth.{LoginForm, SignUpForm, UserDao}
-import com.mohiva.play.silhouette.api.{LoginInfo, Silhouette}
+import auth.{LoginForm, ResetPasswordEmailForm, ResetPasswordForm, SignUpForm, UserDao}
+import com.amazonaws.regions.Regions
+import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder
+import com.amazonaws.services.simpleemail.model._
 import com.mohiva.play.silhouette.api.services.{AuthenticatorResult, AuthenticatorService}
 import com.mohiva.play.silhouette.api.util.Credentials
+import com.mohiva.play.silhouette.api.{LoginInfo, Silhouette}
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
+import graphql.GraphQLClientProvider
+import graphql.codegen.IsPasswordTokenValid.isPasswordTokenValid
 import javax.inject.{Inject, Singleton}
 import play.api.data.Form
 import play.api.mvc._
 import utils.DefaultEnv
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success}
 
 
 @Singleton
 class AuthController @Inject()(controllerComponents: ControllerComponents,
                                userService: UserDao,
                                silhouette: Silhouette[DefaultEnv],
+                               client: GraphQLClientProvider,
                                credentialsProvider: CredentialsProvider)(implicit executionContext: ExecutionContext) extends AbstractController(controllerComponents)  with play.api.i18n.I18nSupport {
 
   val authService: AuthenticatorService[CookieAuthenticator] = silhouette.env.authenticatorService
@@ -87,6 +94,66 @@ class AuthController @Inject()(controllerComponents: ControllerComponents,
               Future.successful(AuthenticatorResult(Redirect(routes.AuthController.signUpForm())))
             }))
       })
+  }
+
+  def resetPasswordEmail = Action {implicit request =>
+    Ok(views.html.resetPasswordEmail(ResetPasswordEmailForm.form))
+  }
+
+  def sendResetPasswordEmail = Action.async { implicit request =>
+    val errorFunction: Form[ResetPasswordEmailForm.Data] => Future[Result] = { formWithErrors: Form[ResetPasswordEmailForm.Data] =>
+      Future.apply(BadRequest(views.html.resetPasswordEmail(formWithErrors)))
+    }
+
+    val successFunction: ResetPasswordEmailForm.Data => Future[Result] = { resetForm: ResetPasswordEmailForm.Data =>
+      userService.createOrUpdatePasswordResetToken(resetForm.email)
+          .map {
+            token =>
+              val client = AmazonSimpleEmailServiceClientBuilder.standard().withRegion(Regions.EU_WEST_1).build()
+              val request = new SendEmailRequest()
+                                .withDestination(new Destination().withToAddresses(resetForm.email))
+                                .withMessage(new Message().withBody(new Body().withHtml(new Content().withCharset("UTF-8").withData(s"<h1>$token</h1>")))
+                                .withSubject(new Content().withCharset("UTF-8").withData("Test"))
+                                ).withSource("noreply@tdr-prototype.co.uk")
+              client.sendEmail(request)
+              Redirect(routes.AuthController.login())
+          }
+    }
+
+    val formValidationResult: Form[ResetPasswordEmailForm.Data] = ResetPasswordEmailForm.form.bindFromRequest
+
+    formValidationResult.fold(
+      errorFunction,
+      successFunction
+    )
+  }
+
+  def resetPassword(email: String, token: String) = Action.async { implicit request =>
+    val graphqlClient = client.graphqlClient(List())
+    val vars = isPasswordTokenValid.Variables(email, token)
+    graphqlClient.query[isPasswordTokenValid.Data, isPasswordTokenValid.Variables](isPasswordTokenValid.document, vars).result.map {
+      case Right(r) if r.data.isPasswordTokenValid =>  Ok(views.html.resetPassword(ResetPasswordForm.form, email))
+      case Right(_) => Redirect(routes.AuthController.login())
+    }
+  }
+
+  def submitResetPassword(email: String) = Action.async { implicit request =>
+    val errorFunction: Form[ResetPasswordForm.Data] => Future[Result] = { formWithErrors: Form[ResetPasswordForm.Data] =>
+      Future.apply(BadRequest(views.html.resetPassword(formWithErrors, email)))
+    }
+
+    val successFunction: ResetPasswordForm.Data => Future[Result] = { resetForm: ResetPasswordForm.Data =>
+      userService.updatePassword(email, resetForm.newPassword) map {
+        _ => Redirect(routes.AuthController.login())
+      }
+    }
+
+    val formValidationResult: Form[ResetPasswordForm.Data] = ResetPasswordForm.form.bindFromRequest
+
+    formValidationResult.fold(
+      errorFunction,
+      successFunction
+    )
   }
 
 

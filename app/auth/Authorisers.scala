@@ -3,8 +3,8 @@ package auth
 import com.mohiva.play.silhouette.api.Authorization
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
 import graphql.GraphQLClientProvider
-import graphql.codegen.GetSeriesForCreator.getSeriesForCreator
 import graphql.codegen.GetConsignmentForCreator.getConsignmentForCreator
+import graphql.codegen.GetSeriesForCreator.getSeriesForCreator
 import javax.inject.Inject
 import play.api.mvc.Request
 
@@ -34,5 +34,4 @@ object Authorisers {
       }
     }
   }
-
 }

@@ -7,9 +7,21 @@ args: (Symbol, Any)*
 
 @elements = @{new FieldElements(field.id, field, null, args.toMap, messages) }
 
+@requiredOption() = @{
+if(elements.args.contains('_requiredOption)) {
+"required"
+}
+}
+
 <div class="govuk-form-group">
-    <label class="govuk-label" for=username>
-        @elements.label
-    </label>
-    <input type="@inputType" class="govuk-input" id="@elements.id" name="@elements.id"/>
+    <div class="@if(elements.hasErrors){error}">
+        <label class="govuk-label" for=@elements.id>
+            @elements.label
+        </label>
+        <input type="@inputType" @requiredOption class="govuk-input @if(elements.hasErrors){govuk-input--error}" id="@elements.id"
+               name="@elements.id"/>
+        <span id="error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span>@elements.errors.mkString(", ")
+        </span>
+    </div>
 </div>

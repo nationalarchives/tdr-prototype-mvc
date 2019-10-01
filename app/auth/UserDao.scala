@@ -10,6 +10,7 @@ import graphql.GraphQLClientProvider
 import graphql.codegen.GetUser.getUser
 import graphql.codegen.CreateUser.createUser
 import graphql.codegen.types.UserInput
+import graphql.codegen.CreatePasswordResetToken.createPasswordResetToken
 import graphql.tdr.TdrGraphQLClient
 import graphql.tdr.TdrGraphQLClient.GraphQLResponse
 
@@ -51,5 +52,21 @@ class UserDao @Inject()(client: GraphQLClientProvider,
 
     }.map(_ => LoginInfo(CredentialsProvider.ID, data.email))
   }
+
+  def createOrUpdatePasswordResetToken(email: String) = {
+    val vars = createPasswordResetToken.Variables(email)
+    graphqlClient.query[createPasswordResetToken.Data, createPasswordResetToken.Variables](createPasswordResetToken.document, vars).result map {
+      case Right(r) => r.data.createPasswordResetToken.map(t => t.token).get
+      case Left(_) => throw new Exception
+    }
+  }
+
+  def updatePassword(email: String, newPassword: String) = {
+    val loginInfo: LoginInfo = LoginInfo(CredentialsProvider.ID, email)
+    val authInfo: PasswordInfo = passwordHasher.hash(newPassword)
+    authInfoRepository.update(loginInfo, authInfo)
+  }
+
+
 }
 

@@ -6,11 +6,11 @@
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third">
         <h1 class="govuk-heading-xl">Create User</h1>
-        @helper.form(action = routes.AuthController.signUpSubmit(), 'enctype -> "multipart/form-data", 'id -> "login-form") {
-            @inputTextBox(createUserForm("firstName"), "text", '_label -> "First Name", '_id -> "firstName")
-            @inputTextBox(createUserForm("lastName"), "text", '_label -> "First Name", '_id -> "lastName")
-            @inputTextBox(createUserForm("email"), "text", '_label -> "Email", '_id -> "email")
-            @inputTextBox(createUserForm("password"), "password", '_label -> "Password", '_id -> "password")
+        @helper.form(action = routes.AuthController.signUpSubmit(), 'id -> "login-form") {
+            @inputTextBox(createUserForm("firstName"), "text", '_requiredOption -> true, '_label -> "First Name", '_id -> "firstName")
+            @inputTextBox(createUserForm("lastName"), "text", '_requiredOption -> true, '_label -> "First Name", '_id -> "lastName")
+            @inputTextBox(createUserForm("email"), "text", '_requiredOption -> true, '_label -> "Email", '_id -> "email")
+            @inputTextBox(createUserForm("password"), "password", '_requiredOption -> true, '_label -> "Password", '_id -> "password")
 
         <input type="submit" class="govuk-button" value="Sign Up">
 
