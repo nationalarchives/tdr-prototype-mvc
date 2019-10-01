@@ -1,0 +1,85 @@
+
+@import helper._
+@(serviceAgreementsForm: Form[model.ServiceAgreementsData], agreementOptions: Seq[(String, String)])(implicit messages: Messages)
+    @main("ServiceAgreements") {
+        @defining(play.core.PlayVersion.current) { version =>
+
+            <!-- Back Button -->
+            <a href="@routes.DashboardController.index" class="govuk-back-link">Back</a>
+
+            <!-- Progress indicator -->
+            <span class="govuk-caption-xl">Step 1 of 4</span>
+
+            <!-- Headline -->
+            <h1 class="govuk-heading-xl">Service Agreements</h1>
+
+            <div class="govuk-grid-row">
+
+                <div class="govuk-grid-column-two-thirds">
+
+                    @form(action = routes.ServiceAgreementsController.submit) {
+
+                        <!-- Compliance -->
+                        <fieldset class="govuk-fieldset" aria-describedby="service-agreements">
+                            @inputRadioGroup(
+                                serviceAgreementsForm("publicRecord"),
+                                agreementOptions,
+                                '_name -> "The records are all public records",
+                                '_disabledOption -> "no",
+                                '_requiredOption -> true
+                            )
+                            @inputRadioGroup(
+                                serviceAgreementsForm("crownCopyright"),
+                                agreementOptions,
+                                '_name -> "The records are all Crown Copyright",
+                                '_disabledOption -> "no",
+                                '_requiredOption -> true
+                            )
+                            @inputRadioGroup(
+                                serviceAgreementsForm("english"),
+                                agreementOptions,
+                                '_name -> "The records are all in English",
+                                '_disabledOption -> "no",
+                                '_requiredOption -> true
+                            )
+                            @inputRadioGroup(
+                                serviceAgreementsForm("digital"),
+                                agreementOptions,
+                                '_name -> "The  records are all Digital",
+                                '_disabledOption -> "no",
+                                '_requiredOption -> true
+                            )
+                        </fieldset>
+                        <!-- DRO confirmation -->
+                        <fieldset class="govuk-fieldset" aria-describedby="service-agreements-checks">
+                            @inputSingleCheckbox(
+                                serviceAgreementsForm("droAppraisalselection"),
+                                '_label -> "I confirm that the DRO has signed off on the appraisal and selection decision.",
+                                '_value -> "yes",
+                                '_requiredOption -> true
+                            )
+                            @inputSingleCheckbox(
+                                serviceAgreementsForm("droSensitivity"),
+                                '_label -> "I confirm that the DRO has signed off on the sensitivity review decision - including that all records in this transfer are only up to official-sensitive.",
+                                '_value -> "yes",
+                                '_requiredOption -> true
+                            )
+                        </fieldset>
+
+                        <!-- Buttons -->
+                        <div>
+                            <!-- Cancel -->
+                            <a href="@routes.DashboardController.index" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                                Cancel
+                            </a>
+
+                            <!-- Continue -->
+                            <button class="govuk-button" type="submit" data-module="govuk-button" role="button">
+                                Save and continue
+                            </button>
+                        </div>
+                    }
+
+                </div>
+            </div>
+}}

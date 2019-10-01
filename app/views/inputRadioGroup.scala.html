@@ -1,0 +1,52 @@
+
+@(field: Field,
+radioOptions: Seq[(String, String)],
+args: (Symbol, Any)*
+)(implicit messages: Messages)
+
+@import views.html.helper._
+
+@elements = @{new FieldElements(field.id, field, null, args.toMap, messages) }
+
+@checkedOption(value: String) = @{
+    if(elements.args.contains('_checkedOption)) {
+        elements.args.get('_checkedOption).filter( _ == value).map{_ => "checked"}
+    }
+}
+
+@disabledOption(value: String) = @{
+    if(elements.args.contains('_disabledOption)) {
+        elements.args.get('_disabledOption).filter( _ == value).map{_ => "disabled"}
+    }
+}
+
+@requiredOption() = @{
+    if(elements.args.contains('_requiredOption)) {
+        "required"
+    }
+}
+
+<label class="govuk-label">
+    @elements.args.get('_name)
+</label>
+
+<div class="govuk-radios govuk-radios--inline" id="@elements.id">
+    @radioOptions.map {case (label, value) =>
+        <div class="govuk-radios__item">
+
+            <input
+                class="govuk-radios__input"
+                id="@elements.id@value"
+                name="@elements.id"
+                type="radio"
+                value="@value"
+                @checkedOption(value)
+                @disabledOption(value)
+                @requiredOption
+            />
+            <label class="govuk-label govuk-radios__label" for="@elements.id@value">
+                @label
+            </label>
+        </div>
+    }
+</div>
