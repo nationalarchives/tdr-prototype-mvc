@@ -2,10 +2,27 @@
 
 @main("Dashboard") {
 @defining(play.core.PlayVersion.current) { version =>
-    <h1 class="govuk-heading-xl">Dashboard</h1>
-    <h2>Start a new records transfer</h2>    
-    <a href="@routes.ServiceAgreementsController.index" role="button" draggable="false" class="govuk-button govuk-button--start">
-        Start
-    </a>
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+
+            <!-- Headline -->
+            <h1 class="govuk-heading-xl">Dashboard</h1>
+
+            <h3 class="govuk-heading-m">Start a New Records Transfer</h3>    
+            <a href="@routes.ServiceAgreementsController.index" role="button" draggable="false" class="govuk-button">
+                Start
+            </a>
+            <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+
+            <!-- Future implementation -->
+            <!-- <h3 class="govuk-heading-m">Resume a Records Transfer</h3>   
+            <p class="govuk-body">You will find transfers here to proceed if you have started and paused them.</p>
+
+            <h3 class="govuk-heading-m">View Transfer History</h3>   
+            <p class="govuk-body">Every completed transfer will be listed here for you.</p> -->
+
+        </div>
+    </div>
 }
 }
