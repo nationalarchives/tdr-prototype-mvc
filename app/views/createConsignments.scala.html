@@ -1,6 +1,7 @@
 @import model.CreateConsignmentData
 @(userForm: Form[CreateConsignmentData], seriesId: Int)(implicit messages: Messages)
     @import helper._
+    @import viewsapi.FormFunctions._
     @main("Consignment") {
         @defining(play.core.PlayVersion.current) { version =>
 
@@ -16,29 +17,19 @@
                 <div class="govuk-grid-column-two-thirds">
                 @form(action = routes.CreateConsignmentController.submit) {
                     <fieldset class="govuk-fieldset">
-
-                            <!-- Consignment Name -->
-                        <div class="govuk-form-group">
-                            <label class="govuk-label">
-                                Consignment Name*
-                            </label>
-                            @inputText(userForm("consignmentName"),
-                                '_label -> null,
-                                'class -> "govuk-input",
-                                '_id -> "consignmentName")
-                        </div>
-
-                            <!-- Transferring Body -->
-                        <div class="govuk-form-group">
-                            <label class="govuk-label">
-                                Transferring Body*
-                            </label>
-                            @inputText(userForm("transferringBody"),
-                                '_label -> null,
-                                'class -> "govuk-input")
-                            <input type="hidden" name="seriesId" value="@seriesId" />
-                        </div>
-
+                        @inputTextBox(
+                            userForm("consignmentName"),
+                            "text",
+                            '_label -> "Consignment Name",
+                            requiredInputArg -> true
+                        )
+                        @inputTextBox(
+                            userForm("transferringBody"),
+                            "text",
+                            '_label -> "Transferring Body",
+                            requiredInputArg -> true
+                        )
+                        <input type="hidden" name="seriesId" value="@seriesId" />
                     </fieldset>
 
                         <!-- Buttons -->

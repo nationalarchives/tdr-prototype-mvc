@@ -1,47 +1,45 @@
-@(createSeriesForm: Form[model.CreateSeriesData])
+@(createSeriesForm: Form[model.CreateSeriesData])(implicit messages: Messages)
+@import helper._
+@import viewsapi.FormFunctions._
 
 @main("CreateSeries") {
 @defining(play.core.PlayVersion.current) { version =>
+    <!-- Back -->
+    <a href="@routes.SeriesDetailsController.index()" class="govuk-back-link">Back</a>
 
-<div className="govuk-grid-row">
-    <div className="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl">Create Series</h1>
-        <form
-                action="@routes.CreateSeriesController.submit()"
-                method="POST"
-        >
-            <div class="govuk-form-group">
-                <label className="govuk-label" htmlFor={props.id}>
-                    Series Name
-                </label>
-                <input
-                        className={`govuk-input govuk-!-width-one-third`}
-                        id="seriesName"
-                        name="seriesName"
-                />
-            </div>
-            <div class="govuk-form-group">
-                <label className="govuk-label" htmlFor={props.id}>
-                    Series Description
-                </label>
-                <input
-                        className={`govuk-input govuk-!-width-one-third`}
-                        id="seriesDescription"
-                        name="seriesDescription"
-                />
-            </div>
-            <div class="govuk-form-group">
-                <a href="@routes.DashboardController.index" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
-                    Cancel
-                </a>
-                <button class="govuk-button" type="submit" data-module="govuk-button" role="button">
-                    Save and continue
-                </button>
-            </div>
+    <!-- Progress indicator -->
+    <span class="govuk-caption-xl">Step 2 of 5</span>
 
-        </form>
+    <h1 class="govuk-heading-xl">Create Series</h1>
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @form(action = routes.CreateSeriesController.submit) {
+                <fieldset class="govuk-fieldset">
+                    <!-- Series Name -->
+                    @inputTextBox(
+                        createSeriesForm("seriesName"),
+                        "text",
+                        '_label -> "Series Name",
+                        requiredInputArg -> true
+                    )
+                    <!-- Series Description -->
+                    @inputTextBox(
+                        createSeriesForm("seriesDescription"),
+                        "text",
+                        '_label -> "Series Description"
+                    )
+                </fieldset>
+                <div class="govuk-form-group">
+                    <a href="@routes.DashboardController.index" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                        Cancel
+                    </a>
+                    <button class="govuk-button" type="submit" data-module="govuk-button" role="button">
+                        Save and continue
+                    </button>
+                </div>
+            }
+        </div>
     </div>
-</div>
-
-}
+    }
 }

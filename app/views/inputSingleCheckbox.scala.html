@@ -10,9 +10,8 @@ args: (Symbol, Any)*
 @value = {@elements.args.get('_value)}
 @label = {@elements.args.get('_label)}
 
-<div class="govuk-checkboxes govuk-checkboxes--small">
-
-        <div class="govuk-checkboxes__item">
+<div class="govuk-checkboxes">
+        <div class="govuk-checkboxes__item @if(elements.args.contains('_smallCheckbox)){govuk-checkboxes--small}">
             <input
                 @elements.args.requiredInput()
                 class="govuk-checkboxes__input"
