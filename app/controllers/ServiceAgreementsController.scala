@@ -7,7 +7,7 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.mvc._
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ServiceAgreementsController @Inject()(controllerComponents: ControllerComponents,
@@ -38,18 +38,30 @@ class ServiceAgreementsController @Inject()(controllerComponents: ControllerComp
   }
 
   //Only print information to console to show form works
-  def submit() = Action { implicit request: Request[AnyContent] =>
-    val formData = form.bindFromRequest.get
-    println("++++SERVICE AGREEMENT START++++")
-    println("Public Record: " + formData.publicRecord)
-    println("Crown Copyright: " + formData.crownCopyright)
-    println("English Language: " + formData.english)
-    println("Digital: " + formData.digital)
-    println("DRO Appraisal: " + formData.droAppraisalselection)
-    println("DRO Sensitivity: " + formData.droSensitivity)
-    println("++++SERVICE AGREEMENT END++++")
+  def submit() = Action.async { implicit request: Request[AnyContent] =>
 
-    Redirect(routes.SeriesDetailsController.index())
+    val errorFunction: Form[ServiceAgreementsData] => Future[Result] = { formWithErrors: Form[ServiceAgreementsData] =>
+      Future.apply(BadRequest(views.html.serviceAgreements(formWithErrors, options)))
+    }
+    val successFunction: ServiceAgreementsData => Future[Result] = { formData: ServiceAgreementsData =>
+      println("++++SERVICE AGREEMENT START++++")
+      println("Public Record: " + formData.publicRecord)
+      println("Crown Copyright: " + formData.crownCopyright)
+      println("English Language: " + formData.english)
+      println("Digital: " + formData.digital)
+      println("DRO Appraisal: " + formData.droAppraisalselection)
+      println("DRO Sensitivity: " + formData.droSensitivity)
+      println("++++SERVICE AGREEMENT END++++")
+
+      Future.apply(Redirect(routes.SeriesDetailsController.index()))
+    }
+
+    val formValidationResult: Form[ServiceAgreementsData] = form.bindFromRequest
+
+    formValidationResult.fold(
+      errorFunction,
+      successFunction
+    )
   }
 
   private def hasAgreed(s: String): Boolean = {

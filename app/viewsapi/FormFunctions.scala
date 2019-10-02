@@ -1,5 +1,8 @@
 package viewsapi
 
+import play.twirl.api.Html
+import views.html.helper.FieldElements
+
 object FormFunctions {
 
   val selectedInputArg = '_checkedOption
@@ -20,6 +23,12 @@ object FormFunctions {
       }
     }
 
+    def requiredLabelSuffix() = {
+      if(args.contains(requiredInputArg)) {
+        "*"
+      }
+    }
+
     def requiredInput() = {
       if(args.contains(requiredInputArg)) {
         "required"
@@ -27,5 +36,23 @@ object FormFunctions {
     }
   }
 
+  class ErrorHandling(elements: FieldElements) {
+
+    def setErrorClass() = {
+      if(elements.hasErrors) {
+        "govuk-form-group--error"
+      }
+    }
+
+    def renderErrorMessage() = {
+      if(elements.hasErrors) {
+        Html("<span id=\"error\" class=\"govuk-error-message\"><span class=\"govuk-visually-hidden\">Error:</span>" +
+          elements.errors.mkString(", ")
+        )
+      }
+    }
+  }
+
   implicit def inputRenderOptions(args: Map[Symbol, Any]): InputRenderOptions = new InputRenderOptions(args)
+  implicit def errorHandling(elements: FieldElements): ErrorHandling = new ErrorHandling(elements)
 }
