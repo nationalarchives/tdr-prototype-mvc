@@ -1,0 +1,36 @@
+@()
+
+@main("Confirmation") {
+@defining(play.core.PlayVersion.current) { version =>
+
+<!-- Confirmation page -->
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+
+        <!-- Panel -->
+        <div class="govuk-panel govuk-panel--confirmation">
+            <h1 class="govuk-panel__title">
+                Transfer complete
+            </h1>
+            <div class="govuk-panel__body">
+                Your records have been transferred.
+            </div>
+        </div>
+
+        <!-- Feedback? -->
+        <p class="govuk-body">
+            <a href="#" class="govuk-link">What did you think of this service?</a> (takes 30 seconds)
+        </p>
+
+        <!-- Button -->
+        <div>
+            <!-- Back to dashboard -->
+            <a href="@routes.DashboardController.index" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                Back to Dashboard
+            </a>
+        </div>
+
+    </div>
+</div>
+}
+}

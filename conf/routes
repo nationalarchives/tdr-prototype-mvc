@@ -23,5 +23,6 @@ GET     /fileStatus                         controllers.FileStatusController.get
 GET     /fileStatusApi                      controllers.FileStatusController.getFileStatusApi(consignmentId: Int)
 POST    /upload                             controllers.UploadController.upload(consignmentId: Int)
 POST    /filedata                           controllers.UploadController.saveFileData
+GET     /transferConfirmation               controllers.TransferConfirmationController.index
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
