@@ -17,13 +17,12 @@ class CreateConsignmentController @Inject()(
                                              client: GraphQLClientProvider,
                                              controllerComponents: ControllerComponents,
                                              silhouette: Silhouette[DefaultEnv],
-                                             configuration: Configuration,
-                                             isSeriesCreator: IsSeriesCreator)(
+                                             configuration: Configuration)(
                                              implicit val ex: ExecutionContext) extends AbstractController(controllerComponents) with play.api.i18n.I18nSupport {
 
 
 
-  def index(seriesId:Int) = silhouette.SecuredAction(isSeriesCreator).async { implicit request: Request[AnyContent] =>
+  def index(seriesId:Int) = silhouette.SecuredAction.async { implicit request: Request[AnyContent] =>
 
     Future(Ok(views.html.createConsignments(CreateConsignmentData.form, seriesId)))
   }

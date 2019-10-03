@@ -16,7 +16,7 @@ class FileStatusController @Inject()(client: GraphQLClientProvider,
   def getFileStatus(consignmentId: Int) = Action.async  { implicit request: Request[AnyContent] =>
     val appSyncClient = client.graphqlClient(List())
     appSyncClient.query[Data, Variables](document,Variables(consignmentId)).result.map {
-        case Right(r) => Ok(views.html.fileStatus(r.data.getFileChecksStatus))
+        case Right(r) => Ok(views.html.fileStatus(r.data.getFileChecksStatus, consignmentId))
         case Left(ex) => InternalServerError(ex.errors.toString())
       }
   }

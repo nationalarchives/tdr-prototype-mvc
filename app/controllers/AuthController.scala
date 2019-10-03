@@ -56,6 +56,7 @@ class AuthController @Inject()(controllerComponents: ControllerComponents,
                 .flatMap(authService.init(_))
                 .flatMap(authService.embed(_, Redirect(routes.DashboardController.index())))
             }
+            case None => Future.successful(Redirect(routes.AuthController.login()))
           }
         }.recover {
         case e: Exception =>

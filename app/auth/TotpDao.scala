@@ -44,6 +44,7 @@ class TotpDao @Inject()(client: GraphQLClientProvider)(implicit ec: ExecutionCon
     val vars = addTotp.Variables(totpInput)
     graphqlClient.query[addTotp.Data, addTotp.Variables](updateTotp.document, vars).result.map {
       case Right(r) => r.data.addTotp
+      case Left(ex) => throw new RuntimeException(ex.errors.mkString)
     }
     Future.successful(GoogleTotpInfo(authInfo.sharedKey, authInfo.scratchCodes))
   }

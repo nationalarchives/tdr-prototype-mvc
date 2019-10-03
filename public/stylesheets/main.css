@@ -49,16 +49,17 @@ body {
   }
 
   /* Drag and Drop svg image */
-  svg {
+  .govuk-file-drop svg {
       width: 100%;
       fill: #92b0b3;
       display: block;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
   }
 
     /* Drag and Drop span */
   .draganddrop {
       color: #92b0b3;
+      font-size: 1.25rem;
   }
 
   /*---------------------------------------------------------------------------------------------------*/

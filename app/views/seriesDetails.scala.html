@@ -5,36 +5,38 @@
 @defining(play.core.PlayVersion.current) { version =>
 
 <!-- Back -->
-
-<!-- Progress indicator -->
-<span class="govuk-caption-xl">Step 1 of 4</span>
-<!-- Headline -->
-<h1 class="govuk-heading-xl">Series Information</h1>
+<a href="@routes.ServiceAgreementsController.index" class="govuk-back-link">Back</a>
 
 <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
-    <!-- ONLY IF ACCRUING SERIES -->
-    <div class="govuk-form-group" id="forAccruing">
-        <h3>Accruing Series:</h3>
+        <!-- Progress indicator -->
+        <span class="govuk-caption-xl">Step 2 of 5</span>
+        <!-- Headline -->
+        <h1 class="govuk-heading-xl">Series Information</h1>
 
         <form action="@routes.SeriesDetailsController.submit()" method="POST">
+            <!-- Accruing Series -->
             <div class="govuk-form-group">
-            <label class="govuk-label" for="seriesNo">
-                Series Number*
-            </label>
-            <select class="govuk-select" id="seriesNo" name="seriesNo">
-                <option value="placeholder" selected>Please choose...</option>
-                @for(series <- allSeries) {
-                <option value="@series.id">@series.name</option>
-                }
-            </select>
+                <h3 class="govuk-heading-m">Accruing series</h3>
+                <label class="govuk-label" for="seriesNo">
+                    Series number*
+                </label>
+                <select class="govuk-select" id="seriesNo" name="seriesNo">
+                    <option value="placeholder" selected>Please choose...</option>
+                    @for(series <- allSeries) {
+                    <option value="@series.id">@series.name</option>
+                    }
+                </select>
             </div>
+            <!-- New Series -->
             <div class="govuk-form-group">
-                <h3>Create Series:</h3>
-                <a href="@routes.CreateSeriesController.index" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
-                    New Series
+                <a href="@routes.CreateSeriesController.index" class="govuk-link govuk-!-font-size-19">
+                    Add new series
                 </a>
             </div>
+
+            <!-- Buttons -->
             <div class="govuk-form-group">
                 <a href="@routes.DashboardController.index" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
                     Cancel
@@ -43,11 +45,10 @@
                     Save and continue
                 </button>
             </div>
-        </form>
-    </div>
 
-    </form>
-</div>
+        </form>
+
+    </div>
 </div>
 }
 }

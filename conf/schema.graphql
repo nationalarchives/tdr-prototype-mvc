@@ -45,9 +45,8 @@ type File {
 }
 
 type FileCheckStatus {
-  virusPercentage: Int!
-  fileFormatPercentage: Int!
-  checksumPercentage: Int!
+  totalComplete: Int!
+  totalFiles: Int!
   error: Boolean!
 }
 
@@ -112,7 +111,6 @@ type TotpScratchCodesOuput {
   salt: String
 }
 
-
 scalar Instant
 
 type Mutation {
@@ -140,13 +138,13 @@ type Query {
   getConsignment(id: Int!): Consignment
   getFile(id: UUID!): File
   getFiles: [File!]!
-  getFileChecksStatus(id: Int!): FileProgress!
   getSeriesForCreator(seriesId: Int!, creator: String!): Series
   getUser(providerKey: String!, providerId: String!): User
   findPassword(providerKey: String!): Password
   getConsignmentForCreator(id: Int!, creator: String!): Consignment
   isPasswordTokenValid(email: String!, token: String!): Boolean!
   findTotp(providerKey: String!): TotpInfoOutput
+  getFileChecksStatus(id: Int!): FileCheckStatus!
 }
 
 type Series {

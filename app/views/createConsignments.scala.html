@@ -1,57 +1,48 @@
 @import model.CreateConsignmentData
 @(userForm: Form[CreateConsignmentData], seriesId: Int)(implicit messages: Messages)
     @import helper._
+    @import viewsapi.FormFunctions._
     @main("Consignment") {
         @defining(play.core.PlayVersion.current) { version =>
 
             <!-- Back -->
             <a href="@routes.SeriesDetailsController.index()" class="govuk-back-link">Back</a>
 
-            <!-- Progress indicator -->
-            <span class="govuk-caption-xl">Step 2 of 5</span>
-            <!-- Headline -->
-            <h1 class="govuk-heading-xl">Consignment Information</h1>
-
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
-                @form(action = routes.CreateConsignmentController.submit) {
+
+                    <!-- Progress indicator -->
+                    <span class="govuk-caption-xl">Step 3 of 5</span>
+                    <!-- Headline -->
+                    <h1 class="govuk-heading-xl">Consignment Information</h1>
+
+                    @form(action = routes.CreateConsignmentController.submit) {
                     <fieldset class="govuk-fieldset">
-
-                            <!-- Consignment Name -->
                         <div class="govuk-form-group">
-                            <label class="govuk-label">
-                                Consignment Name*
-                            </label>
-                            @inputText(userForm("consignmentName"),
-                                '_label -> null,
-                                'class -> "govuk-input",
-                                '_id -> "consignmentName")
-                        </div>
-
-                            <!-- Transferring Body -->
-                        <div class="govuk-form-group">
-                            <label class="govuk-label">
-                                Transferring Body*
-                            </label>
-                            @inputText(userForm("transferringBody"),
-                                '_label -> null,
-                                'class -> "govuk-input")
+                            @inputTextBox(
+                                userForm("consignmentName"),
+                                '_label -> "Consignment name",
+                                requiredInputArg -> true
+                            )
+                            @inputTextBox(
+                                userForm("transferringBody"),
+                                '_label -> "Transferring body",
+                                requiredInputArg -> true
+                            )
                             <input type="hidden" name="seriesId" value="@seriesId" />
                         </div>
-
                     </fieldset>
 
-                        <!-- Buttons -->
-                    <div>
-                            <!-- Cancel -->
+                    <!-- Buttons -->
+                    <div class="govuk-form-group">
                         <a href="@routes.DashboardController.index" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
                             Cancel
                         </a>
-                            <!-- Continue -->
                         <input type="submit" value="Save and continue" role="button" draggable="false" class="govuk-button" data-module="govuk-button"/>
                     </div>
 
-                }
+                    }
+
                 </div>
             </div>
         }

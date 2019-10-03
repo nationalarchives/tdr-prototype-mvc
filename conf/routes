@@ -10,22 +10,27 @@ GET     /logout                             controllers.AuthController.logout
 POST    /processLoginAttempt                controllers.AuthController.processLoginAttempt
 GET     /                                   controllers.HomeController.index
 GET     /dashboard                          controllers.DashboardController.index
+GET     /serviceAgreements                  controllers.ServiceAgreementsController.index
++nocsrf
+POST    /serviceAgreements/submit           controllers.ServiceAgreementsController.submit()
 GET     /seriesDetails                      controllers.SeriesDetailsController.index
 +nocsrf
 POST    /seriesDetails/submit               controllers.SeriesDetailsController.submit()
 GET     /createSeries                       controllers.CreateSeriesController.index
 +nocsrf
 POST    /createSeries/submit                controllers.CreateSeriesController.submit()
+GET     /reviewTransfer                     controllers.ReviewController.index(consignmentId: Int)
 GET     /upload                             controllers.UploadController.index(consignmentId: Int)
-GET     /createConsignment                   controllers.CreateConsignmentController.index(seriesId: Int)
+GET     /createConsignment                  controllers.CreateConsignmentController.index(seriesId: Int)
 +nocsrf
-POST    /createConsignment/submit            controllers.CreateConsignmentController.submit()
+POST    /createConsignment/submit           controllers.CreateConsignmentController.submit()
 GET     /fileStatus                         controllers.FileStatusController.getFileStatus(consignmentId: Int)
-GET    /fileStatusApi                       controllers.FileStatusController.getFileStatusApi(consignmentId: Int)
+GET     /fileStatusApi                      controllers.FileStatusController.getFileStatusApi(consignmentId: Int)
 +nocsrf
 POST    /upload                             controllers.UploadController.upload(consignmentId: Int)
 +nocsrf
-POST    /filedata                           controllers.UploadController.saveFileData()
+POST    /filedata                           controllers.UploadController.saveFileData
+GET     /transferConfirmation               controllers.TransferConfirmationController.index
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 GET         /signUp                         controllers.AuthController.signUpForm

@@ -11,17 +11,17 @@ import graphql.codegen.CreateSeries
 import graphql.codegen.types.CreateSeriesInput
 import play.api.Configuration
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CreateSeriesController @Inject()(
                                             client: GraphQLClientProvider,
                                             controllerComponents: ControllerComponents,
                                             configuration: Configuration)(
-                                            implicit val ex: ExecutionContext) extends AbstractController(controllerComponents) {
+                                            implicit val ex: ExecutionContext) extends AbstractController(controllerComponents) with play.api.i18n.I18nSupport {
   val createSeriesForm = Form(
     mapping(
-      "seriesName" -> text,
+      "seriesName" -> nonEmptyText,
       "seriesDescription" -> text
     )(CreateSeriesData.apply)(CreateSeriesData.unapply)
   )
@@ -33,14 +33,25 @@ class CreateSeriesController @Inject()(
 
   def submit() = Action.async { implicit request: Request[AnyContent] =>
 
-    val seriesData = createSeriesForm.bindFromRequest.get
-    val createSeriesInput = CreateSeriesInput(seriesData.seriesName, seriesData.seriesDescription)
+    val errorFunction: Form[CreateSeriesData] => Future[Result] = { formWithErrors: Form[CreateSeriesData] =>
+      Future.apply(BadRequest(views.html.createSeries(formWithErrors)))
+    }
+    val successFunction: CreateSeriesData => Future[Result] = { data: CreateSeriesData =>
+      val createSeriesInput = CreateSeriesInput(data.seriesName, data.seriesDescription)
 
-    val graphQlClient = client.graphqlClient(List())
+      val graphQlClient = client.graphqlClient(List())
 
-    graphQlClient.query[CreateSeries.CreateSeries.Data, CreateSeries.CreateSeries.Variables](CreateSeries.CreateSeries.document,
-            CreateSeries.CreateSeries.Variables(createSeriesInput)).result.map(result => result match {
-            case Right(r) => Redirect(routes.CreateConsignmentController.index(r.data.createSeries.id))
-            case Left(ex) => InternalServerError(ex.errors.toString())})
+      graphQlClient.query[CreateSeries.CreateSeries.Data, CreateSeries.CreateSeries.Variables](CreateSeries.CreateSeries.document,
+        CreateSeries.CreateSeries.Variables(createSeriesInput)).result.map(result => result match {
+        case Right(r) => Redirect(routes.CreateConsignmentController.index(r.data.createSeries.id))
+        case Left(ex) => InternalServerError(ex.errors.toString())})
+    }
+
+    val formValidationResult: Form[CreateSeriesData] = createSeriesForm.bindFromRequest
+
+    formValidationResult.fold(
+      errorFunction,
+      successFunction
+    )
   }
 }

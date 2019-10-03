@@ -4,13 +4,9 @@ args: (Symbol, Any)*
 
 @import views.html.helper._
 
-@elements = @{new FieldElements(field.id, field, null, args.toMap, messages) }
+@import viewsapi.FormFunctions._
 
-@requiredOption() = @{
-if(elements.args.contains('_requiredOption)) {
-"required"
-}
-}
+@elements = @{new FieldElements(field.id, field, null, args.toMap, messages) }
 
 @hide() = @{
 if(inputType == "hidden") {
@@ -26,17 +22,18 @@ if(elements.args.contains('_inputType)) {
 }
 }
 
-
-
-<div class="govuk-form-group">
-    <div class="@if(elements.hasErrors){error} @hide">
+<div class="govuk-form-group @elements.setErrorClass @hide">
         <label class="govuk-label" for=@elements.id>
             @elements.label
+            @elements.args.requiredLabelSuffix()
         </label>
-        <input type="@inputType" @requiredOption class="govuk-input @if(elements.hasErrors){govuk-input--error}" id="@elements.id"
-               name="@elements.id" value="@elements.field.value"/>
-        <span id="error" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span>@elements.errors.mkString(", ")
-        </span>
-    </div>
+        <input
+            type="@inputType"
+            @elements.args.requiredInput()
+            class="govuk-input @elements.setErrorClass"
+            id="@elements.id"
+            name="@elements.id"
+            value="@elements.field.value"
+        />
+        @elements.renderErrorMessage()
 </div>
