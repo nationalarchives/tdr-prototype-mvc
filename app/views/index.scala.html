@@ -1,10 +1,24 @@
 @main("Welcome") {
 @defining(play.core.PlayVersion.current) { version =>
 
-  <h1 class="govuk-heading-xl">Transfer Digital Records</h1>
+  <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-third">
 
-  <a href="@routes.DashboardController.index" role="button" draggable="false" class="govuk-button govuk-button--start">
-    Dashboard
-  </a>
+        <!-- Headline -->
+        <h1 class="govuk-heading-xl">Transfer Digital Records</h1>
+
+        <p class="govuk-body">Use this service to:</p>
+        <ul class="govuk-list govuk-list--bullet">
+            <li>transfer your digital records</li>
+            <li>resume a transfer</li>
+            <li>view your transfer history</li>
+        </ul>
+
+        <a href="@routes.DashboardController.index" role="button" draggable="false" class="govuk-button govuk-button--start">
+          Start now
+        </a>
+
+      </div>
+  </div>
 }
 }

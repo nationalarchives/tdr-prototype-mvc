@@ -8,24 +8,24 @@
             <!-- Back Button -->
             <a href="@routes.DashboardController.index" class="govuk-back-link">Back</a>
 
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+
             <!-- Progress indicator -->
-            <span class="govuk-caption-xl">Step 1 of 4</span>
-
+            <span class="govuk-caption-xl">Step 1 of 5</span>
             <!-- Headline -->
-            <h1 class="govuk-heading-xl">Service Agreements</h1>
-
-            <div class="govuk-grid-row">
-
-                <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-xl">Transfer Agreement</h1>
 
                     @form(action = routes.ServiceAgreementsController.submit) {
 
                         <!-- Compliance -->
-                        <fieldset class="govuk-fieldset" aria-describedby="service-agreements">
+                        <fieldset class="govuk-fieldset" aria-describedby="transfer-agreement">
+                            <div class="govuk-form-group">
+
                             @inputRadioGroup(
                                 serviceAgreementsForm("publicRecord"),
                                 agreementOptions,
-                                '_name -> "The records are all public records",
+                                '_name -> "The records are all Public Records",
                                 disabledInputArg -> "no",
                                 requiredInputArg -> true
                             )
@@ -50,9 +50,14 @@
                                 disabledInputArg -> "no",
                                 requiredInputArg -> true
                             )
+                            </div>
                         </fieldset>
+
+
                         <!-- DRO confirmation -->
-                        <fieldset class="govuk-fieldset" aria-describedby="service-agreements-checks">
+                        <fieldset class="govuk-fieldset" aria-describedby="transfer-agreement-checks">
+                            <div class="govuk-form-group">
+
                             @inputSingleCheckbox(
                                 serviceAgreementsForm("droAppraisalselection"),
                                 '_label -> "I confirm that the DRO has signed off on the appraisal and selection decision.",
@@ -67,6 +72,7 @@
                                 '_smallCheckbox -> true,
                                 requiredInputArg -> true
                             )
+                            </div>
                         </fieldset>
 
                         <!-- Buttons -->

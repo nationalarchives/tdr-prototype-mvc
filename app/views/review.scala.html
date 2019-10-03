@@ -3,93 +3,96 @@
 @main("Review") {
     @defining(play.core.PlayVersion.current) { version =>
 
-        <!-- Back -->
-        <a href="@routes.HomeController.index" class="govuk-back-link">Back</a>
+        <!-- PL: I think a Back button does not make sense in this step. Please correct me if you think it does. -->
+        <!-- <a href="@routes.HomeController.index" class="govuk-back-link">Back</a> -->
 
-        <!-- Progress indicator -->
-        <span class="govuk-caption-xl">Step 5 of 5</span>
-        <!-- Headline -->
-        <h1 class="govuk-heading-xl">Review</h1>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
 
-        <!-- Processing progress bar -->
-        <!-- TODO team: Create a review and checkboxes for warning notifications -->
-        <div id="review_container">
+                <!-- Progress indicator -->
+                <span class="govuk-caption-xl">Step 5 of 5</span>
+                <!-- Headline -->
+                <h1 class="govuk-heading-xl">Review and Confirm</h1>
 
-            <dl class="govuk-summary-list govuk-summary-list--no-border">
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Series number
-                    </dt>
-                    <dd class="govuk-summary-list__value" >
-                    @consignment.series.name
-                    </dd>
+
+                <!-- Review data -->
+                <div id="review_container">
+
+                    <dl class="govuk-summary-list govuk-summary-list">
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Series number
+                            </dt>
+                            <dd class="govuk-summary-list__value" >
+                            @consignment.series.name
+                            </dd>
+                        </div>
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Consignment name
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                            @consignment.name
+                            </dd>
+                        </div>
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Transferring body
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @consignment.transferringBody
+                            </dd>
+                        </div>
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                Files uploaded
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @files.totalFiles
+                            </dd>
+                        </div>
+                    </dl>
+
                 </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Consignment name
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                    @consignment.name
-                    </dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Transferring Department
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                        @consignment.transferringBody
-                    </dd>
-                </div>
-                <div class="govuk-summary-list__row">
-                    <dt class="govuk-summary-list__key">
-                        Files uploaded / to transfer
-                    </dt>
-                    <dd class="govuk-summary-list__value">
-                        @files.totalFiles
-                    </dd>
-                </div>
-            </dl>
 
-        </div>
+                <!-- Confirmation Checkboxes -->
+                <fieldset class="govuk-fieldset" aria-describedby="confirm-transfer-checks">
+                    <div class="govuk-form-group">
 
-        <!-- Confirmation Checkboxes -->
-        <div class="govuk-form-group">
-            <fieldset class="govuk-fieldset" aria-describedby="waste-hint">
-
-                <div class="govuk-checkboxes">
-                    <div class="govuk-checkboxes__item">
-                        <input class="govuk-checkboxes__input" id="waste" name="waste" type="checkbox" value="carcasses">
-                        <label class="govuk-label govuk-checkboxes__label" for="waste">
-                            @files.totalFiles records are selected to be transferred.
-                        </label>
+                        <div class="govuk-checkboxes govuk-checkboxes--small">
+                            <div class="govuk-checkboxes__item">
+                                <input required class="govuk-checkboxes__input" id="tbt" name="confirm-transfer" type="checkbox" value="toBeTransferred">
+                                <label class="govuk-label govuk-checkboxes__label" for="tbt">
+                                    @files.totalFiles records are selected to be transferred.
+                                </label>
+                            </div>
+                            <div class="govuk-checkboxes__item">
+                                <input required class="govuk-checkboxes__input" id="open" name="confirm-transfer" type="checkbox" value="openRecords">
+                                <label class="govuk-label govuk-checkboxes__label" for="open">
+                                    I confirm that all records are open.
+                                </label>
+                            </div>
+                            <div class="govuk-checkboxes__item">
+                                <input required class="govuk-checkboxes__input" id="owner" name="confirm-transfer" type="checkbox" value="ownershipTNA">
+                                <label class="govuk-label govuk-checkboxes__label" for="owner">
+                                    I confirm that I am transferring ownership to The National Archives.
+                                </label>
+                            </div>
+                        </div>
                     </div>
-                    <div class="govuk-checkboxes__item">
-                        <input class="govuk-checkboxes__input" id="waste-2" name="waste" type="checkbox" value="mines">
-                        <label class="govuk-label govuk-checkboxes__label" for="waste-2">
-                            I confirm that all records are open.
-                        </label>
-                    </div>
-                    <div class="govuk-checkboxes__item">
-                        <input class="govuk-checkboxes__input" id="waste-3" name="waste" type="checkbox" value="farm">
-                        <label class="govuk-label govuk-checkboxes__label" for="waste-3">
-                            I confirm that I am transferring ownership to The National Archives.
-                        </label>
-                    </div>
+                </fieldset>
+
+                <!-- Buttons -->
+                <div class="govuk-form-group">
+                    <a href="@routes.DashboardController.index" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                        Cancel
+                    </a>
+                    <a href="#" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+                        Transfer
+                    </a>
                 </div>
-            </fieldset>
-        </div>
 
-        <!-- Buttons -->
-        <div>
-                <!-- Cancel -->
-            <a href="@routes.DashboardController.index" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
-                Cancel
-            </a>
-
-                <!-- Continue -->
-            <a href="#" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
-                Transfer
-            </a>
+            </div>
         </div>
     }
 }

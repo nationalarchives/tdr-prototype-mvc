@@ -8,41 +8,43 @@
             <!-- Back -->
             <a href="@routes.SeriesDetailsController.index()" class="govuk-back-link">Back</a>
 
-            <!-- Progress indicator -->
-            <span class="govuk-caption-xl">Step 2 of 5</span>
-            <!-- Headline -->
-            <h1 class="govuk-heading-xl">Consignment Information</h1>
-
             <div class="govuk-grid-row">
                 <div class="govuk-grid-column-two-thirds">
-                @form(action = routes.CreateConsignmentController.submit) {
+
+                    <!-- Progress indicator -->
+                    <span class="govuk-caption-xl">Step 3 of 5</span>
+                    <!-- Headline -->
+                    <h1 class="govuk-heading-xl">Consignment Information</h1>
+
+                    @form(action = routes.CreateConsignmentController.submit) {
                     <fieldset class="govuk-fieldset">
-                        @inputTextBox(
-                            userForm("consignmentName"),
-                            "text",
-                            '_label -> "Consignment Name",
-                            requiredInputArg -> true
-                        )
-                        @inputTextBox(
-                            userForm("transferringBody"),
-                            "text",
-                            '_label -> "Transferring Body",
-                            requiredInputArg -> true
-                        )
-                        <input type="hidden" name="seriesId" value="@seriesId" />
+                        <div class="govuk-form-group">
+                            @inputTextBox(
+                                userForm("consignmentName"),
+                                "text",
+                                '_label -> "Consignment name",
+                                requiredInputArg -> true
+                            )
+                            @inputTextBox(
+                                userForm("transferringBody"),
+                                "text",
+                                '_label -> "Transferring body",
+                                requiredInputArg -> true
+                            )
+                            <input type="hidden" name="seriesId" value="@seriesId" />
+                        </div>
                     </fieldset>
 
-                        <!-- Buttons -->
-                    <div>
-                            <!-- Cancel -->
+                    <!-- Buttons -->
+                    <div class="govuk-form-group">
                         <a href="@routes.DashboardController.index" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
                             Cancel
                         </a>
-                            <!-- Continue -->
                         <input type="submit" value="Save and continue" role="button" draggable="false" class="govuk-button" data-module="govuk-button"/>
                     </div>
 
-                }
+                    }
+
                 </div>
             </div>
         }
