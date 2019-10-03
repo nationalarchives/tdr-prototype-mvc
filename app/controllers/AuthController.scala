@@ -31,6 +31,7 @@ class AuthController @Inject()(controllerComponents: ControllerComponents,
                                                                          authInfoRepository: AuthInfoRepository) extends AbstractController(controllerComponents)  with play.api.i18n.I18nSupport {
 
   private val sendgridKey: String = config.get[String]("app.sendgrid.key")
+  private val environment: String = config.get[String]("app.environment")
 
   val authService: AuthenticatorService[CookieAuthenticator] = silhouette.env.authenticatorService
 
@@ -119,8 +120,8 @@ class AuthController @Inject()(controllerComponents: ControllerComponents,
               val from = new Email("test@example.com")
               val subject = "Reset your password"
               val to = new Email(user.email)
-              val protocol = if(request.host.contains("localhost")) {"http"} else {"https"}
-              val content = new Content("text/html", s"<h1>$protocol://${request.host}/resetPassword?email=${resetForm.email}&token=$token</h1>")
+              val url = if(environment.equals("dev")) {"https://app.tdr-prototype.co.uk"} else {"http://localhost:9000"}
+              val content = new Content("text/html", s"<h1>$url/resetPassword?email=${resetForm.email}&token=$token</h1>")
               val mail = new Mail(from, subject, to, content)
               val sg = new SendGrid(sendgridKey)
               val sendgridRequest = new com.sendgrid.Request()
