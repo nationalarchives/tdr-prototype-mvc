@@ -1,9 +1,8 @@
-package auth
+package forms
 
-import play.api.data.Forms._
 import play.api.data.Form
-import play.api.data.Forms.mapping
-import auth.SignUpForm.passwordCheckConstraint
+import play.api.data.Forms.{mapping, text}
+import forms.SignUpForm.passwordCheckConstraint
 
 object ResetPasswordForm {
   val form: Form[Data] = Form(

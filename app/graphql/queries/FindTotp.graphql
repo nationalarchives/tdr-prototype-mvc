@@ -1,0 +1,13 @@
+query findTotp($providerKey: String!) {
+    findTotp(providerKey: $providerKey) {
+        id,
+        providerKey,
+        sharedKey,
+        scratchCodes {
+            id,
+            hasher,
+            password,
+            salt
+        }
+    }
+}

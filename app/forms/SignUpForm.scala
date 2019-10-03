@@ -1,7 +1,7 @@
-package auth
+package forms
 
 import play.api.data.Form
-import play.api.data.Forms._
+import play.api.data.Forms.{mapping, text, nonEmptyText, email}
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 
 object SignUpForm {
@@ -36,4 +36,3 @@ object SignUpForm {
                   password: String)
 
 }
-

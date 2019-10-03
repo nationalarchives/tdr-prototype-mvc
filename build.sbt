@@ -60,10 +60,12 @@ libraryDependencies += "software.amazon.awssdk" % "aws-sdk-java" % "2.7.11"
 libraryDependencies += "com.amazonaws" % "aws-java-sdk-s3" % "1.11.633"
 libraryDependencies += "com.amazonaws" % "aws-java-sdk-sts" % "1.11.636"
 libraryDependencies += "com.amazonaws" % "aws-java-sdk-ses" % "1.11.641"
+libraryDependencies += "com.mohiva" %% "play-silhouette-totp" % "6.1.0"
 libraryDependencies += "com.amazonaws" % "aws-java-sdk-iam" % "1.9.21"
 libraryDependencies += "ca.ryangreen" % "apigateway-generic-java-sdk" % "1.3"
 libraryDependencies +=  "com.github.jarlakxen" %% "drunk" % "2.5.0"
 libraryDependencies += "com.github.t3hnar" %% "scala-bcrypt" % "4.1"
+libraryDependencies += "com.sendgrid" % "sendgrid-java" % "4.0.1"
 libraryDependencies ++= Seq(
   "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.2" % "test"
 )

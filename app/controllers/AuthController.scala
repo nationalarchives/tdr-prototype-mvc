@@ -1,33 +1,36 @@
 package controllers
 
-import auth.LoginForm.LoginData
-import auth.{LoginForm, ResetPasswordEmailForm, ResetPasswordForm, SignUpForm, UserDao}
-import com.amazonaws.regions.Regions
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder
-import com.amazonaws.services.simpleemail.model._
+import forms.LoginForm.LoginData
+import auth._
+import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services.{AuthenticatorResult, AuthenticatorService}
 import com.mohiva.play.silhouette.api.util.Credentials
 import com.mohiva.play.silhouette.api.{LoginInfo, Silhouette}
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
-import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
+import com.mohiva.play.silhouette.impl.providers.{CredentialsProvider, GoogleTotpInfo}
+import com.sendgrid.{Content, Email, Mail, Method, SendGrid}
+import forms.{LoginForm, ResetPasswordEmailForm, ResetPasswordForm, SignUpForm, TotpForm}
 import graphql.GraphQLClientProvider
 import graphql.codegen.IsPasswordTokenValid.isPasswordTokenValid
 import javax.inject.{Inject, Singleton}
+import play.api.Configuration
 import play.api.data.Form
 import play.api.mvc._
 import utils.DefaultEnv
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success}
 
 
 @Singleton
 class AuthController @Inject()(controllerComponents: ControllerComponents,
-                               userService: UserDao,
+                               userService: UserService,
                                silhouette: Silhouette[DefaultEnv],
                                client: GraphQLClientProvider,
-                               credentialsProvider: CredentialsProvider)(implicit executionContext: ExecutionContext) extends AbstractController(controllerComponents)  with play.api.i18n.I18nSupport {
+                               config: Configuration,
+                               credentialsProvider: CredentialsProvider)(implicit executionContext: ExecutionContext,
+                                                                         authInfoRepository: AuthInfoRepository) extends AbstractController(controllerComponents)  with play.api.i18n.I18nSupport {
 
+  private val sendgridKey: String = config.get[String]("app.sendgrid.key")
   val authService: AuthenticatorService[CookieAuthenticator] = silhouette.env.authenticatorService
 
 
@@ -35,10 +38,8 @@ class AuthController @Inject()(controllerComponents: ControllerComponents,
     Ok(views.html.login(LoginForm.form))
   }
 
-  def logout: Action[AnyContent] = Action {
-    Redirect(routes.AuthController.login()).withNewSession.flashing(
-      "success" -> "You've been logged out"
-    )
+  def logout: Action[AnyContent] = silhouette.SecuredAction.async { implicit request =>
+    authService.discard(request.authenticator, Redirect(routes.AuthController.login()))
   }
 
   def processLoginAttempt: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
@@ -48,12 +49,14 @@ class AuthController @Inject()(controllerComponents: ControllerComponents,
     val successFunction: LoginData => Future[Result] = { user: LoginData =>
       credentialsProvider.authenticate(credentials = Credentials(user.username, user.password))
         .flatMap { loginInfo =>
-
-
-          authService.create(loginInfo)
-            .flatMap(authService.init(_))
-            .flatMap(authService.embed(_, Redirect(routes.DashboardController.index())))
-
+          userService.retrieve(loginInfo).flatMap {
+            case Some(u) => authInfoRepository.find[GoogleTotpInfo](loginInfo).flatMap {
+              case Some(totpInfo) => Future.successful(Ok(views.html.totp(TotpForm.form.fill(TotpForm.Data(u.email, totpInfo.sharedKey)))))
+              case _ =>  authService.create(loginInfo)
+                .flatMap(authService.init(_))
+                .flatMap(authService.embed(_, Redirect(routes.DashboardController.index())))
+            }
+          }
         }.recover {
         case e: Exception =>
           e.printStackTrace()
@@ -106,18 +109,29 @@ class AuthController @Inject()(controllerComponents: ControllerComponents,
     }
 
     val successFunction: ResetPasswordEmailForm.Data => Future[Result] = { resetForm: ResetPasswordEmailForm.Data =>
-      userService.createOrUpdatePasswordResetToken(resetForm.email)
+      userService.retrieve(LoginInfo(CredentialsProvider.ID, resetForm.email)).flatMap {
+        case Some(user) =>
+
+        userService.createOrUpdatePasswordResetToken(resetForm.email)
           .map {
             token =>
-              val client = AmazonSimpleEmailServiceClientBuilder.standard().withRegion(Regions.EU_WEST_1).build()
-              val request = new SendEmailRequest()
-                                .withDestination(new Destination().withToAddresses(resetForm.email))
-                                .withMessage(new Message().withBody(new Body().withHtml(new Content().withCharset("UTF-8").withData(s"<h1>http://localhost:9000/resetPassword?email=${resetForm.email}&token=$token</h1>")))
-                                .withSubject(new Content().withCharset("UTF-8").withData("Test"))
-                                ).withSource("noreply@tdr-prototype.co.uk")
-              client.sendEmail(request)
+              val from = new Email("test@example.com")
+              val subject = "Reset your password"
+              val to = new Email(user.email)
+              val content = new Content("text/html", s"<h1>http://localhost:9000/resetPassword?email=${resetForm.email}&token=$token</h1>")
+              val mail = new Mail(from, subject, to, content)
+              val sg = new SendGrid(sendgridKey)
+              val request = new com.sendgrid.Request()
+              request.setMethod(Method.POST)
+              request.setEndpoint("mail/send")
+              request.setBody(mail.build())
+              sg.api(request)
               Redirect(routes.AuthController.login())
+
           }
+        case _ => Future.successful(Redirect(routes.AuthController.resetPasswordEmail()).flashing("email-error" -> "Email does not exist"))
+      }
+
     }
 
     val formValidationResult: Form[ResetPasswordEmailForm.Data] = ResetPasswordEmailForm.form.bindFromRequest

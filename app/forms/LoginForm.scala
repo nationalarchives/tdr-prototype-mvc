@@ -1,9 +1,8 @@
-package auth
+package forms
 
-import play.api.data.Forms._
+import SignUpForm.passwordCheckConstraint
 import play.api.data.Form
-import play.api.data.Forms.{mapping, nonEmptyText}
-import auth.SignUpForm.passwordCheckConstraint
+import play.api.data.Forms.{mapping, text, email}
 
 object LoginForm {
 
@@ -17,4 +16,3 @@ object LoginForm {
 
   case class LoginData(username: String, password: String)
 }
-

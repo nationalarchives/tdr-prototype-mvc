@@ -1,0 +1,3 @@
+ mutation removeTotp($providerKey: String!) {
+     removeTotp(providerKey: $providerKey)
+ }

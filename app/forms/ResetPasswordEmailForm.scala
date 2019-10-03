@@ -1,12 +1,12 @@
-package auth
+package forms
 
 import play.api.data.Form
-import play.api.data.Forms.{mapping, nonEmptyText}
+import play.api.data.Forms.{mapping,  email}
 
 object ResetPasswordEmailForm {
   val form: Form[Data] = Form(
     mapping(
-      "email" -> nonEmptyText,
+      "email" -> email,
     )(Data.apply)(Data.unapply)
   )
 

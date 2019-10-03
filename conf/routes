@@ -37,3 +37,9 @@ POST    /sendResetPasswordEmail             controllers.AuthController.sendReset
 GET     /resetPassword                      controllers.AuthController.resetPassword(email: String, token: String)
 +nocsrf
 POST    /submitResetPassword                controllers.AuthController.submitResetPassword(email: String)
+GET     /totp                               controllers.TotpController.view()
++nocsrf
+POST    /totpSubmit                         controllers.TotpController.submit()
+GET     /enableTotp                         controllers.TotpController.enableTotp()
++nocsrf
+POST    /enableTotpSubmit                   controllers.TotpController.enableTotpSubmit()

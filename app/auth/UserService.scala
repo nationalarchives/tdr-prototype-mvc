@@ -6,6 +6,7 @@ import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services.IdentityService
 import com.mohiva.play.silhouette.api.util.{PasswordHasher, PasswordInfo}
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
+import forms.SignUpForm
 import graphql.GraphQLClientProvider
 import graphql.codegen.GetUser.getUser
 import graphql.codegen.CreateUser.createUser
@@ -17,10 +18,10 @@ import graphql.tdr.TdrGraphQLClient.GraphQLResponse
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
-class UserDao @Inject()(client: GraphQLClientProvider,
-                        passwordHasher: PasswordHasher,
-                        authInfoRepository: AuthInfoRepository)
-                       (implicit ec: ExecutionContext)
+class UserService @Inject()(client: GraphQLClientProvider,
+                            passwordHasher: PasswordHasher,
+                            authInfoRepository: AuthInfoRepository)
+                           (implicit ec: ExecutionContext)
   extends IdentityService[User]
 {
 

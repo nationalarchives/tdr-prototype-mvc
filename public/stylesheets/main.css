@@ -170,3 +170,6 @@ body {
       flex-direction: column;
       font-size: 15px;
    }
+   ul {
+    list-style: none;
+   }

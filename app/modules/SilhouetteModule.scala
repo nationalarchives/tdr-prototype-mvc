@@ -1,6 +1,6 @@
 package modules
 
-import auth.{PasswordDao, UserDao}
+import auth.{PasswordDao, TotpDao, UserService}
 import com.google.inject.name.Named
 import com.google.inject.{AbstractModule, Provides}
 import com.mohiva.play.silhouette.api.actions.SecuredErrorHandler
@@ -11,23 +11,20 @@ import com.mohiva.play.silhouette.api.util._
 import com.mohiva.play.silhouette.api.{Environment, EventBus, Silhouette, SilhouetteProvider}
 import com.mohiva.play.silhouette.crypto.{JcaCrypter, JcaCrypterSettings, JcaSigner, JcaSignerSettings}
 import com.mohiva.play.silhouette.impl.authenticators.{CookieAuthenticator, CookieAuthenticatorService, CookieAuthenticatorSettings}
-import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
+import com.mohiva.play.silhouette.impl.providers.{CredentialsProvider, GoogleTotpInfo, GoogleTotpProvider}
 import com.mohiva.play.silhouette.impl.util.{DefaultFingerprintGenerator, SecureRandomIDGenerator}
 import com.mohiva.play.silhouette.password.BCryptPasswordHasher
-import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
+import com.mohiva.play.silhouette.persistence.daos.{DelegableAuthInfoDAO, InMemoryAuthInfoDAO}
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
-import controllers.{ErrorRedirectController, routes}
+import controllers.ErrorRedirectController
 import graphql.GraphQLClientProvider
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
-import play.api.db.slick.DatabaseConfigProvider
-import play.api.mvc.{CookieHeaderEncoding, RequestHeader, Result}
+import play.api.mvc.CookieHeaderEncoding
 import utils.DefaultEnv
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 import scala.concurrent.duration._
-import play.api.mvc._
 
 class SilhouetteModule extends AbstractModule with ScalaModule {
 
@@ -45,7 +42,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
 
 
   @Provides
-  def provideEnvironment(userService: UserDao,
+  def provideEnvironment(userService: UserService,
                          authenticatorService: AuthenticatorService[CookieAuthenticator],
                          eventBus: EventBus): Environment[DefaultEnv] = {
 
@@ -59,6 +56,9 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
 
   @Provides
   def providePasswordDAO(client: GraphQLClientProvider): DelegableAuthInfoDAO[PasswordInfo] = new PasswordDao(client)
+
+  @Provides
+  def provideTotpDAO(client: GraphQLClientProvider): DelegableAuthInfoDAO[GoogleTotpInfo] = new TotpDao(client)
 
   @Provides
   def provideAuthenticatorService(@Named("authenticator-signer") signer: Signer,
@@ -88,8 +88,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
 
 
   @Provides
-  def provideAuthInfoRepository(passwordDAO: DelegableAuthInfoDAO[PasswordInfo]): AuthInfoRepository =
-    new DelegableAuthInfoRepository(passwordDAO)
+  def provideAuthInfoRepository(passwordDAO: DelegableAuthInfoDAO[PasswordInfo], totpInfoDAO: DelegableAuthInfoDAO[GoogleTotpInfo]): AuthInfoRepository =
+    new DelegableAuthInfoRepository(passwordDAO, totpInfoDAO)
 
   @Provides
   def providePasswordHasherRegistry(passwordHasher: PasswordHasher): PasswordHasherRegistry = {
@@ -118,6 +118,16 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     val config = JcaCrypterSettings("SecretKey")
 
     new JcaCrypter(config)
+  }
+
+  /**
+    * Provides the TOTP provider.
+    *
+    * @return The credentials provider.
+    */
+  @Provides
+  def provideTotpProvider(passwordHasherRegistry: PasswordHasherRegistry): GoogleTotpProvider = {
+    new GoogleTotpProvider(passwordHasherRegistry)
   }
 
 }
