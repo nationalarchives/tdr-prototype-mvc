@@ -22,25 +22,45 @@
                             <div class="file-status">
 
                                 <div class="error @errorClass">
-                                    <div class="progress-complete">
-                                        <span class="iconify" data-icon="ic:baseline-error-outline" data-inline="false"></span>
+                                    <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
+                                        <h2 class="govuk-error-summary__title" id="error-summary-title">
+                                            There is a problem
+                                        </h2>
+                                        <div class="govuk-error-summary__body">
+                                            <p class="govuk-body">We had an error during our checks. The collection you have uploaded will be deleted.</p>
+                                            <p class="govuk-body">Please check your collection for viruses and file format and try again.</p>
+                                        </div>
+                                    </div>
+
+                                    <a href="@routes.DashboardController.index()" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                                        Start again
+                                    </a>
+
+                                        <!-- <span class="iconspan iconify" data-icon="ic:baseline-error-outline" data-inline="false"></span>
                                         <div class="complete-text">
                                             <h4>Upload failed</h4>
                                             <span>Please try again.</span>
-                                        </div>
-                                    </div>
+                                        </div> -->
                                 </div>
 
                                 <div class="progress-complete-container @completeClass">
-                                    <div class="progress-complete">
-                                        <span class="iconify complete-tick" data-icon="ic-round-check-circle-outline" data-inline="false"></span>
+                                    <div id="success-summary" class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
+                                        <h2 class="govuk-error-summary__title" id="error-summary-title">
+                                            Upload was successful
+                                        </h2>
+                                        <div class="govuk-error-summary__body">
+                                            <p class="govuk-body">@status.totalComplete files have been successfully uploaded.</p>
+                                            <p class="govuk-body">Please review and confirm your transfer to complete this transaction.</p>
+                                        </div>
+                                    </div>
+
+                                        <!-- <span class="iconspan iconify complete-tick" data-icon="ic-round-check-circle-outline" data-inline="false"></span>
                                         <div class="complete-text">
                                             <h4>Upload was successful</h4>
                                             <span class="complete-message">@status.totalComplete
                                                 files have been successfully uploaded</span>
                                             <span>Please click 'Save and Continue' to proceed this transfer.</span>
-                                        </div>
-                                    </div>
+                                        </div> -->
 
                                     <a href="@routes.ReviewController.index(consignmentId)" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
                                         Confirm transfer
