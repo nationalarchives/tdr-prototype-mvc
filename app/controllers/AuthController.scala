@@ -30,7 +30,6 @@ class AuthController @Inject()(controllerComponents: ControllerComponents,
                                credentialsProvider: CredentialsProvider)(implicit executionContext: ExecutionContext,
                                                                          authInfoRepository: AuthInfoRepository) extends AbstractController(controllerComponents)  with play.api.i18n.I18nSupport {
 
-  private val sendgridKey: String = config.get[String]("app.sendgrid.key")
   private val environment: String = config.get[String]("app.environment")
 
   val authService: AuthenticatorService[CookieAuthenticator] = silhouette.env.authenticatorService
@@ -45,9 +44,11 @@ class AuthController @Inject()(controllerComponents: ControllerComponents,
   }
 
   def processLoginAttempt: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
+
     val errorFunction: Form[LoginData] => Future[Result] = { formWithErrors: Form[LoginData] =>
       Future.apply(BadRequest(views.html.login(formWithErrors)))
     }
+
     val successFunction: LoginData => Future[Result] = { user: LoginData =>
       credentialsProvider.authenticate(credentials = Credentials(user.username, user.password))
         .flatMap { loginInfo =>
@@ -62,7 +63,6 @@ class AuthController @Inject()(controllerComponents: ControllerComponents,
           }
         }.recover {
         case e: Exception =>
-          e.printStackTrace()
           Redirect(routes.AuthController.login()).flashing("login-error" -> e.getMessage)
       }
     }
@@ -123,12 +123,6 @@ class AuthController @Inject()(controllerComponents: ControllerComponents,
               val url = if(environment.equals("dev")) {"https://app.tdr-prototype.co.uk"} else {"http://localhost:9000"}
               val content = new Content("text/html", s"<h1>$url/resetPassword?email=${resetForm.email}&token=$token</h1>")
               val mail = new Mail(from, subject, to, content)
-              val sg = new SendGrid(sendgridKey)
-              val sendgridRequest = new com.sendgrid.Request()
-              sendgridRequest.setMethod(Method.POST)
-              sendgridRequest.setEndpoint("mail/send")
-              sendgridRequest.setBody(mail.build())
-              sg.api(sendgridRequest)
               Redirect(routes.AuthController.login())
 
           }

@@ -1,6 +1,5 @@
 package controllers
 
-import auth.Authorisers.IsSeriesCreator
 import com.mohiva.play.silhouette.api.Silhouette
 import graphql.GraphQLClientProvider
 import graphql.codegen.CreateConsignment.createConsignment
