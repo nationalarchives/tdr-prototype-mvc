@@ -1,7 +1,9 @@
 package controllers
 
+import com.mohiva.play.silhouette.api.Silhouette
 import javax.inject._
 import play.api.mvc._
+import utils.DefaultEnv
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -11,7 +13,8 @@ import scala.concurrent.{ExecutionContext, Future}
  */
 @Singleton
 class HomeController @Inject()(
-  cc: ControllerComponents
+  cc: ControllerComponents,
+  silhouette: Silhouette[DefaultEnv],
 )(
   implicit ex: ExecutionContext
 ) extends AbstractController(cc) {
@@ -23,7 +26,11 @@ class HomeController @Inject()(
    * will be called when the application receives a `GET` request with
    * a path of `/`.
    */
-  def index() = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.index())
+  def index() = silhouette.UserAwareAction { implicit request =>
+    request.identity match {
+      case Some(_) => Redirect(routes.DashboardController.index())
+      case None => Redirect(routes.AuthController.login())
+    }
+
   }
 }

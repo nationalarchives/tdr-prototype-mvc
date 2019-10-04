@@ -1,0 +1,10 @@
+query getUser($providerKey: String!, $providerId: String!) {
+    getUser(providerKey: $providerKey, providerId: $providerId) {
+        id
+        firstName
+        lastName
+        email
+        providerId
+        providerKey
+    }
+}

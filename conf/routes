@@ -6,23 +6,45 @@
 # An example controller showing a sample home page
 GET     /login                              controllers.AuthController.login
 GET     /logout                             controllers.AuthController.logout
++nocsrf
 POST    /processLoginAttempt                controllers.AuthController.processLoginAttempt
 GET     /                                   controllers.HomeController.index
 GET     /dashboard                          controllers.DashboardController.index
 GET     /serviceAgreements                  controllers.ServiceAgreementsController.index
++nocsrf
 POST    /serviceAgreements/submit           controllers.ServiceAgreementsController.submit()
 GET     /seriesDetails                      controllers.SeriesDetailsController.index
++nocsrf
 POST    /seriesDetails/submit               controllers.SeriesDetailsController.submit()
 GET     /createSeries                       controllers.CreateSeriesController.index
++nocsrf
 POST    /createSeries/submit                controllers.CreateSeriesController.submit()
 GET     /reviewTransfer                     controllers.ReviewController.index(consignmentId: Int)
 GET     /upload                             controllers.UploadController.index(consignmentId: Int)
 GET     /createConsignment                  controllers.CreateConsignmentController.index(seriesId: Int)
++nocsrf
 POST    /createConsignment/submit           controllers.CreateConsignmentController.submit()
 GET     /fileStatus                         controllers.FileStatusController.getFileStatus(consignmentId: Int)
 GET     /fileStatusApi                      controllers.FileStatusController.getFileStatusApi(consignmentId: Int)
++nocsrf
 POST    /upload                             controllers.UploadController.upload(consignmentId: Int)
++nocsrf
 POST    /filedata                           controllers.UploadController.saveFileData
 GET     /transferConfirmation               controllers.TransferConfirmationController.index
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+GET         /signUp                         controllers.AuthController.signUpForm
++nocsrf
+POST        /signUp                         controllers.AuthController.signUpSubmit
+GET     /resetPasswordEmail                 controllers.AuthController.resetPasswordEmail
++nocsrf
+POST    /sendResetPasswordEmail             controllers.AuthController.sendResetPasswordEmail
+GET     /resetPassword                      controllers.AuthController.resetPassword(email: String, token: String)
++nocsrf
+POST    /submitResetPassword                controllers.AuthController.submitResetPassword(email: String)
+GET     /totp                               controllers.TotpController.view()
++nocsrf
+POST    /totpSubmit                         controllers.TotpController.submit()
+GET     /enableTotp                         controllers.TotpController.enableTotp()
++nocsrf
+POST    /enableTotpSubmit                   controllers.TotpController.enableTotpSubmit()

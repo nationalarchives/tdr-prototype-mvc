@@ -20,6 +20,19 @@ input CreateSeriesInput {
   description: String!
 }
 
+input UserInput {
+  firstName: String!
+  lastName: String!
+  email: String!
+  providerId: String!
+}
+
+input PasswordInput {
+  providerKey: String!
+  hasher: String!
+  password: String!
+}
+
 type File {
   id: UUID!
   path: String!
@@ -46,6 +59,58 @@ type FileStatus {
   antivirusStatus: String!
 }
 
+type FileProgress {
+  totalComplete: Int!
+  totalFiles: Int!
+  error: Boolean!
+}
+
+type User {
+  id: Int!
+  firstName: String!
+  lastName: String!
+  email: String!
+  providerId: String!
+  providerKey: String!
+}
+
+type Password {
+  hasher: String!
+  password: String!
+  salt: String
+}
+
+type PasswordResetToken {
+  email: String!
+  token: String!
+}
+
+input TotpInfoInput {
+  providerKey: String!
+  sharedKey: String!
+  scratchCodes: [TotpScratchCodesInput!]!
+}
+
+type TotpInfoOutput {
+  id: Int!
+  providerKey: String!
+  sharedKey: String!
+  scratchCodes: [TotpScratchCodesOuput!]!
+}
+
+input TotpScratchCodesInput {
+  hasher: String!
+  password: String!
+  salt: String
+}
+
+type TotpScratchCodesOuput {
+  id: Int!
+  hasher: String!
+  password: String!
+  salt: String
+}
+
 scalar Instant
 
 type Mutation {
@@ -57,6 +122,14 @@ type Mutation {
   updateVirusCheck(id: UUID!, status: String!): Boolean!
   updateFileFormat(id: UUID!, pronomId: String!): Boolean!
   createMultipleFiles(createFileInputs: [CreateFileInput!]!): [File!]!
+  createUser(userData: UserInput!): User
+  addPassword(passwordInput: PasswordInput!): Password
+  updatePassword(passwordInput: PasswordInput!): Int
+  removePassword(providerKey: String!): Int
+  createPasswordResetToken(email: String!): PasswordResetToken
+  addTotp(totp: TotpInfoInput!): TotpInfoOutput
+  updateTotp(totp: TotpInfoInput!): Int!
+  removeTotp(providerKey: String!): Int!
 }
 
 type Query {
@@ -65,6 +138,12 @@ type Query {
   getConsignment(id: Int!): Consignment
   getFile(id: UUID!): File
   getFiles: [File!]!
+  getSeriesForCreator(seriesId: Int!, creator: String!): Series
+  getUser(providerKey: String!, providerId: String!): User
+  findPassword(providerKey: String!): Password
+  getConsignmentForCreator(id: Int!, creator: String!): Consignment
+  isPasswordTokenValid(email: String!, token: String!): Boolean!
+  findTotp(providerKey: String!): TotpInfoOutput
   getFileChecksStatus(id: Int!): FileCheckStatus!
 }
 

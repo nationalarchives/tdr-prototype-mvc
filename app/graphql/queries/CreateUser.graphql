@@ -1,0 +1,10 @@
+mutation createUser($userData: UserInput!) {
+    createUser(userData: $userData) {
+        id
+        email
+        firstName
+        lastName
+        providerId
+        providerKey
+    }
+}

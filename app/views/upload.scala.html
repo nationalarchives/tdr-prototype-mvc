@@ -15,7 +15,7 @@
                 <h1 class="govuk-heading-xl">Upload</h1>
 
                 <div class="error"></div>
-                @helper.form(action = routes.UploadController.upload(consignmentId), 'enctype -> "multipart/form-data", 'id -> "file-upload-form") {
+                @helper.form(action = routes.UploadController.upload(consignmentId), 'id -> "file-upload-form") {
 
                 <div class="upload-form">
                     <label class="govuk-label" for="file-upload">
