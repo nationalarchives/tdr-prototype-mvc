@@ -43,7 +43,7 @@ class UploadController @Inject()(
     val result = request.body.validate[FileInputs]
     result.fold(
       errors => {
-        Future.apply(InternalServerError(errors.toString()))
+        Future.successful(InternalServerError(errors.toString()))
       },
       fileInputs => {
         val graphQlClient = client.graphqlClient

@@ -41,7 +41,7 @@ class ServiceAgreementsController @Inject()(controllerComponents: ControllerComp
   def submit() = Action.async { implicit request: Request[AnyContent] =>
 
     val errorFunction: Form[ServiceAgreementsData] => Future[Result] = { formWithErrors: Form[ServiceAgreementsData] =>
-      Future.apply(BadRequest(views.html.serviceAgreements(formWithErrors, options)))
+      Future.successful(BadRequest(views.html.serviceAgreements(formWithErrors, options)))
     }
     val successFunction: ServiceAgreementsData => Future[Result] = { formData: ServiceAgreementsData =>
       println("++++SERVICE AGREEMENT START++++")
@@ -53,7 +53,7 @@ class ServiceAgreementsController @Inject()(controllerComponents: ControllerComp
       println("DRO Sensitivity: " + formData.droSensitivity)
       println("++++SERVICE AGREEMENT END++++")
 
-      Future.apply(Redirect(routes.SeriesDetailsController.index()))
+      Future.successful(Redirect(routes.SeriesDetailsController.index()))
     }
 
     val formValidationResult: Form[ServiceAgreementsData] = form.bindFromRequest

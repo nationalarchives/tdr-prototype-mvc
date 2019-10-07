@@ -46,7 +46,7 @@ class AuthController @Inject()(controllerComponents: ControllerComponents,
   def processLoginAttempt: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
 
     val errorFunction: Form[LoginData] => Future[Result] = { formWithErrors: Form[LoginData] =>
-      Future.apply(BadRequest(views.html.login(formWithErrors)))
+      Future.successful(BadRequest(views.html.login(formWithErrors)))
     }
 
     val successFunction: LoginData => Future[Result] = { user: LoginData =>
