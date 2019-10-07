@@ -1,9 +1,10 @@
 type Consignment {
   id: Int!
   name: String!
-  series: Series!
   creator: String!
   transferringBody: String!
+  series: Series!
+  files: [File!]!
 }
 
 input CreateFileInput {
@@ -18,19 +19,6 @@ input CreateFileInput {
 input CreateSeriesInput {
   name: String!
   description: String!
-}
-
-input UserInput {
-  firstName: String!
-  lastName: String!
-  email: String!
-  providerId: String!
-}
-
-input PasswordInput {
-  providerKey: String!
-  hasher: String!
-  password: String!
 }
 
 type File {
@@ -59,22 +47,36 @@ type FileStatus {
   antivirusStatus: String!
 }
 
-type FileProgress {
-  totalComplete: Int!
-  totalFiles: Int!
-  error: Boolean!
+scalar Instant
+
+type Mutation {
+  createSeries(createSeriesInput: CreateSeriesInput!): Series!
+  createConsignment(name: String!, seriesId: Int!, creator: String!, transferringBody: String!): Consignment!
+  createFile(createFileInput: CreateFileInput!): File!
+  updateServerSideFileChecksum(id: UUID!, checksum: String!): Boolean!
+  updateClientSideFileChecksum(id: UUID!, checksum: String!): Boolean!
+  updateVirusCheck(id: UUID!, status: String!): Boolean!
+  updateFileFormat(id: UUID!, pronomId: String!): Boolean!
+  createMultipleFiles(createFileInputs: [CreateFileInput!]!): [File!]!
+  createUser(userData: UserInput!): User
+  addPassword(passwordInput: PasswordInput!): PasswordInfo
+  updatePassword(passwordInput: PasswordInput!): Int!
+  removePassword(providerKey: String!): Int!
+  addTotp(totp: TotpInfoInput!): TotpInfo
+  updateTotp(totp: TotpInfoInput!): Int!
+  removeTotp(providerKey: String!): Int!
+  createPasswordResetToken(email: String!): PasswordResetToken
+  confirmTransfer(id: Int!): Boolean!
 }
 
-type User {
-  id: Int!
-  firstName: String!
-  lastName: String!
-  email: String!
-  providerId: String!
+type PasswordInfo {
+  hasher: String!
+  password: String!
+  salt: String
+}
+
+input PasswordInput {
   providerKey: String!
-}
-
-type Password {
   hasher: String!
   password: String!
   salt: String
@@ -85,17 +87,38 @@ type PasswordResetToken {
   token: String!
 }
 
-input TotpInfoInput {
-  providerKey: String!
-  sharedKey: String!
-  scratchCodes: [TotpScratchCodesInput!]!
+type Query {
+  getAllSeries: [Series!]!
+  getConsignments: [Consignment!]!
+  getSeriesForCreator(seriesId: Int!, creator: String!): Series
+  getConsignmentForCreator(id: Int!, creator: String!): Consignment
+  getConsignment(id: Int!): Consignment
+  getFile(id: UUID!): File
+  getFiles: [File!]!
+  getFileChecksStatus(id: Int!): FileCheckStatus!
+  getUser(providerKey: String!, providerId: String!): User
+  findPassword(providerKey: String!): PasswordInfo
+  findTotp(providerKey: String!): TotpInfo
+  isPasswordTokenValid(email: String!, token: String!): Boolean!
 }
 
-type TotpInfoOutput {
+type Series {
+  id: Int!
+  name: String!
+  description: String!
+}
+
+type TotpInfo {
   id: Int!
   providerKey: String!
   sharedKey: String!
   scratchCodes: [TotpScratchCodesOuput!]!
+}
+
+input TotpInfoInput {
+  providerKey: String!
+  sharedKey: String!
+  scratchCodes: [TotpScratchCodesInput!]!
 }
 
 input TotpScratchCodesInput {
@@ -111,46 +134,20 @@ type TotpScratchCodesOuput {
   salt: String
 }
 
-scalar Instant
-
-type Mutation {
-  createSeries(createSeriesInput: CreateSeriesInput!): Series!
-  createConsignment(name: String!, seriesId: Int!, creator: String!, transferringBody: String!): Consignment!
-  createFile(createFileInput: CreateFileInput!): File!
-  updateServerSideFileChecksum(id: UUID!, checksum: String!): Boolean!
-  updateClientSideFileChecksum(id: UUID!, checksum: String!): Boolean!
-  updateVirusCheck(id: UUID!, status: String!): Boolean!
-  updateFileFormat(id: UUID!, pronomId: String!): Boolean!
-  createMultipleFiles(createFileInputs: [CreateFileInput!]!): [File!]!
-  createUser(userData: UserInput!): User
-  addPassword(passwordInput: PasswordInput!): Password
-  updatePassword(passwordInput: PasswordInput!): Int
-  removePassword(providerKey: String!): Int
-  createPasswordResetToken(email: String!): PasswordResetToken
-  addTotp(totp: TotpInfoInput!): TotpInfoOutput
-  updateTotp(totp: TotpInfoInput!): Int!
-  removeTotp(providerKey: String!): Int!
-}
-
-type Query {
-  getAllSeries: [Series!]!
-  getConsignments: [Consignment!]!
-  getConsignment(id: Int!): Consignment
-  getFile(id: UUID!): File
-  getFiles: [File!]!
-  getSeriesForCreator(seriesId: Int!, creator: String!): Series
-  getUser(providerKey: String!, providerId: String!): User
-  findPassword(providerKey: String!): Password
-  getConsignmentForCreator(id: Int!, creator: String!): Consignment
-  isPasswordTokenValid(email: String!, token: String!): Boolean!
-  findTotp(providerKey: String!): TotpInfoOutput
-  getFileChecksStatus(id: Int!): FileCheckStatus!
-}
-
-type Series {
-  id: Int!
-  name: String!
-  description: String!
-}
-
 scalar UUID
+
+type User {
+  id: Int!
+  firstName: String!
+  lastName: String!
+  email: String!
+  providerId: String!
+  providerKey: String!
+}
+
+input UserInput {
+  firstName: String!
+  lastName: String!
+  email: String!
+  providerId: String!
+}

@@ -34,12 +34,12 @@ class CreateSeriesController @Inject()(
   def submit() = Action.async { implicit request: Request[AnyContent] =>
 
     val errorFunction: Form[CreateSeriesData] => Future[Result] = { formWithErrors: Form[CreateSeriesData] =>
-      Future.apply(BadRequest(views.html.createSeries(formWithErrors)))
+      Future.successful(BadRequest(views.html.createSeries(formWithErrors)))
     }
     val successFunction: CreateSeriesData => Future[Result] = { data: CreateSeriesData =>
       val createSeriesInput = CreateSeriesInput(data.seriesName, data.seriesDescription)
 
-      val graphQlClient = client.graphqlClient(List())
+      val graphQlClient = client.graphqlClient
 
       graphQlClient.query[CreateSeries.CreateSeries.Data, CreateSeries.CreateSeries.Variables](CreateSeries.CreateSeries.document,
         CreateSeries.CreateSeries.Variables(createSeriesInput)).result.map(result => result match {

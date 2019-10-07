@@ -26,7 +26,7 @@ class UserService @Inject()(client: GraphQLClientProvider,
 {
 
 
-  val graphqlClient: TdrGraphQLClient = client.graphqlClient(List())
+  val graphqlClient: TdrGraphQLClient = client.graphqlClient
 
   override def retrieve(loginInfo: LoginInfo): Future[Option[User]] = {
     val vars = getUser.Variables(loginInfo.providerKey, loginInfo.providerID)

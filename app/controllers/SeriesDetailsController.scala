@@ -35,7 +35,7 @@ class SeriesDetailsController @Inject()(
 
   def index() = Action.async { implicit request: Request[AnyContent] =>
 
-    val graphQlClient = client.graphqlClient(List())
+    val graphQlClient = client.graphqlClient
 
     graphQlClient.query[GetAllSeries.getAllSeries.Data](GetAllSeries.getAllSeries.document).result.map(result => result match {
       case Right(r) => Ok(views.html.seriesDetails(r.data.getAllSeries, selectedSeriesForm))

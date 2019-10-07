@@ -7,7 +7,7 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.mvc._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class ServiceAgreementsController @Inject()(controllerComponents: ControllerComponents,
@@ -38,12 +38,12 @@ class ServiceAgreementsController @Inject()(controllerComponents: ControllerComp
   }
 
   //Only print information to console to show form works
-  def submit() = Action.async { implicit request: Request[AnyContent] =>
+  def submit() = Action { implicit request: Request[AnyContent] =>
 
-    val errorFunction: Form[ServiceAgreementsData] => Future[Result] = { formWithErrors: Form[ServiceAgreementsData] =>
-      Future.apply(BadRequest(views.html.serviceAgreements(formWithErrors, options)))
+    val errorFunction: Form[ServiceAgreementsData] => Result = { formWithErrors: Form[ServiceAgreementsData] =>
+      BadRequest(views.html.serviceAgreements(formWithErrors, options))
     }
-    val successFunction: ServiceAgreementsData => Future[Result] = { formData: ServiceAgreementsData =>
+    val successFunction: ServiceAgreementsData => Result = { formData: ServiceAgreementsData =>
       println("++++SERVICE AGREEMENT START++++")
       println("Public Record: " + formData.publicRecord)
       println("Crown Copyright: " + formData.crownCopyright)
@@ -53,7 +53,7 @@ class ServiceAgreementsController @Inject()(controllerComponents: ControllerComp
       println("DRO Sensitivity: " + formData.droSensitivity)
       println("++++SERVICE AGREEMENT END++++")
 
-      Future.apply(Redirect(routes.SeriesDetailsController.index()))
+      Redirect(routes.SeriesDetailsController.index())
     }
 
     val formValidationResult: Form[ServiceAgreementsData] = form.bindFromRequest

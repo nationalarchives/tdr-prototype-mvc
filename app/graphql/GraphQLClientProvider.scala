@@ -10,7 +10,6 @@ import graphql.tdr._
 import javax.inject.Inject
 import play.api.Configuration
 
-import scala.collection.immutable.Seq
 import scala.concurrent.Future
 
 class GraphQLClientProvider @Inject()(
@@ -28,9 +27,9 @@ class GraphQLClientProvider @Inject()(
       http.outgoingConnectionHttps(uri.authority.host.address(), uri.effectivePort)
     }
 
-  def graphqlClient(oathHeaders: Seq[HttpHeader]): TdrGraphQLClient = {
+  def graphqlClient: TdrGraphQLClient = {
     if (uri.scheme == "http") {
-      TdrGraphQLClient( uri, oathHeaders)
+      TdrGraphQLClient(uri)
     }
     else {
       TdrGraphQLClient(configuration)

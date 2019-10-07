@@ -1,0 +1,3 @@
+mutation confirmTransfer ($id: Int!) {
+    confirmTransfer(id: $id)
+}

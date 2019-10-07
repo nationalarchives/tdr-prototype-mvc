@@ -23,27 +23,17 @@
 
 package graphql.tdr
 
-import play.api.Configuration
-import javax.inject.Inject
-import akka.actor.ActorSystem
-import akka.http.scaladsl.Http.OutgoingConnection
-import akka.http.scaladsl.model.{HttpHeader, HttpRequest, HttpResponse, Uri}
-import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.Flow
+import akka.http.scaladsl.model.Uri
+import com.github.jarlakxen.drunk.extensions.{GraphQLExtensions, NoExtensions}
+import com.github.jarlakxen.drunk.{ast => _, _}
 import io.circe._
 import io.circe.parser._
-import sangria._
+import play.api.Configuration
 import sangria.ast.Document
 import sangria.introspection._
 import sangria.marshalling.circe._
 import sangria.parser.QueryParser
-import ca.ryangreen.apigateway.generic.{GenericApiGatewayClientBuilder, GenericApiGatewayRequestBuilder, GenericApiGatewayResponse}
-import com.github.jarlakxen.drunk.GraphQLClient.GraphQLResponse
-import com.github.jarlakxen.drunk.{ast => _, _}
-import com.github.jarlakxen.drunk.extensions.{GraphQLExtensions, NoExtensions}
 
-import scala.collection.immutable
-import scala.collection.immutable.Seq
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util._
 
@@ -171,7 +161,7 @@ object TdrGraphQLClient {
 
   def apply(configuration: Configuration) = new TdrGraphQLClient(new TdrSignRequestClient(configuration))
 
-  def apply(uri: Uri, oathHeaders: Seq[HttpHeader]) =  new TdrGraphQLClient(new TdrBackendClientGraphQL(uri, oathHeaders))
+  def apply(uri: Uri) =  new TdrGraphQLClient(new TdrBackendClientGraphQL(uri))
 
   // Work arround for Scala 2.11
   implicit class Either212[+A, +B](either: Either[A, B]) {

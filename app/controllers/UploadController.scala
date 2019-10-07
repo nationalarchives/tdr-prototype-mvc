@@ -43,22 +43,20 @@ class UploadController @Inject()(
     val result = request.body.validate[FileInputs]
     result.fold(
       errors => {
-        Future.apply(InternalServerError(errors.toString()))
+        Future.successful(InternalServerError(errors.toString()))
       },
       fileInputs => {
-        val appSyncClient = client.graphqlClient(List())
+        val graphQlClient = client.graphqlClient
 
-        appSyncClient.query[Data, Variables](document, Variables(fileInputs.data)).result.map {
+        graphQlClient.query[Data, Variables](document, Variables(fileInputs.data)).result.map {
           case Right(r) =>
             val pathToId: Map[String, String] = r.data.createMultipleFiles map (f => f.path.toString -> f.id.toString) toMap
             val output: Output = Output(pathToId, getTemporaryCredentials, s"tdr-upload-files-$environment")
             Ok(Json.toJson(output))
           case Left(ex) => InternalServerError(ex.errors.toString())
         }
-
       }
     )
-
   }
 
   def upload(consignmentId: Int) = silhouette.SecuredAction(isConsignmentCreator) { implicit request =>
@@ -91,5 +89,4 @@ class UploadController @Inject()(
   implicit val fileInputReads: Reads[FileInputs] = Json.reads[FileInputs]
   implicit val temporaryCredentialsWrites: OWrites[TemporaryCredentials] = Json.writes[TemporaryCredentials]
   implicit val outputWrites: OWrites[Output] = Json.writes[Output]
-
 }

@@ -19,7 +19,7 @@ import scala.reflect.ClassTag
 class TotpDao @Inject()(client: GraphQLClientProvider)(implicit ec: ExecutionContext, implicit val classTag: ClassTag[GoogleTotpInfo])
   extends DelegableAuthInfoDAO[GoogleTotpInfo]  {
 
-  val graphqlClient: TdrGraphQLClient = client.graphqlClient(List())
+  val graphqlClient: TdrGraphQLClient = client.graphqlClient
 
   override def find(loginInfo: LoginInfo): Future[Option[GoogleTotpInfo]] = {
     val vars = findTotp.Variables(loginInfo.providerKey)
