@@ -46,9 +46,9 @@ class UploadController @Inject()(
         Future.apply(InternalServerError(errors.toString()))
       },
       fileInputs => {
-        val appSyncClient = client.graphqlClient
+        val graphQlClient = client.graphqlClient
 
-        appSyncClient.query[Data, Variables](document, Variables(fileInputs.data)).result.map {
+        graphQlClient.query[Data, Variables](document, Variables(fileInputs.data)).result.map {
           case Right(r) =>
             val pathToId: Map[String, String] = r.data.createMultipleFiles map (f => f.path.toString -> f.id.toString) toMap
             val output: Output = Output(pathToId, getTemporaryCredentials, s"tdr-upload-files-$environment")

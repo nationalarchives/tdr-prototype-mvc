@@ -20,10 +20,10 @@ class ReviewController @Inject()(
   def index(consignmentId: Int) = Action.async {
     implicit request =>
 
-      val appSyncClient = client.graphqlClient
+      val graphQlClient = client.graphqlClient
 
-      val consignmentDetails =  appSyncClient.query[getConsignment.Data, getConsignment.Variables](getConsignment.document, getConsignment.Variables(consignmentId)).result
-      val fileDetails = appSyncClient.query[getFileChecksStatus.Data, getFileChecksStatus.Variables](getFileChecksStatus.document, getFileChecksStatus.Variables(consignmentId)).result
+      val consignmentDetails =  graphQlClient.query[getConsignment.Data, getConsignment.Variables](getConsignment.document, getConsignment.Variables(consignmentId)).result
+      val fileDetails = graphQlClient.query[getFileChecksStatus.Data, getFileChecksStatus.Variables](getFileChecksStatus.document, getFileChecksStatus.Variables(consignmentId)).result
 
       for {
         consignment <-consignmentDetails
