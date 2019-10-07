@@ -18,7 +18,7 @@ import scala.reflect.ClassTag
 class PasswordDao @Inject()(client: GraphQLClientProvider)(implicit ec: ExecutionContext, implicit val classTag: ClassTag[PasswordInfo])
   extends DelegableAuthInfoDAO[PasswordInfo] {
 
-  val graphqlClient: TdrGraphQLClient = client.graphqlClient(List())
+  val graphqlClient: TdrGraphQLClient = client.graphqlClient
 
   override def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]] = {
     val vars: findPassword.Variables = findPassword.Variables(loginInfo.providerKey)

@@ -13,7 +13,7 @@ object Authorisers {
 
   case class IsConsignmentCreator @Inject ()(client: GraphQLClientProvider, implicit val ec: ExecutionContext) extends Authorization[User, CookieAuthenticator] {
     override def isAuthorized[B](user: User, authenticator: CookieAuthenticator)(implicit request: Request[B]): Future[Boolean] = {
-      val graphqlClient = client.graphqlClient(List())
+      val graphqlClient = client.graphqlClient
       val vars = getConsignmentForCreator.Variables(request.getQueryString("consignmentId").get.toInt, user.email)
       graphqlClient.query[getConsignmentForCreator.Data, getConsignmentForCreator.Variables](getConsignmentForCreator.document, vars).result.map {
         case Right(r) => r.data.getConsignmentForCreator.isDefined

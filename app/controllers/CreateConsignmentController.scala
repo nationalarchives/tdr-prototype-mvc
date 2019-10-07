@@ -28,7 +28,7 @@ class CreateConsignmentController @Inject()(
 
   def submit() = silhouette.UserAwareAction.async { implicit request =>
     request.identity.map(id => {
-      val appSyncClient = client.graphqlClient(List())
+      val appSyncClient = client.graphqlClient
       val form = CreateConsignmentData.form.bindFromRequest
       val vars = createConsignment.Variables(form.get.consignmentName,form.get.seriesId,id.email,form.get.transferringBody)
       appSyncClient.query[createConsignment.Data, createConsignment.Variables](createConsignment.document, vars).result.map {
@@ -37,9 +37,5 @@ class CreateConsignmentController @Inject()(
         case Left(e) => InternalServerError(e.errors.toString())
       }
     }).get
-
-
   }
-
-
 }

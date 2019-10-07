@@ -46,7 +46,7 @@ class UploadController @Inject()(
         Future.apply(InternalServerError(errors.toString()))
       },
       fileInputs => {
-        val appSyncClient = client.graphqlClient(List())
+        val appSyncClient = client.graphqlClient
 
         appSyncClient.query[Data, Variables](document, Variables(fileInputs.data)).result.map {
           case Right(r) =>
@@ -55,10 +55,8 @@ class UploadController @Inject()(
             Ok(Json.toJson(output))
           case Left(ex) => InternalServerError(ex.errors.toString())
         }
-
       }
     )
-
   }
 
   def upload(consignmentId: Int) = silhouette.SecuredAction(isConsignmentCreator) { implicit request =>
@@ -91,5 +89,4 @@ class UploadController @Inject()(
   implicit val fileInputReads: Reads[FileInputs] = Json.reads[FileInputs]
   implicit val temporaryCredentialsWrites: OWrites[TemporaryCredentials] = Json.writes[TemporaryCredentials]
   implicit val outputWrites: OWrites[Output] = Json.writes[Output]
-
 }

@@ -140,7 +140,7 @@ class AuthController @Inject()(controllerComponents: ControllerComponents,
   }
 
   def resetPassword(email: String, token: String) = Action.async { implicit request =>
-    val graphqlClient = client.graphqlClient(List())
+    val graphqlClient = client.graphqlClient
     val vars = isPasswordTokenValid.Variables(email, token)
     graphqlClient.query[isPasswordTokenValid.Data, isPasswordTokenValid.Variables](isPasswordTokenValid.document, vars).result.map {
       case Right(r) if r.data.isPasswordTokenValid =>  Ok(views.html.resetPassword(ResetPasswordForm.form, email))

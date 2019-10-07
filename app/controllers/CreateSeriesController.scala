@@ -39,7 +39,7 @@ class CreateSeriesController @Inject()(
     val successFunction: CreateSeriesData => Future[Result] = { data: CreateSeriesData =>
       val createSeriesInput = CreateSeriesInput(data.seriesName, data.seriesDescription)
 
-      val graphQlClient = client.graphqlClient(List())
+      val graphQlClient = client.graphqlClient
 
       graphQlClient.query[CreateSeries.CreateSeries.Data, CreateSeries.CreateSeries.Variables](CreateSeries.CreateSeries.document,
         CreateSeries.CreateSeries.Variables(createSeriesInput)).result.map(result => result match {
