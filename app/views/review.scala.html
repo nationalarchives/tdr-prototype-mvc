@@ -1,4 +1,7 @@
-@(consignment:graphql.codegen.GetConsignment.getConsignment.GetConsignment, files: graphql.codegen.GetFileStatus.getFileChecksStatus.GetFileChecksStatus)
+@import helper._
+@import viewsapi.FormFunctions._
+
+@(consignment:graphql.codegen.GetConsignment.getConsignment.GetConsignment, files: graphql.codegen.GetFileStatus.getFileChecksStatus.GetFileChecksStatus, reviewform: Form[model.ReviewData])(implicit messages: Messages)
 
 @main("Review") {
     @defining(play.core.PlayVersion.current) { version =>
@@ -55,43 +58,47 @@
 
                 </div>
 
-                <!-- Confirmation Checkboxes -->
-                <fieldset class="govuk-fieldset" aria-describedby="confirm-transfer-checks">
-                    <div class="govuk-form-group">
+                @form(action = routes.ReviewController.submit(consignment.id)) {
 
-                        <div class="govuk-checkboxes govuk-checkboxes--small">
-                            <div class="govuk-checkboxes__item">
-                                <input required class="govuk-checkboxes__input" id="tbt" name="confirm-transfer" type="checkbox" value="toBeTransferred">
-                                <label class="govuk-label govuk-checkboxes__label" for="tbt">
-                                    @files.totalFiles records are selected to be transferred.
-                                </label>
-                            </div>
-                            <div class="govuk-checkboxes__item">
-                                <input required class="govuk-checkboxes__input" id="open" name="confirm-transfer" type="checkbox" value="openRecords">
-                                <label class="govuk-label govuk-checkboxes__label" for="open">
-                                    I confirm that all records are open.
-                                </label>
-                            </div>
-                            <div class="govuk-checkboxes__item">
-                                <input required class="govuk-checkboxes__input" id="owner" name="confirm-transfer" type="checkbox" value="ownershipTNA">
-                                <label class="govuk-label govuk-checkboxes__label" for="owner">
-                                    I confirm that I am transferring ownership to The National Archives.
-                                </label>
+                    <!-- Confirmation Checkboxes -->
+                    <fieldset class="govuk-fieldset" aria-describedby="confirm-transfer-checks">
+                        <div class="govuk-form-group">
+                            <div class="govuk-checkboxes govuk-checkboxes--small">
+                                @inputSingleCheckbox(
+                                    reviewform("confirmRecordTransfer"),
+                                    '_label -> s"${files.totalFiles} records are selected to be transferred.",
+                                    '_value -> "yes",
+                                    '_smallCheckbox -> true,
+                                    requiredInputArg -> true
+                                )
+                                @inputSingleCheckbox(
+                                    reviewform("confirmOpen"),
+                                    '_label -> "I confirm that all records are open.",
+                                    '_value -> "yes",
+                                    '_smallCheckbox -> true,
+                                    requiredInputArg -> true
+                                )
+                                @inputSingleCheckbox(
+                                    reviewform("confirmTnaOwnership"),
+                                    '_label -> "I confirm that I am transferring ownership to The National Archives.",
+                                    '_value -> "yes",
+                                    '_smallCheckbox -> true,
+                                    requiredInputArg -> true
+                                )
                             </div>
                         </div>
+                    </fieldset>
+
+                    <!-- Buttons -->
+                    <div class="govuk-form-group">
+                        <a href="@routes.DashboardController.index" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                            Cancel
+                        </a>
+                        <button class="govuk-button" type="submit" data-module="govuk-button" role="button">
+                            Transfer
+                        </button>
                     </div>
-                </fieldset>
-
-                <!-- Buttons -->
-                <div class="govuk-form-group">
-                    <a href="@routes.DashboardController.index" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
-                        Cancel
-                    </a>
-                    <a href="#" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
-                        Transfer
-                    </a>
-                </div>
-
+                }
             </div>
         </div>
     }

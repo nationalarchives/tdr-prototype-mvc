@@ -20,6 +20,8 @@ GET     /createSeries                       controllers.CreateSeriesController.i
 +nocsrf
 POST    /createSeries/submit                controllers.CreateSeriesController.submit()
 GET     /reviewTransfer                     controllers.ReviewController.index(consignmentId: Int)
++nocsrf
+POST    /reviewTransfer/submit              controllers.ReviewController.submit(consignmentId: Int)
 GET     /upload                             controllers.UploadController.index(consignmentId: Int)
 GET     /createConsignment                  controllers.CreateConsignmentController.index(seriesId: Int)
 +nocsrf
