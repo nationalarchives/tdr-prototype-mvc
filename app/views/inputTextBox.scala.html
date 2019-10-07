@@ -1,14 +1,28 @@
 @(field: Field,
-inputType: String,
 args: (Symbol, Any)*
 )(implicit messages: Messages)
 
 @import views.html.helper._
+
 @import viewsapi.FormFunctions._
 
 @elements = @{new FieldElements(field.id, field, null, args.toMap, messages) }
 
-<div class="govuk-form-group @elements.setErrorClass">
+@hide() = @{
+if(inputType == "hidden") {
+"hide"
+}
+}
+
+@inputType = @{
+if(elements.args.contains('_inputType)) {
+    elements.args('_inputType)
+} else {
+    "text"
+}
+}
+
+<div class="govuk-form-group @elements.setErrorClass @hide">
         <label class="govuk-label" for=@elements.id>
             @elements.label
             @elements.args.requiredLabelSuffix()
@@ -19,6 +33,7 @@ args: (Symbol, Any)*
             class="govuk-input @elements.setErrorClass"
             id="@elements.id"
             name="@elements.id"
+            value="@elements.field.value"
         />
         @elements.renderErrorMessage()
 </div>

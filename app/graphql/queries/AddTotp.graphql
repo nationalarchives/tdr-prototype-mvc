@@ -1,0 +1,13 @@
+ mutation addTotp($totp: TotpInfoInput! ){
+     addTotp(totp: $totp) {
+         id,
+         providerKey,
+         sharedKey,
+         scratchCodes {
+             id,
+             hasher,
+             password,
+             salt
+         }
+     }
+ }

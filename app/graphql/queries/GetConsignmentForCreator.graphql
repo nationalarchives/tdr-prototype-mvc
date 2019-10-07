@@ -1,0 +1,5 @@
+query getConsignmentForCreator($id: Int! $creator: String!) {
+    getConsignmentForCreator(id: $id, creator: $creator) {
+        id
+    }
+}

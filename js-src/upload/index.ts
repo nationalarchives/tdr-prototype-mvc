@@ -202,7 +202,7 @@ async function processFiles(files: TdrFile[]) {
             fileInfoList.push(fileInfo);
             filePathToFile.push({ path: fileInfo.path!, file: tdrFile });
         }
-        const response: AxiosResponse | void = await Axios.post<{}, AxiosResponse>("/filedata", { data: fileInfoList })
+        const response: AxiosResponse | void = await Axios.post<{}, AxiosResponse>(`/filedata?consignmentId=${consignmentId}`, { data: fileInfoList })
             .catch(err => {
                 const error: HTMLParagraphElement | null = document.querySelector('.error')
                 error!.innerText = "There has been an error"

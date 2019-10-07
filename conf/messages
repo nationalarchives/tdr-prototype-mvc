@@ -1,1 +1,10 @@
 # https://www.playframework.com/documentation/latest/ScalaI18N
+createConsignment=You cannot create a consignment for this series
+upload=You cannot upload files for this consignment
+
+totp.create.title=Set up two factor authentication
+totp.create.instructions=Scan the QR code with your authenticator app and then input the verification code
+totp.recovery.tokens.title=These are your recovery tokens. Keep them in a safe place
+totp.verify=Verify
+totp.signin.title=Enter your code to sign in
+totp.verification.code=Verification code

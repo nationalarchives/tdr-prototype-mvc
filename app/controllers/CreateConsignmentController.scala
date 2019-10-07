@@ -1,11 +1,13 @@
 package controllers
 
+import com.mohiva.play.silhouette.api.Silhouette
 import graphql.GraphQLClientProvider
-import graphql.codegen.CreateConsignment.createConsignment._
+import graphql.codegen.CreateConsignment.createConsignment
 import javax.inject.{Inject, _}
 import model.CreateConsignmentData
 import play.api.Configuration
 import play.api.mvc._
+import utils.DefaultEnv
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -13,24 +15,31 @@ import scala.concurrent.{ExecutionContext, Future}
 class CreateConsignmentController @Inject()(
                                              client: GraphQLClientProvider,
                                              controllerComponents: ControllerComponents,
+                                             silhouette: Silhouette[DefaultEnv],
                                              configuration: Configuration)(
                                              implicit val ex: ExecutionContext) extends AbstractController(controllerComponents) with play.api.i18n.I18nSupport {
 
-  def index(seriesId:Int) = Action.async { implicit request: Request[AnyContent] =>
+
+
+  def index(seriesId:Int) = silhouette.SecuredAction.async { implicit request: Request[AnyContent] =>
+
     Future(Ok(views.html.createConsignments(CreateConsignmentData.form, seriesId)))
   }
 
-  def submit() = Action.async { implicit request =>
-
-    val appSyncClient = client.graphqlClient(List())
-    val form = CreateConsignmentData.form.bindFromRequest
-
-    val vars = Variables(form.get.consignmentName,form.get.seriesId,request.session.get("username").get,form.get.transferringBody)
-    appSyncClient.query[Data,Variables](document, vars).result.map(result => result match {
-      case Right(r) => {
-        Redirect(routes.UploadController.index(r.data.createConsignment.id))
+  def submit() = silhouette.UserAwareAction.async { implicit request =>
+    request.identity.map(id => {
+      val appSyncClient = client.graphqlClient(List())
+      val form = CreateConsignmentData.form.bindFromRequest
+      val vars = createConsignment.Variables(form.get.consignmentName,form.get.seriesId,id.email,form.get.transferringBody)
+      appSyncClient.query[createConsignment.Data, createConsignment.Variables](createConsignment.document, vars).result.map {
+        case Right(r) =>
+          Redirect(routes.UploadController.index(r.data.createConsignment.id))
+        case Left(e) => InternalServerError(e.errors.toString())
       }
-      case Left(ex) => InternalServerError(ex.errors.toString())
-    })
+    }).get
+
+
   }
+
+
 }

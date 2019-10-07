@@ -1,21 +1,19 @@
 package controllers
 
-import java.io.ByteArrayInputStream
-import java.nio.file.Files
-
 import akka.actor.ActorSystem
+import auth.Authorisers.IsConsignmentCreator
 import com.amazonaws.auth.{AWSStaticCredentialsProvider, BasicAWSCredentials}
-import com.amazonaws.services.s3.model.{ObjectMetadata, PutObjectRequest}
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder
 import com.amazonaws.services.securitytoken.model.GetSessionTokenRequest
+import com.mohiva.play.silhouette.api.{HandlerResult, Silhouette}
 import graphql.GraphQLClientProvider
 import graphql.codegen.CreateMultipleFiles.createMultipleFiles.{Data, Variables, document}
 import graphql.codegen.types.CreateFileInput
-import io.circe.parser.decode
 import javax.inject._
 import play.api.Configuration
 import play.api.libs.json.{Json, _}
 import play.api.mvc._
+import utils.DefaultEnv
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -26,6 +24,8 @@ class UploadController @Inject()(
                                   controllerComponents: ControllerComponents,
                                   system: ActorSystem,
                                   config: Configuration,
+                                  silhouette: Silhouette[DefaultEnv],
+                                  isConsignmentCreator: IsConsignmentCreator
                                 )(implicit val ex: ExecutionContext) extends AbstractController(controllerComponents) {
 
 
@@ -34,13 +34,38 @@ class UploadController @Inject()(
   private val environment: String = config.get[String]("app.environment")
 
 
-  def index(consignmentId: Int) = Action { implicit request: Request[AnyContent] =>
+  def index(consignmentId: Int) = silhouette.SecuredAction(isConsignmentCreator) { implicit request: Request[AnyContent] =>
     Ok(views.html.upload(consignmentId))
   }
 
-  case class TemporaryCredentials(accessKeyId: String, secretAccessKey: String, sessionToken: String)
 
-  def getTemporaryCredentials = {
+  def saveFileData = silhouette.SecuredAction(isConsignmentCreator).async(parse.json) { request =>
+    val result = request.body.validate[FileInputs]
+    result.fold(
+      errors => {
+        Future.apply(InternalServerError(errors.toString()))
+      },
+      fileInputs => {
+        val appSyncClient = client.graphqlClient(List())
+
+        appSyncClient.query[Data, Variables](document, Variables(fileInputs.data)).result.map {
+          case Right(r) =>
+            val pathToId: Map[String, String] = r.data.createMultipleFiles map (f => f.path.toString -> f.id.toString) toMap
+            val output: Output = Output(pathToId, getTemporaryCredentials, s"tdr-upload-files-$environment")
+            Ok(Json.toJson(output))
+          case Left(ex) => InternalServerError(ex.errors.toString())
+        }
+
+      }
+    )
+
+  }
+
+  def upload(consignmentId: Int) = silhouette.SecuredAction(isConsignmentCreator) { implicit request =>
+    Redirect(routes.FileStatusController.getFileStatus(consignmentId))
+  }
+
+  def getTemporaryCredentials: TemporaryCredentials = {
     // This would use an iam user which only has access to the upload bucket
     val credentialsProvider = new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKeyID, accessKeySecret))
     val tokenClient =  AWSSecurityTokenServiceClientBuilder.standard()
@@ -56,10 +81,7 @@ class UploadController @Inject()(
   }
 
 
-
-  def upload(consignmentId: Int) = Action(parse.multipartFormData) { _ =>
-    Redirect(routes.FileStatusController.getFileStatus(consignmentId))
-  }
+  case class TemporaryCredentials(accessKeyId: String, secretAccessKey: String, sessionToken: String)
 
   case class FileInputs(data: List[CreateFileInput])
 
@@ -70,25 +92,4 @@ class UploadController @Inject()(
   implicit val temporaryCredentialsWrites: OWrites[TemporaryCredentials] = Json.writes[TemporaryCredentials]
   implicit val outputWrites: OWrites[Output] = Json.writes[Output]
 
-
-  def saveFileData = Action.async(parse.json) { request =>
-    val result = request.body.validate[FileInputs]
-    result.fold(
-      errors => {
-        Future.apply(InternalServerError(errors.toString()))
-      },
-      fileInputs => {
-        val appSyncClient = client.graphqlClient(List())
-        appSyncClient.query[Data, Variables](document, Variables(fileInputs.data)).result.map {
-          case Right(r) =>
-            val pathToId: Map[String, String] = r.data.createMultipleFiles map (f => f.path.toString -> f.id.toString) toMap
-            val output: Output = Output(pathToId, getTemporaryCredentials, s"tdr-upload-files-$environment")
-            Ok(Json.toJson(output))
-          case Left(ex) => InternalServerError(ex.errors.toString())
-        }
-
-      }
-    )
-
-  }
 }
