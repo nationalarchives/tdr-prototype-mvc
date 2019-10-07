@@ -22,8 +22,8 @@
                 <label class="govuk-label" for="seriesNo">
                     Series number*
                 </label>
-                <select class="govuk-select" id="seriesNo" name="seriesNo">
-                    <option value="placeholder" selected>Please choose...</option>
+                <select class="govuk-select" id="seriesNo" name="seriesNo" required>
+                    <option value="" selected>Please choose...</option>
                     @for(series <- allSeries) {
                     <option value="@series.id">@series.name</option>
                     }
