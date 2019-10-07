@@ -29,7 +29,7 @@ class PasswordDao @Inject()(client: GraphQLClientProvider)(implicit ec: Executio
   }
 
   override def add(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = {
-    val passwordInput = PasswordInput(loginInfo.providerKey, authInfo.hasher, authInfo.password)
+    val passwordInput = PasswordInput(loginInfo.providerKey, authInfo.hasher, authInfo.password, authInfo.salt)
     val vars: addPassword.Variables = addPassword.Variables(passwordInput)
 
     graphqlClient.query[addPassword.Data, addPassword.Variables](addPassword.document, vars).result.map {
@@ -39,7 +39,7 @@ class PasswordDao @Inject()(client: GraphQLClientProvider)(implicit ec: Executio
   }
 
   override def update(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = {
-    val passwordInput = PasswordInput(loginInfo.providerKey, authInfo.hasher, authInfo.password)
+    val passwordInput = PasswordInput(loginInfo.providerKey, authInfo.hasher, authInfo.password, authInfo.salt)
     val vars: updatePassword.Variables = updatePassword.Variables(passwordInput)
     graphqlClient.query[updatePassword.Data, updatePassword.Variables](updatePassword.document, vars).result.map {
       case Right(_) => PasswordInfo(authInfo.hasher, authInfo.password, authInfo.salt)
