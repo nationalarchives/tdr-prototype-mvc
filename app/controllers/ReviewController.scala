@@ -2,8 +2,10 @@ package controllers
 
 import com.mohiva.play.silhouette.api.Silhouette
 import graphql.GraphQLClientProvider
+import graphql.codegen.ConfirmTransfer.confirmTransfer
+import graphql.codegen.ConfirmTransfer.confirmTransfer.{Data, Variables}
 import graphql.codegen.GetConsignment.getConsignment
-import graphql.codegen.GetConsignment.getConsignment.GetConsignment
+import graphql.codegen.GetConsignment.getConsignment._
 import graphql.codegen.GetFileStatus.getFileChecksStatus
 import graphql.codegen.GetFileStatus.getFileChecksStatus.GetFileChecksStatus
 import javax.inject.{Inject, _}
@@ -50,8 +52,17 @@ class ReviewController @Inject()(
         BadRequest(views.html.review(reviewDetails.consignment, reviewDetails.fileChecks, formWithErrors))
       )
     }
+
     val successFunction: ReviewData => Future[Result] = { formData: ReviewData =>
-      Future.apply(Redirect(routes.TransferConfirmationController.index()))
+      val graphQlClient = client.graphqlClient
+      val vars = Variables(consignmentId)
+
+      graphQlClient.query[Data, Variables](confirmTransfer.document, vars).result.map {
+        case Right(_) => {
+          Redirect(routes.TransferConfirmationController.index())
+        }
+        case Left(ex) => InternalServerError(ex.errors.toString())
+      }
     }
 
     val formValidationResult: Form[ReviewData] = form.bindFromRequest
