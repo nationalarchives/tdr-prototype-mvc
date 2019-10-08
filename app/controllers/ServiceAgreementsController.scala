@@ -14,22 +14,22 @@ class ServiceAgreementsController @Inject()(controllerComponents: ControllerComp
                                              configuration: Configuration)
                                            (implicit val ex: ExecutionContext) extends AbstractController(controllerComponents) with play.api.i18n.I18nSupport {
 
-  private val options: Seq[(String, String)] = Seq("Yes" -> "yes", "No" -> "no")
+  private val options: Seq[(String, String)] = Seq("Yes" -> "true", "No" -> "false")
 
   val form = Form(
     mapping(
-      "publicRecord" -> text
-        .verifying("Must answer yes", s => hasAgreed(s)),
-      "crownCopyright" -> text
-        .verifying("Must answer yes", s => hasAgreed(s)),
-      "english" -> text
-        .verifying("Must answer yes", s => hasAgreed(s)),
-      "digital" -> text
-        .verifying("Must answer yes", s => hasAgreed(s)),
-      "droAppraisalselection" -> text
-        .verifying("Must answer yes", s => hasAgreed(s)),
-      "droSensitivity" -> text
-        .verifying("Must answer yes", s => hasAgreed(s)),
+      "publicRecord" -> boolean
+        .verifying("Must select yes", b => b),
+      "crownCopyright" -> boolean
+        .verifying("Must select yes", b => b),
+      "english" -> boolean
+        .verifying("Must select yes", b => b),
+      "digital" -> boolean
+        .verifying("Must select yes", b => b),
+      "droAppraisalselection" -> boolean
+        .verifying("Must select yes", b => b),
+      "droSensitivity" -> boolean
+        .verifying("Must select yes", b => b),
     )(ServiceAgreementsData.apply)(ServiceAgreementsData.unapply)
   )
 
@@ -62,9 +62,5 @@ class ServiceAgreementsController @Inject()(controllerComponents: ControllerComp
       errorFunction,
       successFunction
     )
-  }
-
-  private def hasAgreed(s: String): Boolean = {
-    s.equals("yes")
   }
 }

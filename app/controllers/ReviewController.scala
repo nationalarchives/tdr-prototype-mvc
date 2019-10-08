@@ -12,7 +12,7 @@ import javax.inject.{Inject, _}
 import model.ReviewData
 import play.api.Configuration
 import play.api.data.Form
-import play.api.data.Forms.{mapping, text}
+import play.api.data.Forms.{mapping, text, boolean}
 import play.api.mvc._
 import utils.DefaultEnv
 
@@ -29,12 +29,9 @@ class ReviewController @Inject()(
 
   val form = Form(
     mapping(
-      "confirmRecordTransfer" -> text
-        .verifying("Must answer yes", s => hasAgreed(s)),
-      "confirmOpen" -> text
-        .verifying("Must answer yes", s => hasAgreed(s)),
-      "confirmTnaOwnership" -> text
-        .verifying("Must answer yes", s => hasAgreed(s)),
+      "confirmRecordTransfer" -> boolean,
+      "confirmOpen" -> boolean,
+      "confirmTnaOwnership" -> boolean,
     )(ReviewData.apply)(ReviewData.unapply)
   )
 
