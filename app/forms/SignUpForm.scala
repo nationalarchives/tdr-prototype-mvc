@@ -11,7 +11,7 @@ object SignUpForm {
   val passwordCheckConstraint: Constraint[String] = Constraint(s"Must match ${complexPassword.pattern}")({ plainText =>
     val errors = plainText match {
       case complexPassword() => Nil
-      case _ => Seq(ValidationError(s"Password must match ${complexPassword.toString}"))
+      case _ => Seq(ValidationError(s"Password needs to be at least 8 characters long and include one lowercase letter, one uppercase letter, one digit and one special character (! @ $$ % & * ?)."))
     }
     if (errors.isEmpty) {
       Valid
