@@ -19,17 +19,17 @@ class ServiceAgreementsController @Inject()(controllerComponents: ControllerComp
   val form = Form(
     mapping(
       "publicRecord" -> boolean
-        .verifying("Must select yes", b => b),
+        .verifying("Must answer yes", b => b),
       "crownCopyright" -> boolean
-        .verifying("Must select yes", b => b),
+        .verifying("Must answer yes", b => b),
       "english" -> boolean
-        .verifying("Must select yes", b => b),
+        .verifying("Must answer yes", b => b),
       "digital" -> boolean
-        .verifying("Must select yes", b => b),
+        .verifying("Must answer yes", b => b),
       "droAppraisalselection" -> boolean
-        .verifying("Must select yes", b => b),
+        .verifying("Must answer yes", b => b),
       "droSensitivity" -> boolean
-        .verifying("Must select yes", b => b),
+        .verifying("Must answer yes", b => b),
     )(ServiceAgreementsData.apply)(ServiceAgreementsData.unapply)
   )
 
