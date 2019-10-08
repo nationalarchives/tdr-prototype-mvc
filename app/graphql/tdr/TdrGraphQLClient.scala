@@ -159,7 +159,7 @@ class TdrGraphQLClient(backend: TdrBackendClient)  {
 
 object TdrGraphQLClient {
 
-  def apply(configuration: Configuration) = new TdrGraphQLClient(new TdrSignRequestClient(configuration))
+  def apply(configuration: Configuration) = new TdrGraphQLClient(new TdrSignRequestClient(configuration, "graphql.uri"))
 
   def apply(uri: Uri) =  new TdrGraphQLClient(new TdrBackendClientGraphQL(uri))
 
