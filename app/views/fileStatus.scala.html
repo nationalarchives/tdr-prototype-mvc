@@ -1,14 +1,13 @@
 @import graphql.codegen.GetFileStatus.getFileChecksStatus.GetFileChecksStatus
-@(status: GetFileChecksStatus, consignmentId: Int)
+@(status: GetFileChecksStatus, consignmentId: Int)(implicit messages: Messages)
 
     @main("FileStatus") {
 
 
-        @defining(if(status.error) "" else " hide") { errorClass =>
+        @defining(if(status.virusErrors.size > 0 || status.checksumErrors.size > 0) "" else " hide") { errorClass =>
 
-            @defining(if(status.totalComplete == status.totalFiles && !status.error && status.totalComplete > 0) "" else " hide") { completeClass =>
-
-                @defining(if((status.totalComplete != status.totalFiles && !status.error) || status.totalComplete == 0) "" else " hide") { progressBarClass =>
+            @defining(if(status.percentage == 100 && !(status.virusErrors.size > 0 || status.checksumErrors.size > 0) && status.percentage > 0) "" else " hide") { completeClass =>
+                @defining(if((status.percentage < 100 && !(status.virusErrors.size > 0 || status.checksumErrors.size > 0)) || status.percentage == 0) "" else " hide") { progressBarClass =>
 
                     <div class="govuk-grid-row">
                         <div class="govuk-grid-column-two-thirds">
@@ -16,7 +15,7 @@
                             <!-- Progress indicator -->
                             <span class="govuk-caption-xl">Step 4 of 5</span>
                             <!-- Headline -->
-                            <h3 class="govuk-heading-xl">Upload and Processing</h3>
+                            <h3 class="govuk-heading-xl">@messages("filestatus.title")</h3>
 
 
                             <div class="file-status">
@@ -27,8 +26,19 @@
                                             There is a problem
                                         </h2>
                                         <div class="govuk-error-summary__body">
-                                            <p class="govuk-body">We had an error during our checks. The collection you have uploaded will be deleted.</p>
-                                            <p class="govuk-body">Please check your collection for viruses and file format and try again.</p>
+                                            <p class="govuk-body">@messages("filestatus.error.general")</p>
+                                            @if(status.virusErrors.nonEmpty) {
+                                                <p class="govuk-body">@messages("filestatus.error.virus")</p>
+                                                @for(e <- status.virusErrors) {
+                                                    <p>@e</p>
+                                                }
+                                            }
+                                            @if(status.checksumErrors.nonEmpty) {
+                                                <p class="govuk-body">@messages("filestatus.error.checksum")</p>
+                                                @for(e <- status.checksumErrors) {
+                                                    <p>@e</p>
+                                                }
+                                            }
                                         </div>
                                     </div>
 
@@ -36,40 +46,27 @@
                                         Start again
                                     </a>
 
-                                        <!-- <span class="iconspan iconify" data-icon="ic:baseline-error-outline" data-inline="false"></span>
-                                        <div class="complete-text">
-                                            <h4>Upload failed</h4>
-                                            <span>Please try again.</span>
-                                        </div> -->
                                 </div>
 
                                 <div class="progress-complete-container @completeClass">
                                     <div id="success-summary" class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
                                         <h2 class="govuk-error-summary__title" id="error-summary-title">
-                                            Upload was successful
+                                            @messages("filestatus.success")
                                         </h2>
                                         <div class="govuk-error-summary__body">
-                                            <p class="govuk-body">@status.totalComplete files have been successfully uploaded.</p>
-                                            <p class="govuk-body">Please review and confirm your transfer to complete this transaction.</p>
+                                            <p class="govuk-body">@messages("filestatus.success.filecount", status.totalFiles)</p>
+                                            <p class="govuk-body">@messages("filestatus.success.review")</p>
                                         </div>
                                     </div>
 
-                                        <!-- <span class="iconspan iconify complete-tick" data-icon="ic-round-check-circle-outline" data-inline="false"></span>
-                                        <div class="complete-text">
-                                            <h4>Upload was successful</h4>
-                                            <span class="complete-message">@status.totalComplete
-                                                files have been successfully uploaded</span>
-                                            <span>Please click 'Save and Continue' to proceed this transfer.</span>
-                                        </div> -->
-
                                     <a href="@routes.ReviewController.index(consignmentId)" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
-                                        Confirm transfer
+                                        @messages("filestatus.success.confirm")
                                     </a>
                                 </div>
 
                                 <div class="progress-container @progressBarClass">
-                                    <progress class="status-progress" value="@status.totalComplete" max="@status.totalFiles"></progress>
-                                    <span class="status-progress-label">Processed @status.totalComplete of @status.totalFiles files</span>
+                                    <progress class="status-progress" value="@status.percentage" max="100"></progress>
+                                    <span class="status-progress-label">@status.percentage%</span>
                                 </div>
                                 
                             </div>
