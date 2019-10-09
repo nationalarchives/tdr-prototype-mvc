@@ -1,8 +1,7 @@
 query  getFileChecksStatus($id: Int!){
     getFileChecksStatus(id: $id) {
-        percentage
+        totalComplete
         totalFiles
-        virusErrors
-        checksumErrors
+        error
     }
 }

@@ -33,10 +33,9 @@ type File {
 }
 
 type FileCheckStatus {
-  percentage: Int!
+  totalComplete: Int!
   totalFiles: Int!
-  virusErrors: [String!]!
-  checksumErrors: [String!]!
+  error: Boolean!
 }
 
 type FileStatus {
