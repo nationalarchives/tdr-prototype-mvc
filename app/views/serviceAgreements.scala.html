@@ -26,49 +26,47 @@
                                 serviceAgreementsForm("publicRecord"),
                                 agreementOptions,
                                 '_name -> "The records are all Public Records",
-                                disabledInputArg -> "no",
+                                disabledInputArg -> "false",
                                 requiredInputArg -> true
                             )
                             @inputRadioGroup(
                                 serviceAgreementsForm("crownCopyright"),
                                 agreementOptions,
                                 '_name -> "The records are all Crown Copyright",
-                                disabledInputArg -> "no",
+                                disabledInputArg -> "false",
                                 requiredInputArg -> true
                             )
                             @inputRadioGroup(
                                 serviceAgreementsForm("english"),
                                 agreementOptions,
                                 '_name -> "The records are all in English",
-                                disabledInputArg -> "no",
+                                disabledInputArg -> "false",
                                 requiredInputArg -> true
                             )
                             @inputRadioGroup(
                                 serviceAgreementsForm("digital"),
                                 agreementOptions,
                                 '_name -> "The  records are all Digital",
-                                disabledInputArg -> "no",
+                                disabledInputArg -> "false",
                                 requiredInputArg -> true
                             )
                             </div>
                         </fieldset>
 
-
                         <!-- DRO confirmation -->
                         <fieldset class="govuk-fieldset" aria-describedby="transfer-agreement-checks">
                             <div class="govuk-form-group">
-
-                            @inputSingleCheckbox(
+                             @inputSingleCheckbox(
                                 serviceAgreementsForm("droAppraisalselection"),
                                 '_label -> "I confirm that the DRO has signed off on the appraisal and selection decision.",
-                                '_value -> "yes",
+                                '_value -> "true",
                                 '_smallCheckbox -> true,
                                 requiredInputArg -> true
                             )
                             @inputSingleCheckbox(
                                 serviceAgreementsForm("droSensitivity"),
                                 '_label -> "I confirm that the DRO has signed off on the sensitivity review decision - including that all records in this transfer are only up to official-sensitive.",
-                                '_value -> "yes",
+                                '_value -> "true",
                                 '_smallCheckbox -> true,
                                 requiredInputArg -> true
                             )

@@ -10,3 +10,13 @@ totp.signin.title=Enter your code to sign in
 totp.verification.code=Verification code
 
 error.email=Enter an email address in the correct format, for example name@domain.com
+
+filestatus.title=Upload and Processing
+filestatus.error.title=There is a problem
+filestatus.error.general=We had an error during our checks. The collection you have uploaded will be deleted.
+filestatus.error.virus=We have detected malicious software (for example, a virus, worm, or trojan) during our check with clamav. The collection you have uploaded will be deleted. Please prepare a collection free of viruses and try again. The affected files are
+filestatus.error.checksum=This following file(s) do not appear to have uploaded correctly.
+filestatus.success=Upload was successful
+filestatus.success.filecount={0} files have been successfully uploaded.
+filestatus.success.review=Please review and confirm your transfer to complete this transaction.
+filestatus.success.confirm=Confirm transfer

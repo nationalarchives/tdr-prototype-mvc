@@ -1,8 +1,8 @@
 package model
 
-case class ServiceAgreementsData (publicRecord: String,
-                                  crownCopyright: String,
-                                  english: String,
-                                  digital: String,
-                                  droAppraisalselection: String,
-                                  droSensitivity: String)
+case class ServiceAgreementsData (publicRecord: Boolean,
+                                  crownCopyright: Boolean,
+                                  english: Boolean,
+                                  digital: Boolean,
+                                  droAppraisalselection: Boolean,
+                                  droSensitivity: Boolean)
