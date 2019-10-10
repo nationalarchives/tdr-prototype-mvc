@@ -13,12 +13,12 @@ import com.amazonaws.auth.{BasicAWSCredentials,AWSStaticCredentialsProvider}
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
-class TdrSignRequestClient(config:Configuration) extends TdrBackendClient {
+class TdrSignRequestClient(config:Configuration, uriPath: String) extends TdrBackendClient {
 
   implicit val as: ActorSystem = ActorSystem("GraphQLClient")
   implicit val ec: ExecutionContext = as.dispatcher
 
-  private val uri: Uri = Uri(config.get[String]("graphql.uri"))
+  private val uri: Uri = Uri(config.get[String](uriPath))
   private val accessKeyID : String =  config.get[String]("aws.access.key.id")
   private val accessKeySecret : String =  config.get[String]("aws.secret.access.key")
 

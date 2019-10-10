@@ -9,6 +9,7 @@ import com.mohiva.play.silhouette.api.{HandlerResult, Silhouette}
 import graphql.GraphQLClientProvider
 import graphql.codegen.CreateMultipleFiles.createMultipleFiles.{Data, Variables, document}
 import graphql.codegen.types.CreateFileInput
+import graphql.tdr.TdrSignRequestClient
 import javax.inject._
 import play.api.Configuration
 import play.api.libs.json.{Json, _}
@@ -32,6 +33,12 @@ class UploadController @Inject()(
   private val accessKeyID: String = config.get[String]("aws.access.key.id")
   private val accessKeySecret: String = config.get[String]("aws.secret.access.key")
   private val environment: String = config.get[String]("app.environment")
+  private val stateMachineArn: String = config.get[String]("statemachine.arn")
+
+  case class Input(consignmentId: String)
+  case class StateMachineInput(input: String, stateMachineArn: String)
+  implicit val InputWrites = Json.writes[Input]
+  implicit val StateMachineWrites = Json.writes[StateMachineInput]
 
 
   def index(consignmentId: Int) = silhouette.SecuredAction(isConsignmentCreator) { implicit request: Request[AnyContent] =>
@@ -60,6 +67,11 @@ class UploadController @Inject()(
   }
 
   def upload(consignmentId: Int) = silhouette.SecuredAction(isConsignmentCreator) { implicit request =>
+    val client = new TdrSignRequestClient(config, "stepfunction.uri")
+    val input = Input(consignmentId.toString)
+    val inputString = Json.asciiStringify(Json.toJson(input))
+    client.send(Json.asciiStringify(Json.toJson(StateMachineInput(inputString, stateMachineArn))))
+
     Redirect(routes.FileStatusController.getFileStatus(consignmentId))
   }
 
