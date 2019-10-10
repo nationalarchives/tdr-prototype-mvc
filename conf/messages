@@ -9,6 +9,8 @@ totp.verify=Verify
 totp.signin.title=Enter your code to sign in
 totp.verification.code=Verification code
 
+error.email=Enter an email address in the correct format, for example name@domain.com
+
 filestatus.title=Upload and Processing
 filestatus.error.title=There is a problem
 filestatus.error.general=We had an error during our checks. The collection you have uploaded will be deleted.
