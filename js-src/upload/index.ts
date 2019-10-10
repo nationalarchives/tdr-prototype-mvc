@@ -22,11 +22,6 @@ interface TdrFile extends File {
     webkitRelativePath: string;
 }
 
-interface FilePathMap {
-    path: string;
-    file: File;
-}
-
 export interface IReader {
     readEntries: (callbackFunction: (entry: IWebkitEntry[]) => void) => void;
 }
@@ -53,7 +48,7 @@ export const generateHash: (file: File) => Promise<string> = file => {
     const fileReader = new FileReader();
     fileReader.readAsArrayBuffer(file);
     return new Promise(resolve => {
-        fileReader.onload = async function() {
+        fileReader.onload = async function () {
             const fileReaderResult = fileReader.result;
             if (fileReaderResult instanceof ArrayBuffer) {
                 const buffer = await crypto.digest("SHA-256", fileReaderResult);
@@ -63,19 +58,19 @@ export const generateHash: (file: File) => Promise<string> = file => {
     });
 };
 
-const upload: () => void = async () => {
+const upload: () => void = () => {
     const uploadForm: HTMLFormElement | null = document.querySelector(
         "#file-upload-form"
     );
     if (uploadForm) {
-        uploadForm.addEventListener("submit", async ev => {
+        uploadForm.addEventListener("submit", ev => {
             ev.preventDefault();
             const target: HTMLInputTarget | null = ev.currentTarget;
-            console.log(target);
-            console.log(target!.files!.files);
             const files: TdrFile[] = target!.files!.files!;
             processFiles(files)
-                .then(() => uploadForm.submit())
+                .then(() =>
+                    uploadForm.submit()
+                )
                 .catch(err => {
                     console.log(err);
                     const error: HTMLParagraphElement | null = document.querySelector(
@@ -204,7 +199,7 @@ interface IFileData {
     bucketName: string;
 }
 
-const fileDataUploadBatchSize = 500;
+const fileDataUploadBatchSize = 250;
 
 function createBatches(files: CreateFileInput[], batchSize: number) {
     const batches: CreateFileInput[][] = [];
@@ -217,7 +212,7 @@ function createBatches(files: CreateFileInput[], batchSize: number) {
 }
 
 function uploadFileData(batches: CreateFileInput[][], consignmentId: number) {
-    const responses = batches.map(async function(value) {
+    const responses = batches.map(async function (value) {
         return await Axios.post<{}, AxiosResponse>(
             `/filedata?consignmentId=${consignmentId}`,
             { data: value }
@@ -233,12 +228,12 @@ async function processFiles(files: TdrFile[]) {
     );
     const consignmentId = parseInt(urlParams.get("consignmentId")!, 10);
     if (files) {
-        const filePathToFile: FilePathMap[] = [];
+        const filePathToFile: { [key: string]: File } = {}
         for (var tdrFile of files) {
             const fileInfo: CreateFileInput = await getFileInfo(tdrFile);
 
             fileInfoList.push(fileInfo);
-            filePathToFile.push({ path: fileInfo.path!, file: tdrFile });
+            filePathToFile[fileInfo.path!] = tdrFile
         }
 
         const fileDataBatches = createBatches(
@@ -261,10 +256,10 @@ async function processFiles(files: TdrFile[]) {
                 sessionToken,
                 region
             });
-
-            for (const fileInfo of filePathToFile) {
-                const { file, path } = fileInfo;
+            for (const path of Object.keys(response.data!.pathMap)) {
+                const file = filePathToFile[path];
                 const id = fileData.pathMap[path];
+
                 await uploadToS3(
                     s3,
                     `${consignmentId}/${id}`,
@@ -272,6 +267,7 @@ async function processFiles(files: TdrFile[]) {
                     file
                 );
             }
+
         }
     }
 }
@@ -283,7 +279,7 @@ function uploadToS3(s3: S3, key: string, bucketName: string, file: File) {
                 Bucket: bucketName,
                 Body: file
             },
-            function(err, data) {
+            function (err, data) {
                 if (err) {
                     reject(err);
                 }
