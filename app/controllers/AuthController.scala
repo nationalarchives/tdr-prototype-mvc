@@ -34,7 +34,6 @@ class AuthController @Inject()(controllerComponents: ControllerComponents,
 
   val authService: AuthenticatorService[CookieAuthenticator] = silhouette.env.authenticatorService
 
-
   def login(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.login(LoginForm.form))
   }

@@ -8,3 +8,5 @@ totp.recovery.tokens.title=These are your recovery tokens. Keep them in a safe p
 totp.verify=Verify
 totp.signin.title=Enter your code to sign in
 totp.verification.code=Verification code
+
+error.email=Enter an email address in the correct format, for example name@domain.com
