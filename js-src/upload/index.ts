@@ -229,19 +229,27 @@ async function processFiles(files: TdrFile[]) {
     const consignmentId = parseInt(urlParams.get("consignmentId")!, 10);
     if (files) {
         const filePathToFile: { [key: string]: File } = {}
+
+        const fileInfoStart = new Date().getTime();
         for (var tdrFile of files) {
             const fileInfo: CreateFileInput = await getFileInfo(tdrFile);
 
             fileInfoList.push(fileInfo);
             filePathToFile[fileInfo.path!] = tdrFile
         }
+        const fileInfoEnd = new Date().getTime();
+        console.log(`Got info for ${files.length} files in ${fileInfoEnd - fileInfoStart} ms`);
 
         const fileDataBatches = createBatches(
             fileInfoList,
             fileDataUploadBatchSize
         );
 
+        const fileDataUploadStart = new Date().getTime();
         const responses = await uploadFileData(fileDataBatches, consignmentId);
+        const fileDataUploadEnd = new Date().getTime();
+        console.log(`Uploaded data for ${files.length} files in ${fileDataBatches.length} batches in ${fileDataUploadEnd - fileDataUploadStart} ms`);
+
         for (const response of responses) {
             const fileData = response!.data;
             const {
@@ -256,6 +264,8 @@ async function processFiles(files: TdrFile[]) {
                 sessionToken,
                 region
             });
+
+            const s3UploadStart = new Date().getTime();
             for (const path of Object.keys(response.data!.pathMap)) {
                 const file = filePathToFile[path];
                 const id = fileData.pathMap[path];
@@ -267,6 +277,8 @@ async function processFiles(files: TdrFile[]) {
                     file
                 );
             }
+            const s3UploadEnd = new Date().getTime();
+            console.log(`Uploaded ${files.length} files in ${s3UploadEnd - s3UploadStart} ms`);
 
         }
     }
