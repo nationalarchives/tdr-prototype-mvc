@@ -250,6 +250,8 @@ async function processFiles(files: TdrFile[]) {
         const fileDataUploadEnd = new Date().getTime();
         console.log(`Uploaded data for ${files.length} files in ${fileDataBatches.length} batches in ${fileDataUploadEnd - fileDataUploadStart} ms`);
 
+        const s3UploadStart = new Date().getTime();
+
         for (const response of responses) {
             const fileData = response!.data;
             const {
@@ -265,7 +267,6 @@ async function processFiles(files: TdrFile[]) {
                 region
             });
 
-            const s3UploadStart = new Date().getTime();
             for (const path of Object.keys(response.data!.pathMap)) {
                 const file = filePathToFile[path];
                 const id = fileData.pathMap[path];
@@ -277,10 +278,10 @@ async function processFiles(files: TdrFile[]) {
                     file
                 );
             }
-            const s3UploadEnd = new Date().getTime();
-            console.log(`Uploaded ${files.length} files in ${s3UploadEnd - s3UploadStart} ms`);
-
         }
+
+        const s3UploadEnd = new Date().getTime();
+        console.log(`Uploaded ${files.length} files in ${s3UploadEnd - s3UploadStart} ms`);
     }
 }
 function uploadToS3(s3: S3, key: string, bucketName: string, file: File) {
