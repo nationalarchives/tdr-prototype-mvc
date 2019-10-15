@@ -57,7 +57,10 @@ export const generateHash: (file: File) => Promise<string> = file => {
 
                 if (file.size > 1000000) {
                     const hashEnd = new Date().getTime();
-                    console.log(`Calculated hash for ${file.size} byte file ${hashEnd - hashStart} ms`);
+                    console.log(
+                        `Calculated hash for ${file.size} byte file ${hashEnd -
+                            hashStart} ms`
+                    );
                 }
 
                 resolve(hexString(buffer));
@@ -87,10 +90,14 @@ const upload: () => void = () => {
                 })
                 .catch(err => {
                     console.log(err);
-                    const error: HTMLParagraphElement | null = document.querySelector(
-                        ".error"
+                    const error: HTMLDivElement | null = document.querySelector(
+                        ".govuk-error-summary"
                     );
-                    error!.innerText = "There has been an error";
+                    const displayError: HTMLParagraphElement | null = document.querySelector(
+                        ".errorMessage"
+                    );
+                    displayError!.innerText = err;
+                    error!.style.display = "block";
                 });
         });
     }
@@ -151,9 +158,7 @@ const getEntriesFromReader: (
     return allEntries;
 };
 
-const getEntryBatch: (
-    reader: IReader
-) => Promise<IWebkitEntry[]> = reader => {
+const getEntryBatch: (reader: IReader) => Promise<IWebkitEntry[]> = reader => {
     return new Promise<IWebkitEntry[]>(resolve => {
         reader.readEntries(entries => {
             resolve(entries);
@@ -272,7 +277,7 @@ async function processFiles(files: TdrFile[]) {
 
             fileInfoList.push(fileInfo);
             filePathToFile[fileInfo.path!] = tdrFile;
-            fileInfoCount ++;
+            fileInfoCount++;
         }
         const fileInfoEnd = new Date().getTime();
         console.log(
