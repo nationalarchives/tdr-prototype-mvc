@@ -44,6 +44,8 @@ const hexString = (buffer: ArrayBuffer) => {
 };
 
 export const generateHash: (file: File) => Promise<string> = file => {
+    const hashStart = new Date().getTime();
+
     const crypto = self.crypto.subtle;
     const fileReader = new FileReader();
     fileReader.readAsArrayBuffer(file);
@@ -52,6 +54,12 @@ export const generateHash: (file: File) => Promise<string> = file => {
             const fileReaderResult = fileReader.result;
             if (fileReaderResult instanceof ArrayBuffer) {
                 const buffer = await crypto.digest("SHA-256", fileReaderResult);
+
+                if (file.size > 1000000) {
+                    const hashEnd = new Date().getTime();
+                    console.log(`Calculated hash for ${file.size} byte file ${hashEnd - hashStart} ms`);
+                }
+
                 resolve(hexString(buffer));
             }
         };
