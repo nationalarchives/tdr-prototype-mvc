@@ -1,10 +1,10 @@
-@(consignmentId: Int)
+@(consignmentId: Int, seriesId: Int)
 
 @main("Upload") {
     @defining(play.core.PlayVersion.current) { version =>
 
         <!-- Back -->
-        <a href="#" class="govuk-back-link">Back</a>
+        <a href="@routes.CreateConsignmentController.index(seriesId)" class="govuk-back-link">Back</a>
 
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
@@ -14,7 +14,20 @@
                 <!-- Headline -->
                 <h1 class="govuk-heading-xl">Upload</h1>
 
-                <div class="error"></div>
+                <!-- Error -->
+                <div id="uploadError" class="govuk-error-summary hide" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary"">
+                    <h2 class="govuk-error-summary__title" id="error-summary-title">
+                        There is a problem
+                    </h2>
+                    <div class="govuk-error-summary__body">
+                        <ul class="govuk-list govuk-error-summary__list">
+                            <li>
+                                <p>Some or all of your files failed to upload.</p>
+                                <p class="errorMessage"></p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
                 <!-- Form only handles the file upload without making any posts-->
                 <form id="file-upload-form">
                 <div class="upload-form">

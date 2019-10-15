@@ -26,11 +26,8 @@ class HomeController @Inject()(
    * will be called when the application receives a `GET` request with
    * a path of `/`.
    */
-  def index() = silhouette.UserAwareAction { implicit request =>
-    request.identity match {
-      case Some(_) => Redirect(routes.DashboardController.index())
-      case None => Redirect(routes.AuthController.login())
-    }
+  def index() = Action { implicit request =>
 
+    Ok(views.html.index())
   }
 }

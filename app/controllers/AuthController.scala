@@ -39,7 +39,7 @@ class AuthController @Inject()(controllerComponents: ControllerComponents,
   }
 
   def logout: Action[AnyContent] = silhouette.SecuredAction.async { implicit request =>
-    authService.discard(request.authenticator, Redirect(routes.AuthController.login()))
+    authService.discard(request.authenticator, Redirect(routes.HomeController.index()))
   }
 
   def processLoginAttempt: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>

@@ -33,7 +33,7 @@ class CreateConsignmentController @Inject()(
       val vars = createConsignment.Variables(form.get.consignmentName,form.get.seriesId,id.email,form.get.transferringBody)
       graphQlClient.query[createConsignment.Data, createConsignment.Variables](createConsignment.document, vars).result.map {
         case Right(r) =>
-          Redirect(routes.UploadController.index(r.data.createConsignment.id))
+          Redirect(routes.UploadController.index(r.data.createConsignment.id, r.data.createConsignment.series.id))
         case Left(e) => InternalServerError(e.errors.toString())
       }
     }).get
