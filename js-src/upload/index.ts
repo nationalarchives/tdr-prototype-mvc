@@ -130,6 +130,21 @@ const getFileFromEntry: (entry: IWebkitEntry) => Promise<TdrFile> = entry => {
 
 const getEntriesFromReader: (
     reader: IReader
+) => Promise<IWebkitEntry[]> = async reader => {
+    let allEntries: IWebkitEntry[] = [];
+
+    let nextBatch = await getEntryBatch(reader);
+
+    while (nextBatch.length > 0) {
+        allEntries = allEntries.concat(nextBatch);
+        nextBatch = await getEntryBatch(reader);
+    }
+
+    return allEntries;
+};
+
+const getEntryBatch: (
+    reader: IReader
 ) => Promise<IWebkitEntry[]> = reader => {
     return new Promise<IWebkitEntry[]>(resolve => {
         reader.readEntries(entries => {
@@ -160,7 +175,7 @@ const onDrop: (e: DragEvent) => void = async e => {
     setIsDragging(false);
     const dataTransferItems: DataTransferItemList = e.dataTransfer!.items;
 
-    //Assume one file in the drag and drop for now
+    //Assume one folder in the drag and drop for now
     const files: TdrFile[] = await getAllFiles(
         dataTransferItems[0].webkitGetAsEntry(),
         []
