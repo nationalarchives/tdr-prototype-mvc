@@ -44,6 +44,8 @@ const hexString = (buffer: ArrayBuffer) => {
 };
 
 export const generateHash: (file: File) => Promise<string> = file => {
+    const hashStart = new Date().getTime();
+
     const crypto = self.crypto.subtle;
     const fileReader = new FileReader();
     fileReader.readAsArrayBuffer(file);
@@ -52,6 +54,12 @@ export const generateHash: (file: File) => Promise<string> = file => {
             const fileReaderResult = fileReader.result;
             if (fileReaderResult instanceof ArrayBuffer) {
                 const buffer = await crypto.digest("SHA-256", fileReaderResult);
+
+                if (file.size > 1000000) {
+                    const hashEnd = new Date().getTime();
+                    console.log(`Calculated hash for ${file.size} byte file ${hashEnd - hashStart} ms`);
+                }
+
                 resolve(hexString(buffer));
             }
         };
@@ -130,6 +138,21 @@ const getFileFromEntry: (entry: IWebkitEntry) => Promise<TdrFile> = entry => {
 
 const getEntriesFromReader: (
     reader: IReader
+) => Promise<IWebkitEntry[]> = async reader => {
+    let allEntries: IWebkitEntry[] = [];
+
+    let nextBatch = await getEntryBatch(reader);
+
+    while (nextBatch.length > 0) {
+        allEntries = allEntries.concat(nextBatch);
+        nextBatch = await getEntryBatch(reader);
+    }
+
+    return allEntries;
+};
+
+const getEntryBatch: (
+    reader: IReader
 ) => Promise<IWebkitEntry[]> = reader => {
     return new Promise<IWebkitEntry[]>(resolve => {
         reader.readEntries(entries => {
@@ -160,7 +183,7 @@ const onDrop: (e: DragEvent) => void = async e => {
     setIsDragging(false);
     const dataTransferItems: DataTransferItemList = e.dataTransfer!.items;
 
-    //Assume one file in the drag and drop for now
+    //Assume one folder in the drag and drop for now
     const files: TdrFile[] = await getAllFiles(
         dataTransferItems[0].webkitGetAsEntry(),
         []
@@ -237,11 +260,19 @@ async function processFiles(files: TdrFile[]) {
         const filePathToFile: { [key: string]: File } = {};
 
         const fileInfoStart = new Date().getTime();
+
+        let fileInfoCount = 0;
+
         for (var tdrFile of files) {
+            if (fileInfoCount % 100 == 0) {
+                console.log(`Got file info for ${fileInfoCount} files`);
+            }
+
             const fileInfo: CreateFileInput = await getFileInfo(tdrFile);
 
             fileInfoList.push(fileInfo);
             filePathToFile[fileInfo.path!] = tdrFile;
+            fileInfoCount ++;
         }
         const fileInfoEnd = new Date().getTime();
         console.log(
