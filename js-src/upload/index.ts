@@ -97,7 +97,7 @@ const upload: () => void = () => {
                         ".errorMessage"
                     );
                     displayError!.innerText = err;
-                    error!.style.display = "block";
+                    error!.classList.remove("hide");
                 });
         });
     }
