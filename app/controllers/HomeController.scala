@@ -27,10 +27,7 @@ class HomeController @Inject()(
    * a path of `/`.
    */
   def index() = silhouette.UserAwareAction { implicit request =>
-    request.identity match {
-      case Some(_) => Redirect(routes.DashboardController.index())
-      case None => Redirect(routes.AuthController.login())
-    }
 
+    Ok(views.html.index())
   }
 }
