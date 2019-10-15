@@ -41,8 +41,8 @@ class UploadController @Inject()(
   implicit val StateMachineWrites = Json.writes[StateMachineInput]
 
 
-  def index(consignmentId: Int) = silhouette.SecuredAction(isConsignmentCreator) { implicit request: Request[AnyContent] =>
-    Ok(views.html.upload(consignmentId))
+  def index(consignmentId: Int, seriesId: Int) = silhouette.SecuredAction(isConsignmentCreator) { implicit request: Request[AnyContent] =>
+    Ok(views.html.upload(consignmentId, seriesId))
   }
 
 

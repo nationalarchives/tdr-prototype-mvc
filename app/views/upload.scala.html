@@ -1,10 +1,10 @@
-@(consignmentId: Int)
+@(consignmentId: Int, seriesId: Int)
 
 @main("Upload") {
     @defining(play.core.PlayVersion.current) { version =>
 
         <!-- Back -->
-        <a href="#" class="govuk-back-link">Back</a>
+        <a href="@routes.CreateConsignmentController.index(seriesId)" class="govuk-back-link">Back</a>
 
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
