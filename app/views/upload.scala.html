@@ -15,13 +15,13 @@
                 <h1 class="govuk-heading-xl">Upload</h1>
 
                 <div class="error"></div>
-                @helper.form(action = routes.UploadController.upload(consignmentId), 'id -> "file-upload-form") {
-
+                <!-- Form only handles the file upload without making any posts-->
+                <form id="file-upload-form">
                 <div class="upload-form">
                     <label class="govuk-label" for="file-upload">
                         Upload a folder
                     </label>
-                    <input type="hidden" class="file-id-data" name="file-id-data"/>
+                    <input type="hidden" class="file-id-data" name="file-id-data" />
                     <input type="file" id="file-upload" name="files" class="govuk-file-upload" webkitdirectory>
                     <div class="govuk-file-drop">
                         <svg width="50" height="43" viewBox="0 0 50 43">
@@ -37,10 +37,13 @@
                 <div class="govuk-form-group">
                     <button id="upload-submit" class="govuk-button" type="submit">Submit</button>
                 </div>
-
+                </form>
             </div>
         </div>
 
-    }
+        <!-- Form only posts consignment id -->
+        @helper.form(action = routes.UploadController.upload(consignmentId), 'id -> "commence-upload-form") {
+            <input type="hidden" value="@consignmentId" name="consignmentId" />
+        }
     }
 }

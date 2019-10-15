@@ -48,7 +48,7 @@ export const generateHash: (file: File) => Promise<string> = file => {
     const fileReader = new FileReader();
     fileReader.readAsArrayBuffer(file);
     return new Promise(resolve => {
-        fileReader.onload = async function () {
+        fileReader.onload = async function() {
             const fileReaderResult = fileReader.result;
             if (fileReaderResult instanceof ArrayBuffer) {
                 const buffer = await crypto.digest("SHA-256", fileReaderResult);
@@ -62,15 +62,21 @@ const upload: () => void = () => {
     const uploadForm: HTMLFormElement | null = document.querySelector(
         "#file-upload-form"
     );
+    const commenceUploadForm: HTMLFormElement | null = document.querySelector(
+        "#commence-upload-form"
+    );
+
     if (uploadForm) {
         uploadForm.addEventListener("submit", ev => {
             ev.preventDefault();
             const target: HTMLInputTarget | null = ev.currentTarget;
             const files: TdrFile[] = target!.files!.files!;
             processFiles(files)
-                .then(() =>
-                    uploadForm.submit()
-                )
+                .then(() => {
+                    if (commenceUploadForm) {
+                        commenceUploadForm.submit();
+                    }
+                })
                 .catch(err => {
                     console.log(err);
                     const error: HTMLParagraphElement | null = document.querySelector(
@@ -212,7 +218,7 @@ function createBatches(files: CreateFileInput[], batchSize: number) {
 }
 
 function uploadFileData(batches: CreateFileInput[][], consignmentId: number) {
-    const responses = batches.map(async function (value) {
+    const responses = batches.map(async function(value) {
         return await Axios.post<{}, AxiosResponse>(
             `/filedata?consignmentId=${consignmentId}`,
             { data: value }
@@ -228,17 +234,20 @@ async function processFiles(files: TdrFile[]) {
     );
     const consignmentId = parseInt(urlParams.get("consignmentId")!, 10);
     if (files) {
-        const filePathToFile: { [key: string]: File } = {}
+        const filePathToFile: { [key: string]: File } = {};
 
         const fileInfoStart = new Date().getTime();
         for (var tdrFile of files) {
             const fileInfo: CreateFileInput = await getFileInfo(tdrFile);
 
             fileInfoList.push(fileInfo);
-            filePathToFile[fileInfo.path!] = tdrFile
+            filePathToFile[fileInfo.path!] = tdrFile;
         }
         const fileInfoEnd = new Date().getTime();
-        console.log(`Got info for ${files.length} files in ${fileInfoEnd - fileInfoStart} ms`);
+        console.log(
+            `Got info for ${files.length} files in ${fileInfoEnd -
+                fileInfoStart} ms`
+        );
 
         const fileDataBatches = createBatches(
             fileInfoList,
@@ -248,7 +257,11 @@ async function processFiles(files: TdrFile[]) {
         const fileDataUploadStart = new Date().getTime();
         const responses = await uploadFileData(fileDataBatches, consignmentId);
         const fileDataUploadEnd = new Date().getTime();
-        console.log(`Uploaded data for ${files.length} files in ${fileDataBatches.length} batches in ${fileDataUploadEnd - fileDataUploadStart} ms`);
+        console.log(
+            `Uploaded data for ${files.length} files in ${
+                fileDataBatches.length
+            } batches in ${fileDataUploadEnd - fileDataUploadStart} ms`
+        );
 
         const s3UploadStart = new Date().getTime();
 
@@ -281,7 +294,10 @@ async function processFiles(files: TdrFile[]) {
         }
 
         const s3UploadEnd = new Date().getTime();
-        console.log(`Uploaded ${files.length} files in ${s3UploadEnd - s3UploadStart} ms`);
+        console.log(
+            `Uploaded ${files.length} files in ${s3UploadEnd -
+                s3UploadStart} ms`
+        );
     }
 }
 function uploadToS3(s3: S3, key: string, bucketName: string, file: File) {
@@ -292,7 +308,7 @@ function uploadToS3(s3: S3, key: string, bucketName: string, file: File) {
                 Bucket: bucketName,
                 Body: file
             },
-            function (err, data) {
+            function(err, data) {
                 if (err) {
                     reject(err);
                 }
