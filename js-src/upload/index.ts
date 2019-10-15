@@ -260,11 +260,19 @@ async function processFiles(files: TdrFile[]) {
         const filePathToFile: { [key: string]: File } = {};
 
         const fileInfoStart = new Date().getTime();
+
+        let fileInfoCount = 0;
+
         for (var tdrFile of files) {
+            if (fileInfoCount % 100 == 0) {
+                console.log(`Got file info for ${fileInfoCount} files`);
+            }
+
             const fileInfo: CreateFileInput = await getFileInfo(tdrFile);
 
             fileInfoList.push(fileInfo);
             filePathToFile[fileInfo.path!] = tdrFile;
+            fileInfoCount ++;
         }
         const fileInfoEnd = new Date().getTime();
         console.log(
