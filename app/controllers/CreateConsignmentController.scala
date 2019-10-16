@@ -1,11 +1,15 @@
 package controllers
 
 import com.mohiva.play.silhouette.api.Silhouette
+import forms.CreateConsignmentForm
+import forms.CreateConsignmentForm.CreateConsignmentData
+import forms.CreateSeriesForm.CreateSeriesData
+import forms.SelectedSeriesForm.SelectedSeriesData
 import graphql.GraphQLClientProvider
 import graphql.codegen.CreateConsignment.createConsignment
 import javax.inject.{Inject, _}
-import model.CreateConsignmentData
 import play.api.Configuration
+import play.api.data.Form
 import play.api.mvc._
 import utils.DefaultEnv
 
@@ -23,19 +27,36 @@ class CreateConsignmentController @Inject()(
 
   def index(seriesId:Int) = silhouette.SecuredAction.async { implicit request: Request[AnyContent] =>
 
-    Future(Ok(views.html.createConsignments(CreateConsignmentData.form, seriesId)))
+    Future(Ok(views.html.createConsignments(CreateConsignmentForm.form, seriesId)))
   }
 
   def submit() = silhouette.UserAwareAction.async { implicit request =>
-    request.identity.map(id => {
-      val graphQlClient = client.graphqlClient
-      val form = CreateConsignmentData.form.bindFromRequest
-      val vars = createConsignment.Variables(form.get.consignmentName,form.get.seriesId,id.email,form.get.transferringBody)
-      graphQlClient.query[createConsignment.Data, createConsignment.Variables](createConsignment.document, vars).result.map {
-        case Right(r) =>
-          Redirect(routes.UploadController.index(r.data.createConsignment.id, r.data.createConsignment.series.id))
-        case Left(e) => InternalServerError(e.errors.toString())
-      }
-    }).get
+
+    val errorFunction: Form[CreateConsignmentData] => Future[Result] = { formWithErrors: Form[CreateConsignmentData] =>
+
+        Future.successful(BadRequest(views.html.createConsignments(formWithErrors, formWithErrors.get.seriesId))
+      )
+    }
+
+    val successFunction: CreateConsignmentData => Future[Result] = { data: CreateConsignmentData =>
+
+      request.identity.map(id => {
+        val graphQlClient = client.graphqlClient
+        val vars = createConsignment.Variables(data.consignmentName, data.seriesId, id.email, data.transferringBody)
+        graphQlClient.query[createConsignment.Data, createConsignment.Variables](createConsignment.document, vars).result.map {
+          case Right(r) =>
+            Redirect(routes.UploadController.index(r.data.createConsignment.id, r.data.createConsignment.series.id))
+          case Left(e) => InternalServerError(e.errors.toString())
+        }
+
+      }).get
+    }
+
+    val formValidationResult: Form[CreateConsignmentData] = CreateConsignmentForm.form.bindFromRequest
+
+    formValidationResult.fold(
+      errorFunction,
+      successFunction
+    )
   }
 }

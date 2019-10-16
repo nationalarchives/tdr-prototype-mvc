@@ -1,6 +1,8 @@
 package controllers
 
 import com.mohiva.play.silhouette.api.Silhouette
+import forms.ReviewTransferForm
+import forms.ReviewTransferForm.ReviewTransferData
 import graphql.GraphQLClientProvider
 import graphql.codegen.ConfirmTransfer.confirmTransfer
 import graphql.codegen.ConfirmTransfer.confirmTransfer.{Data, Variables}
@@ -9,10 +11,8 @@ import graphql.codegen.GetConsignment.getConsignment._
 import graphql.codegen.GetFileStatus.getFileChecksStatus
 import graphql.codegen.GetFileStatus.getFileChecksStatus.GetFileChecksStatus
 import javax.inject.{Inject, _}
-import model.ReviewData
 import play.api.Configuration
 import play.api.data.Form
-import play.api.data.Forms.{mapping, text, boolean}
 import play.api.mvc._
 import utils.DefaultEnv
 
@@ -27,33 +27,22 @@ class ReviewController @Inject()(
                                   configuration: Configuration)(
                                   implicit val ex: ExecutionContext) extends AbstractController(controllerComponents) with play.api.i18n.I18nSupport {
 
-  val form = Form(
-    mapping(
-      "confirmRecordTransfer" -> boolean
-        .verifying("Must answer yes", b => b),
-      "confirmOpen" -> boolean
-        .verifying("Must answer yes", b => b),
-      "confirmTnaOwnership" -> boolean
-        .verifying("Must answer yes", b => b),
-    )(ReviewData.apply)(ReviewData.unapply)
-  )
-
   def index(consignmentId: Int) = silhouette.SecuredAction.async {
     implicit request =>
       getDetailsToReview(consignmentId).map(reviewDetails =>
-        Ok(views.html.review(reviewDetails.consignment, reviewDetails.fileChecks, form))
+        Ok(views.html.review(reviewDetails.consignment, reviewDetails.fileChecks, ReviewTransferForm.form))
       )
   }
 
   def submit(consignmentId: Int) = silhouette.SecuredAction.async { implicit request: Request[AnyContent] =>
 
-    val errorFunction: Form[ReviewData] => Future[Result] = { formWithErrors: Form[ReviewData] =>
+    val errorFunction: Form[ReviewTransferData] => Future[Result] = { formWithErrors: Form[ReviewTransferData] =>
       getDetailsToReview(consignmentId).map(reviewDetails =>
         BadRequest(views.html.review(reviewDetails.consignment, reviewDetails.fileChecks, formWithErrors))
       )
     }
 
-    val successFunction: ReviewData => Future[Result] = { formData: ReviewData =>
+    val successFunction: ReviewTransferData => Future[Result] = { formData: ReviewTransferData =>
       val graphQlClient = client.graphqlClient
       val vars = Variables(consignmentId)
 
@@ -65,16 +54,12 @@ class ReviewController @Inject()(
       }
     }
 
-    val formValidationResult: Form[ReviewData] = form.bindFromRequest
+    val formValidationResult: Form[ReviewTransferData] = ReviewTransferForm.form.bindFromRequest
 
     formValidationResult.fold(
       errorFunction,
       successFunction
     )
-  }
-
-  private def hasAgreed(s: String): Boolean = {
-    s.equals("yes")
   }
 
   private def getDetailsToReview(consignmentId: Int): Future[ConsignmentReview] = {

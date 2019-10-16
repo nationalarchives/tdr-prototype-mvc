@@ -1,14 +1,13 @@
 package controllers
 
-import akka.http.scaladsl.model.headers.RawHeader
+import forms.SelectedSeriesForm
+import forms.SelectedSeriesForm.SelectedSeriesData
 import graphql.GraphQLClientProvider
 import graphql.codegen.GetAllSeries
 import javax.inject._
 import play.api.Configuration
 import play.api.data.Form
-import play.api.data.Forms._
 import play.api.mvc._
-import model.SelectedSeriesData
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -18,12 +17,6 @@ class SeriesDetailsController @Inject()(
                                          controllerComponents: ControllerComponents,
                                          configuration: Configuration
                                        )(implicit val ex: ExecutionContext)extends AbstractController(controllerComponents) with play.api.i18n.I18nSupport {
-
-  val selectedSeriesForm = Form(
-    mapping(
-      "seriesNo" -> number
-    )(SelectedSeriesData.apply)(SelectedSeriesData.unapply)
-  )
 
   def submit() = Action.async { implicit request: Request[AnyContent] =>
 
@@ -36,7 +29,7 @@ class SeriesDetailsController @Inject()(
       Future.successful(Redirect(routes.CreateConsignmentController.index(data.seriesId)))
     }
 
-    val formValidationResult: Form[SelectedSeriesData] = selectedSeriesForm.bindFromRequest
+    val formValidationResult: Form[SelectedSeriesData] = SelectedSeriesForm.form.bindFromRequest
 
     formValidationResult.fold(
       errorFunction,
@@ -46,7 +39,7 @@ class SeriesDetailsController @Inject()(
 
   def index() = Action.async { implicit request: Request[AnyContent] =>
     retrieveSeriesInformation().map(data =>
-      Ok(views.html.seriesDetails(data, selectedSeriesForm))
+      Ok(views.html.seriesDetails(data, forms.SelectedSeriesForm.form))
     )
   }
 

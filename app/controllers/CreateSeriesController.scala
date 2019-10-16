@@ -1,15 +1,14 @@
 package controllers
 
-import akka.http.scaladsl.model.headers.RawHeader
+import forms.CreateSeriesForm
+import forms.CreateSeriesForm.CreateSeriesData
 import graphql.GraphQLClientProvider
-import javax.inject._
-import model.CreateSeriesData
-import play.api.data.Form
-import play.api.data.Forms._
-import play.api.mvc._
 import graphql.codegen.CreateSeries
 import graphql.codegen.types.CreateSeriesInput
+import javax.inject._
 import play.api.Configuration
+import play.api.data.Form
+import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -19,16 +18,10 @@ class CreateSeriesController @Inject()(
                                             controllerComponents: ControllerComponents,
                                             configuration: Configuration)(
                                             implicit val ex: ExecutionContext) extends AbstractController(controllerComponents) with play.api.i18n.I18nSupport {
-  val createSeriesForm = Form(
-    mapping(
-      "seriesName" -> nonEmptyText,
-      "seriesDescription" -> text
-    )(CreateSeriesData.apply)(CreateSeriesData.unapply)
-  )
 
   def index() = Action { implicit request: Request[AnyContent] =>
 
-    Ok(views.html.createSeries(createSeriesForm))
+    Ok(views.html.createSeries(CreateSeriesForm.form))
   }
 
   def submit() = Action.async { implicit request: Request[AnyContent] =>
@@ -47,7 +40,7 @@ class CreateSeriesController @Inject()(
         case Left(ex) => InternalServerError(ex.errors.toString())})
     }
 
-    val formValidationResult: Form[CreateSeriesData] = createSeriesForm.bindFromRequest
+    val formValidationResult: Form[CreateSeriesData] = CreateSeriesForm.form.bindFromRequest
 
     formValidationResult.fold(
       errorFunction,

@@ -2,7 +2,7 @@
 @import helper._
 @import viewsapi.FormFunctions._
 
-@(allSeries:Seq[(String, String)], selectedSeriesForm: Form[model.SelectedSeriesData])(implicit messages: Messages)
+@(allSeries:Seq[(String, String)], selectedSeriesForm: Form[forms.SelectedSeriesForm.SelectedSeriesData])(implicit messages: Messages)
 
 @main("Series Details") {
 @defining(play.core.PlayVersion.current) { version =>

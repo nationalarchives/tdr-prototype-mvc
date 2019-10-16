@@ -1,7 +1,7 @@
 
 @import helper._
 @import viewsapi.FormFunctions._
-@(serviceAgreementsForm: Form[model.ServiceAgreementsData], agreementOptions: Seq[(String, String)])(implicit messages: Messages)
+@(serviceAgreementsForm: Form[forms.ServiceAgreementsForm.ServiceAgreementsData], agreementOptions: Seq[(String, String)])(implicit messages: Messages)
     @main("ServiceAgreements") {
         @defining(play.core.PlayVersion.current) { version =>
 

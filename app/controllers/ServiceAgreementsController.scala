@@ -1,7 +1,8 @@
 package controllers
 
+import forms.ServiceAgreementsForm
+import forms.ServiceAgreementsForm.ServiceAgreementsData
 import javax.inject._
-import model.ServiceAgreementsData
 import play.api.Configuration
 import play.api.data.Form
 import play.api.data.Forms._
@@ -16,25 +17,8 @@ class ServiceAgreementsController @Inject()(controllerComponents: ControllerComp
 
   private val options: Seq[(String, String)] = Seq("Yes" -> "true", "No" -> "false")
 
-  val form = Form(
-    mapping(
-      "publicRecord" -> boolean
-        .verifying("Must answer yes", b => b),
-      "crownCopyright" -> boolean
-        .verifying("Must answer yes", b => b),
-      "english" -> boolean
-        .verifying("Must answer yes", b => b),
-      "digital" -> boolean
-        .verifying("Must answer yes", b => b),
-      "droAppraisalselection" -> boolean
-        .verifying("Must answer yes", b => b),
-      "droSensitivity" -> boolean
-        .verifying("Must answer yes", b => b),
-    )(ServiceAgreementsData.apply)(ServiceAgreementsData.unapply)
-  )
-
   def index() = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.serviceAgreements(form, options))
+    Ok(views.html.serviceAgreements(ServiceAgreementsForm.form, options))
   }
 
   //Only print information to console to show form works
@@ -56,7 +40,7 @@ class ServiceAgreementsController @Inject()(controllerComponents: ControllerComp
       Redirect(routes.SeriesDetailsController.index())
     }
 
-    val formValidationResult: Form[ServiceAgreementsData] = form.bindFromRequest
+    val formValidationResult: Form[ServiceAgreementsData] = ServiceAgreementsForm.form.bindFromRequest
 
     formValidationResult.fold(
       errorFunction,

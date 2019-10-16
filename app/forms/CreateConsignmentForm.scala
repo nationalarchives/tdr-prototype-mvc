@@ -1,11 +1,10 @@
-package model
+package forms
 
 import play.api.data.Form
-import play.api.data.Forms._
+import play.api.data.Forms.{mapping, number, text}
 
-case class CreateConsignmentData(consignmentName: String, transferringBody: String, seriesId: Int)
+object CreateConsignmentForm {
 
-object CreateConsignmentData {
   val form: Form[CreateConsignmentData] = Form(
     mapping(
       "consignmentName" -> text,
@@ -13,5 +12,6 @@ object CreateConsignmentData {
       "seriesId" -> number
     )(CreateConsignmentData.apply)(CreateConsignmentData.unapply)
   )
-}
 
+  case class CreateConsignmentData(consignmentName: String, transferringBody: String, seriesId: Int)
+}

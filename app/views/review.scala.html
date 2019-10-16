@@ -1,7 +1,7 @@
 @import helper._
 @import viewsapi.FormFunctions._
 
-@(consignment:graphql.codegen.GetConsignment.getConsignment.GetConsignment, files: graphql.codegen.GetFileStatus.getFileChecksStatus.GetFileChecksStatus, reviewform: Form[model.ReviewData])(implicit messages: Messages)
+@(consignment:graphql.codegen.GetConsignment.getConsignment.GetConsignment, files: graphql.codegen.GetFileStatus.getFileChecksStatus.GetFileChecksStatus, reviewform: Form[forms.ReviewTransferForm.ReviewTransferData])(implicit messages: Messages)
 
 @main("Review") {
     @defining(play.core.PlayVersion.current) { version =>
