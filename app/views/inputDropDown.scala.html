@@ -1,0 +1,33 @@
+@(field: Field,
+elementOptions: Seq[(String, String)],
+args: (Symbol, Any)*
+)(implicit messages: Messages)
+
+@import views.html.helper._
+@import viewsapi.FormFunctions._
+
+@elements = @{new FieldElements(field.id, field, null, args.toMap, messages) }
+
+<div class="govuk-form-group @elements.setErrorClass">
+    @if(elements.args.contains('_additionalHeading)) {
+        <h3 class="govuk-heading-m">@elements.args.get('_additionalHeading)</h3>
+    }
+
+    <label class="govuk-label" for=@elements.id>
+        @elements.label
+        @elements.args.requiredLabelSuffix()
+    </label>
+
+    <select class="govuk-select" id=@elements.id name=@elements.id @elements.args.requiredInput()>
+        @if(elements.args.contains('_emptyValueText)) {
+            <option value="" selected>@elements.args.get('_emptyValueText)</option>
+        }
+        @for(option <- elementOptions) {
+            <option
+                id="@elements.field.name-@option._1"
+                value="@option._1"
+            >@option._2</option>
+        }
+    </select>
+    @elements.renderErrorMessage()
+</div>

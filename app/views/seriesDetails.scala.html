@@ -1,7 +1,10 @@
 @import graphql.codegen.GetAllSeries.getAllSeries.GetAllSeries
-@(allSeries:Seq[GetAllSeries], selectedSeriesForm: Form[model.SelectedSeriesData])
+@import helper._
+@import viewsapi.FormFunctions._
 
-@main("SeriesDetails") {
+@(allSeries:Seq[(String, String)], selectedSeriesForm: Form[model.SelectedSeriesData])(implicit messages: Messages)
+
+@main("Series Details") {
 @defining(play.core.PlayVersion.current) { version =>
 
 <!-- Back -->
@@ -15,20 +18,16 @@
         <!-- Headline -->
         <h1 class="govuk-heading-xl">Series Information</h1>
 
-        <form action="@routes.SeriesDetailsController.submit()" method="POST">
-            <!-- Accruing Series -->
-            <div class="govuk-form-group">
-                <h3 class="govuk-heading-m">Accruing series</h3>
-                <label class="govuk-label" for="seriesNo">
-                    Series number*
-                </label>
-                <select class="govuk-select" id="seriesNo" name="seriesNo" required>
-                    <option value="" selected>Please choose...</option>
-                    @for(series <- allSeries) {
-                    <option value="@series.id">@series.name</option>
-                    }
-                </select>
-            </div>
+        @form(action = routes.SeriesDetailsController.submit) {
+            @inputDropDown(
+                selectedSeriesForm("seriesNo"),
+                allSeries,
+                '_label -> "Series Information",
+                '_emptyValueText -> "Please choose",
+                '_additionalHeading -> "Accruing Series",
+                requiredInputArg -> true
+            )
+
             <!-- New Series -->
             <div class="govuk-form-group">
                 <a href="@routes.CreateSeriesController.index" class="govuk-link govuk-!-font-size-19">
@@ -45,9 +44,7 @@
                     Save and continue
                 </button>
             </div>
-
-        </form>
-
+        }
     </div>
 </div>
 }

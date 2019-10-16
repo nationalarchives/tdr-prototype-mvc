@@ -10,14 +10,14 @@ import play.api.data.Forms._
 import play.api.mvc._
 import model.SelectedSeriesData
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class SeriesDetailsController @Inject()(
                                          client: GraphQLClientProvider,
                                          controllerComponents: ControllerComponents,
                                          configuration: Configuration
-                                       )(implicit val ex: ExecutionContext)extends AbstractController(controllerComponents) {
+                                       )(implicit val ex: ExecutionContext)extends AbstractController(controllerComponents) with play.api.i18n.I18nSupport {
 
   val selectedSeriesForm = Form(
     mapping(
@@ -25,21 +25,40 @@ class SeriesDetailsController @Inject()(
     )(SelectedSeriesData.apply)(SelectedSeriesData.unapply)
   )
 
-  def submit() = Action { implicit request: Request[AnyContent] =>
+  def submit() = Action.async { implicit request: Request[AnyContent] =>
 
-    var seriesData = selectedSeriesForm.bindFromRequest.get
-    var selectedSeriesId = seriesData.seriesId
+    val errorFunction: Form[SelectedSeriesData] => Future[Result] = { formWithErrors: Form[SelectedSeriesData] =>
+      retrieveSeriesInformation().map(data =>
+        BadRequest(views.html.seriesDetails(data, formWithErrors))
+      )
+    }
+    val successFunction: SelectedSeriesData => Future[Result] = { data: SelectedSeriesData =>
+      Future.successful(Redirect(routes.CreateConsignmentController.index(data.seriesId)))
+    }
 
-    Redirect(routes.CreateConsignmentController.index(selectedSeriesId))
+    val formValidationResult: Form[SelectedSeriesData] = selectedSeriesForm.bindFromRequest
+
+    formValidationResult.fold(
+      errorFunction,
+      successFunction
+    )
   }
 
   def index() = Action.async { implicit request: Request[AnyContent] =>
+    retrieveSeriesInformation().map(data =>
+      Ok(views.html.seriesDetails(data, selectedSeriesForm))
+    )
+  }
 
+  def retrieveSeriesInformation() = {
     val graphQlClient = client.graphqlClient
 
-    graphQlClient.query[GetAllSeries.getAllSeries.Data](GetAllSeries.getAllSeries.document).result.map(result => result match {
-      case Right(r) => Ok(views.html.seriesDetails(r.data.getAllSeries, selectedSeriesForm))
-      case Left(ex) => InternalServerError(ex.errors.toString())
-    })
+    val seriesInformation = graphQlClient.query[GetAllSeries.getAllSeries.Data](GetAllSeries.getAllSeries.document).result
+
+    for {
+      info <- seriesInformation
+    } yield {
+      info.right.get.data.getAllSeries.map(s => s.id.toString -> s.name)
+    }
   }
 }
