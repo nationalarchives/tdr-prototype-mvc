@@ -84,7 +84,7 @@ class UploadController @Inject()(
 
 
     val sessionTokenRequest = new GetSessionTokenRequest()
-    sessionTokenRequest.setDurationSeconds(7200)
+    sessionTokenRequest.setDurationSeconds(36000)
     val getSessionResult = tokenClient.getSessionToken(sessionTokenRequest)
     val credentials = getSessionResult.getCredentials
     TemporaryCredentials(credentials.getAccessKeyId, credentials.getSecretAccessKey, credentials.getSessionToken)
