@@ -82,6 +82,7 @@ const upload: () => void = () => {
             ev.preventDefault();
             const target: HTMLInputTarget | null = ev.currentTarget;
             const files: TdrFile[] = target!.files!.files!;
+
             processFiles(files)
                 .then(() => {
                     if (commenceUploadForm) {
@@ -193,6 +194,15 @@ const onDrop: (e: DragEvent) => void = async e => {
         dataTransferItems[0].webkitGetAsEntry(),
         []
     );
+    const input: HTMLInputElement | null = document.querySelector(
+        "#file-upload"
+    );
+    const fileDropLabel: HTMLSpanElement | null = document.querySelector(
+        ".draganddrop"
+    );
+    fileDropLabel!.innerText = files.length + " files";
+    input!.classList.add("hide");
+
     processFiles(files);
 };
 
@@ -261,6 +271,7 @@ async function processFiles(files: TdrFile[]) {
         window.location.search
     );
     const consignmentId = parseInt(urlParams.get("consignmentId")!, 10);
+
     if (files) {
         const filePathToFile: { [key: string]: File } = {};
 
