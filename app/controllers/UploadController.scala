@@ -89,15 +89,6 @@ class UploadController @Inject()(
       errorFunction,
       successFunction
     )
-
-
-
-//    val client = new TdrSignRequestClient(config, "stepfunction.uri")
-//    val input = Input(consignmentId.toString)
-//    val inputString = Json.asciiStringify(Json.toJson(input))
-//    client.send(Json.asciiStringify(Json.toJson(StateMachineInput(inputString, stateMachineArn))))
-//
-//    Redirect(routes.FileStatusController.getFileStatus(consignmentId))
   }
 
   def getTemporaryCredentials: TemporaryCredentials = {
