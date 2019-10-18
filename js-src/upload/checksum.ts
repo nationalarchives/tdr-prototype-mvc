@@ -1,34 +1,45 @@
-export const generateHash: (file: File) => Promise<string> = file => {
+import { Sha256, bytes_to_hex } from "asmcrypto.js";
+
+const FILE_CHUNK_SIZE_BYTES = 10000000;
+
+export const generateHash: (file: File) => Promise<string> = async file => {
     const hashStart = new Date().getTime();
 
-    const crypto = self.crypto.subtle;
     const fileReader = new FileReader();
-    fileReader.readAsArrayBuffer(file);
-    return new Promise(resolve => {
-        fileReader.onload = async function() {
-            const fileReaderResult = fileReader.result;
-            if (fileReaderResult instanceof ArrayBuffer) {
-                const buffer = await crypto.digest("SHA-256", fileReaderResult);
 
-                if (file.size > 1000000) {
-                    const hashEnd = new Date().getTime();
-                    console.log(
-                        `Calculated hash for ${file.size} byte file ${hashEnd -
-                        hashStart} ms`
-                    );
+    const fileSize = file.size;
+    const chunkCount = Math.ceil(fileSize / FILE_CHUNK_SIZE_BYTES);
+
+    const sha256 = new Sha256();
+
+    for (let i = 0; i < chunkCount; i += 1) {
+        const start = i * FILE_CHUNK_SIZE_BYTES;
+        const end = start + FILE_CHUNK_SIZE_BYTES;
+
+        let slice = file.slice(start, end);
+
+        fileReader.readAsArrayBuffer(slice);
+
+        await new Promise(resolve => {
+            fileReader.onload = async function () {
+                const result = fileReader.result;
+
+                if (result instanceof ArrayBuffer) {
+                    sha256.process(new Uint8Array(result));
+                    resolve();
                 }
+            };
+        });
+    }
 
-                resolve(hexString(buffer));
-            }
-        };
-    });
-};
+    const result = sha256.finish().result!;
 
-const hexString = (buffer: ArrayBuffer) => {
-    const byteArray = new Uint8Array(buffer);
-    const hexCodes = [...byteArray].map(value => {
-        const hexCode = value.toString(16);
-        return hexCode.padStart(2, "0");
-    });
-    return hexCodes.join("");
+    if (file.size > 1000000) {
+        const hashEnd = new Date().getTime();
+        console.log(
+            `Calculated hash for ${file.size} byte file ${hashEnd - hashStart} ms`
+        );
+    }
+
+    return bytes_to_hex(result);
 };
