@@ -32,7 +32,7 @@
                 <form id="file-upload-form">
                 <div class="upload-form">
                     <label class="govuk-label" for="file-upload">
-                        Upload a folder
+                        Select a folder
                     </label>
                     <input type="hidden" class="file-id-data" name="file-id-data" />
                     <input type="file" id="file-upload" name="files" class="govuk-file-upload" webkitdirectory>
@@ -48,7 +48,10 @@
 
                 <!-- Buttons -->
                 <div class="govuk-form-group">
-                    <button id="upload-submit" class="govuk-button" type="submit">Submit</button>
+                    <a href="@routes.DashboardController.index" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                        Cancel
+                    </a>
+                    <button id="upload-submit" class="govuk-button" type="submit">Upload now</button>
                 </div>
                 </form>
             </div>
