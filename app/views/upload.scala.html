@@ -1,4 +1,4 @@
-@(consignmentId: Int, seriesId: Int)
+@(commenceUploadForm: Form[forms.CommenceUploadForm.CommenceUploadData], consignmentId: Int, seriesId: Int)(implicit messages: Messages)
 
 @main("Upload") {
     @defining(play.core.PlayVersion.current) { version =>
@@ -15,7 +15,7 @@
                 <h1 class="govuk-heading-xl">Upload</h1>
 
                 <!-- Error -->
-                <div id="uploadError" class="govuk-error-summary hide" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary"">
+                <div id="uploadError" class="govuk-error-summary hide" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
                     <h2 class="govuk-error-summary__title" id="error-summary-title">
                         There is a problem
                     </h2>
@@ -55,8 +55,15 @@
         </div>
 
         <!-- Form only posts consignment id -->
-        @helper.form(action = routes.UploadController.upload(consignmentId), 'id -> "commence-upload-form") {
-            <input type="hidden" value="@consignmentId" name="consignmentId" />
+        @helper.form(action = routes.UploadController.upload(consignmentId, seriesId), 'id -> "commence-upload-form") {
+
+            <input type="hidden" id="number-of-files" value= "0" name="numberOfFiles" />
+
+            @if(commenceUploadForm.hasErrors) {
+                @for(error <- commenceUploadForm.errors) {
+                    <span id="error" class="govuk-error-message"><span>@error.format</span></span>
+                }
+            }
         }
     }
 }

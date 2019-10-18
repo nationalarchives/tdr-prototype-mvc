@@ -6,12 +6,15 @@ import com.amazonaws.auth.{AWSStaticCredentialsProvider, BasicAWSCredentials}
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder
 import com.amazonaws.services.securitytoken.model.GetSessionTokenRequest
 import com.mohiva.play.silhouette.api.{HandlerResult, Silhouette}
+import forms.CommenceUploadForm
+import forms.CommenceUploadForm.CommenceUploadData
 import graphql.GraphQLClientProvider
 import graphql.codegen.CreateMultipleFiles.createMultipleFiles.{Data, Variables, document}
 import graphql.codegen.types.CreateFileInput
 import graphql.tdr.TdrSignRequestClient
 import javax.inject._
 import play.api.Configuration
+import play.api.data.Form
 import play.api.libs.json.{Json, _}
 import play.api.mvc._
 import utils.DefaultEnv
@@ -27,7 +30,7 @@ class UploadController @Inject()(
                                   config: Configuration,
                                   silhouette: Silhouette[DefaultEnv],
                                   isConsignmentCreator: IsConsignmentCreator
-                                )(implicit val ex: ExecutionContext) extends AbstractController(controllerComponents) {
+                                )(implicit val ex: ExecutionContext) extends AbstractController(controllerComponents) with play.api.i18n.I18nSupport {
 
 
   private val accessKeyID: String = config.get[String]("aws.access.key.id")
@@ -42,7 +45,7 @@ class UploadController @Inject()(
 
 
   def index(consignmentId: Int, seriesId: Int) = silhouette.SecuredAction(isConsignmentCreator) { implicit request: Request[AnyContent] =>
-    Ok(views.html.upload(consignmentId, seriesId))
+    Ok(views.html.upload(CommenceUploadForm.form , consignmentId, seriesId))
   }
 
 
@@ -66,13 +69,35 @@ class UploadController @Inject()(
     )
   }
 
-  def upload(consignmentId: Int) = silhouette.SecuredAction(isConsignmentCreator) { implicit request =>
-    val client = new TdrSignRequestClient(config, "stepfunction.uri")
-    val input = Input(consignmentId.toString)
-    val inputString = Json.asciiStringify(Json.toJson(input))
-    client.send(Json.asciiStringify(Json.toJson(StateMachineInput(inputString, stateMachineArn))))
+  def upload(consignmentId: Int, seriesId: Int) = silhouette.SecuredAction(isConsignmentCreator).async { implicit request =>
 
-    Redirect(routes.FileStatusController.getFileStatus(consignmentId))
+    val errorFunction: Form[CommenceUploadData] => Future[Result] = { formWithErrors: Form[CommenceUploadData] =>
+      Future.successful(BadRequest(views.html.upload(formWithErrors, consignmentId, seriesId)))
+    }
+
+    val successFunction: CommenceUploadData => Future[Result] = { _ =>
+      val client = new TdrSignRequestClient(config, "stepfunction.uri")
+      val input = Input(consignmentId.toString)
+      val inputString = Json.asciiStringify(Json.toJson(input))
+      client.send(Json.asciiStringify(Json.toJson(StateMachineInput(inputString, stateMachineArn))))
+      Future.successful(Redirect(routes.FileStatusController.getFileStatus(consignmentId)))
+    }
+
+    val formValidationResult: Form[CommenceUploadData] = CommenceUploadForm.form.bindFromRequest
+
+    formValidationResult.fold(
+      errorFunction,
+      successFunction
+    )
+
+
+
+//    val client = new TdrSignRequestClient(config, "stepfunction.uri")
+//    val input = Input(consignmentId.toString)
+//    val inputString = Json.asciiStringify(Json.toJson(input))
+//    client.send(Json.asciiStringify(Json.toJson(StateMachineInput(inputString, stateMachineArn))))
+//
+//    Redirect(routes.FileStatusController.getFileStatus(consignmentId))
   }
 
   def getTemporaryCredentials: TemporaryCredentials = {

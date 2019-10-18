@@ -203,7 +203,22 @@ const onDrop: (e: DragEvent) => void = async e => {
     fileDropLabel!.innerText = files.length + " files";
     input!.classList.add("hide");
 
-    processFiles(files);
+    const submitButton: HTMLButtonElement | null = document.querySelector(
+        "#upload-submit"
+    );
+    const commenceUploadForm: HTMLFormElement | null = document.querySelector(
+        "#commence-upload-form"
+    );
+
+    //Submit hidden form with consignment information
+    if (submitButton) {
+        submitButton.addEventListener("click", sbe => {
+            sbe.preventDefault();
+            processFiles(files).then(() => {
+                commenceUploadForm!.submit();
+            });
+        });
+    }
 };
 
 const getFileInfo: (
@@ -271,8 +286,12 @@ async function processFiles(files: TdrFile[]) {
         window.location.search
     );
     const consignmentId = parseInt(urlParams.get("consignmentId")!, 10);
+    const numberOfFilesInput: HTMLInputElement | null = document.querySelector(
+        "#number-of-files"
+    );
 
     if (files) {
+        numberOfFilesInput!.setAttribute("value", files.length.toString());
         const filePathToFile: { [key: string]: File } = {};
 
         const fileInfoStart = new Date().getTime();

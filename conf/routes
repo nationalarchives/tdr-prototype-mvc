@@ -29,7 +29,7 @@ POST    /createConsignment/submit           controllers.CreateConsignmentControl
 GET     /fileStatus                         controllers.FileStatusController.getFileStatus(consignmentId: Int)
 GET     /fileStatusApi                      controllers.FileStatusController.getFileStatusApi(consignmentId: Int)
 +nocsrf
-POST    /upload                             controllers.UploadController.upload(consignmentId: Int)
+POST    /upload                             controllers.UploadController.upload(consignmentId: Int, seriesId: Int)
 +nocsrf
 POST    /filedata                           controllers.UploadController.saveFileData
 GET     /transferConfirmation               controllers.TransferConfirmationController.index
