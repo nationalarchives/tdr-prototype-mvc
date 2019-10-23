@@ -36,6 +36,19 @@ export interface IWebkitEntry extends DataTransferItem {
   file: (success: (file: File) => void) => void;
 }
 
+const wasmSupported = (() => {
+  try {
+    if (typeof WebAssembly === "object" && typeof WebAssembly.instantiate === "function") {
+      const module = new WebAssembly.Module(
+        Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00)
+      );
+      if (module instanceof WebAssembly.Module)
+        return new WebAssembly.Instance(module) instanceof WebAssembly.Instance;
+    }
+  } catch (e) {}
+  return false;
+})();
+
 const upload: () => void = () => {
   const uploadForm: HTMLFormElement | null = document.querySelector("#file-upload-form");
   const commenceUploadForm: HTMLFormElement | null = document.querySelector(
@@ -147,13 +160,13 @@ const onDrop: (e: DragEvent) => void = async e => {
 };
 
 const getFileInfo: (tdrFile: TdrFile) => Promise<CreateFileInput> = async tdrFile => {
-  const date = new Date();
-  const clientSideChecksum = await wasm.generate_checksum(tdrFile);
-  // @ts-ignore
-  console.log(`wasm ${new Date() - date}`);
-  await generateHash(tdrFile);
-  // @ts-ignore
-  console.log(`js ${new Date() - date}`);
+  const progress: (percentage: number) => void = percentage => console.log(percentage);
+  let clientSideChecksum;
+  if (wasmSupported) {
+    clientSideChecksum = await wasm.generate_checksum(tdrFile, progress);
+  } else {
+    clientSideChecksum = await generateHash(tdrFile);
+  }
   const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
   const consignmentId = parseInt(urlParams.get("consignmentId")!, 10);
   const fileInfo: CreateFileInput = {
