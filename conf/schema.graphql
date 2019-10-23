@@ -10,7 +10,7 @@ type Consignment {
 input CreateFileInput {
   path: String!
   consignmentId: Int!
-  fileSize: Int!
+  fileSize: Long!
   lastModifiedDate: Instant!
   fileName: String!
   clientSideChecksum: String!
@@ -27,7 +27,7 @@ type File {
   consignmentId: Int!
   fileStatus: FileStatus!
   pronomId: String
-  fileSize: Int!
+  fileSize: Long!
   lastModifiedDate: Instant!
   fileName: String!
 }

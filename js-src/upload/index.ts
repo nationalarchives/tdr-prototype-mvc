@@ -1,355 +1,316 @@
 import Axios from "axios";
 import * as S3 from "aws-sdk/clients/s3";
+import * as wasm from "@nationalarchives/checksum-calculator";
 
 interface HTMLInputTarget extends EventTarget {
-    files?: InputElement;
+  files?: InputElement;
 }
 
 interface InputElement {
-    files?: TdrFile[];
+  files?: TdrFile[];
 }
 
 interface CreateFileInput {
-    consignmentId: number;
-    path: string | null;
-    fileSize: number;
-    lastModifiedDate: Date;
-    clientSideChecksum: unknown;
-    fileName: string;
+  consignmentId: number;
+  path: string | null;
+  fileSize: number;
+  lastModifiedDate: Date;
+  clientSideChecksum: unknown;
+  fileName: string;
 }
 
 interface TdrFile extends File {
-    webkitRelativePath: string;
+  webkitRelativePath: string;
 }
 
 export interface IReader {
-    readEntries: (callbackFunction: (entry: IWebkitEntry[]) => void) => void;
+  readEntries: (callbackFunction: (entry: IWebkitEntry[]) => void) => void;
 }
 
 export interface IWebkitEntry extends DataTransferItem {
-    createReader: () => IReader;
-    isFile: boolean;
-    isDirectory: boolean;
-    fullPath: string;
-    file: (success: (file: File) => void) => void;
+  createReader: () => IReader;
+  isFile: boolean;
+  isDirectory: boolean;
+  fullPath: string;
+  file: (success: (file: File) => void) => void;
 }
 
 const hexString = (buffer: ArrayBuffer) => {
-    const byteArray = new Uint8Array(buffer);
-    const hexCodes = [...byteArray].map(value => {
-        const hexCode = value.toString(16);
-        return hexCode.padStart(2, "0");
-    });
-    return hexCodes.join("");
+  const byteArray = new Uint8Array(buffer);
+  const hexCodes = [...byteArray].map(value => {
+    const hexCode = value.toString(16);
+    return hexCode.padStart(2, "0");
+  });
+  return hexCodes.join("");
 };
 
 export const generateHash: (file: File) => Promise<string> = file => {
-    const hashStart = new Date().getTime();
+  const hashStart = new Date().getTime();
 
-    const crypto = self.crypto.subtle;
-    const fileReader = new FileReader();
-    fileReader.readAsArrayBuffer(file);
-    return new Promise(resolve => {
-        fileReader.onload = async function() {
-            const fileReaderResult = fileReader.result;
-            if (fileReaderResult instanceof ArrayBuffer) {
-                const buffer = await crypto.digest("SHA-256", fileReaderResult);
+  const crypto = self.crypto.subtle;
+  const fileReader = new FileReader();
+  fileReader.readAsArrayBuffer(file);
+  return new Promise(resolve => {
+    fileReader.onload = async function() {
+      const fileReaderResult = fileReader.result;
+      if (fileReaderResult instanceof ArrayBuffer) {
+        const buffer = await crypto.digest("SHA-256", fileReaderResult);
 
-                if (file.size > 1000000) {
-                    const hashEnd = new Date().getTime();
-                    console.log(
-                        `Calculated hash for ${file.size} byte file ${hashEnd -
-                            hashStart} ms`
-                    );
-                }
+        if (file.size > 1000000) {
+          const hashEnd = new Date().getTime();
+          console.log(`Calculated hash for ${file.size} byte file ${hashEnd - hashStart} ms`);
+        }
 
-                resolve(hexString(buffer));
-            }
-        };
-    });
+        resolve(hexString(buffer));
+      }
+    };
+  });
 };
 
 const upload: () => void = () => {
-    const uploadForm: HTMLFormElement | null = document.querySelector(
-        "#file-upload-form"
-    );
-    const commenceUploadForm: HTMLFormElement | null = document.querySelector(
-        "#commence-upload-form"
-    );
+  const uploadForm: HTMLFormElement | null = document.querySelector("#file-upload-form");
+  const commenceUploadForm: HTMLFormElement | null = document.querySelector(
+    "#commence-upload-form"
+  );
 
-    if (uploadForm) {
-        uploadForm.addEventListener("submit", ev => {
-            ev.preventDefault();
-            const target: HTMLInputTarget | null = ev.currentTarget;
-            const files: TdrFile[] = target!.files!.files!;
-            processFiles(files)
-                .then(() => {
-                    if (commenceUploadForm) {
-                        commenceUploadForm.submit();
-                    }
-                })
-                .catch(err => {
-                    console.log(err);
-                    const error: HTMLDivElement | null = document.querySelector(
-                        ".govuk-error-summary"
-                    );
-                    const displayError: HTMLParagraphElement | null = document.querySelector(
-                        ".errorMessage"
-                    );
-                    displayError!.innerText = err;
-                    error!.classList.remove("hide");
-                });
+  if (uploadForm) {
+    uploadForm.addEventListener("submit", ev => {
+      ev.preventDefault();
+      const target: HTMLInputTarget | null = ev.currentTarget;
+      const files: TdrFile[] = target!.files!.files!;
+      processFiles(files)
+        .then(() => {
+          if (commenceUploadForm) {
+            commenceUploadForm.submit();
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          const error: HTMLDivElement | null = document.querySelector(".govuk-error-summary");
+          const displayError: HTMLParagraphElement | null = document.querySelector(".errorMessage");
+          displayError!.innerText = err;
+          error!.classList.remove("hide");
         });
-    }
-    const dragAndDrop: HTMLDivElement | null = document.querySelector(
-        ".govuk-file-drop"
-    );
-    if (dragAndDrop) {
-        dragAndDrop.ondragover = onDragOver;
-        dragAndDrop.ondragleave = () => setIsDragging(false);
-        dragAndDrop.ondrop = onDrop;
-    }
+    });
+  }
+  const dragAndDrop: HTMLDivElement | null = document.querySelector(".govuk-file-drop");
+  if (dragAndDrop) {
+    dragAndDrop.ondragover = onDragOver;
+    dragAndDrop.ondragleave = () => setIsDragging(false);
+    dragAndDrop.ondrop = onDrop;
+  }
 };
 
 const setIsDragging: (isDragging: boolean) => void = isDragging => {
-    let currentVal = ".govuk-file-drop";
-    let fileDrop: HTMLDivElement | null = document.querySelector(
-        ".govuk-file-drop"
-    );
-    if (!fileDrop) {
-        currentVal = ".govuk-file-drop-drag";
-        fileDrop = document.querySelector(currentVal);
-    }
-    const targetVal = isDragging ? ".govuk-file-drop-drag" : ".govuk-file-drop";
-    const fileDropLabel: HTMLSpanElement | null = document.querySelector(
-        ".draganddrop"
-    );
-    const labelText = isDragging ? "Drop now" : "Drag folder here";
-    fileDropLabel!.innerText = labelText;
-    fileDrop!.classList.replace(currentVal, targetVal);
+  let currentVal = ".govuk-file-drop";
+  let fileDrop: HTMLDivElement | null = document.querySelector(".govuk-file-drop");
+  if (!fileDrop) {
+    currentVal = ".govuk-file-drop-drag";
+    fileDrop = document.querySelector(currentVal);
+  }
+  const targetVal = isDragging ? ".govuk-file-drop-drag" : ".govuk-file-drop";
+  const fileDropLabel: HTMLSpanElement | null = document.querySelector(".draganddrop");
+  const labelText = isDragging ? "Drop now" : "Drag folder here";
+  fileDropLabel!.innerText = labelText;
+  fileDrop!.classList.replace(currentVal, targetVal);
 };
 
 const onDragOver: (e: DragEvent) => void = e => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
+  e.preventDefault();
+  e.stopPropagation();
+  setIsDragging(true);
 };
 
 const getFileFromEntry: (entry: IWebkitEntry) => Promise<TdrFile> = entry => {
-    return new Promise<TdrFile>(resolve => {
-        entry.file(f => {
-            resolve(<TdrFile>f);
-        });
+  return new Promise<TdrFile>(resolve => {
+    entry.file(f => {
+      resolve(<TdrFile>f);
     });
+  });
 };
 
-const getEntriesFromReader: (
-    reader: IReader
-) => Promise<IWebkitEntry[]> = async reader => {
-    let allEntries: IWebkitEntry[] = [];
+const getEntriesFromReader: (reader: IReader) => Promise<IWebkitEntry[]> = async reader => {
+  let allEntries: IWebkitEntry[] = [];
 
-    let nextBatch = await getEntryBatch(reader);
+  let nextBatch = await getEntryBatch(reader);
 
-    while (nextBatch.length > 0) {
-        allEntries = allEntries.concat(nextBatch);
-        nextBatch = await getEntryBatch(reader);
-    }
+  while (nextBatch.length > 0) {
+    allEntries = allEntries.concat(nextBatch);
+    nextBatch = await getEntryBatch(reader);
+  }
 
-    return allEntries;
+  return allEntries;
 };
 
 const getEntryBatch: (reader: IReader) => Promise<IWebkitEntry[]> = reader => {
-    return new Promise<IWebkitEntry[]>(resolve => {
-        reader.readEntries(entries => {
-            resolve(entries);
-        });
+  return new Promise<IWebkitEntry[]>(resolve => {
+    reader.readEntries(entries => {
+      resolve(entries);
     });
+  });
 };
 
-const getAllFiles: (
-    entry: IWebkitEntry,
-    fileInfoInput: TdrFile[]
-) => Promise<TdrFile[]> = async (entry, fileInfoInput) => {
-    const reader: IReader = entry.createReader();
-    const entries: IWebkitEntry[] = await getEntriesFromReader(reader);
-    for (const entry of entries) {
-        if (entry.isDirectory) {
-            await getAllFiles(entry, fileInfoInput);
-        } else {
-            fileInfoInput.push(await getFileFromEntry(entry));
-        }
+const getAllFiles: (entry: IWebkitEntry, fileInfoInput: TdrFile[]) => Promise<TdrFile[]> = async (
+  entry,
+  fileInfoInput
+) => {
+  const reader: IReader = entry.createReader();
+  const entries: IWebkitEntry[] = await getEntriesFromReader(reader);
+  for (const entry of entries) {
+    if (entry.isDirectory) {
+      await getAllFiles(entry, fileInfoInput);
+    } else {
+      fileInfoInput.push(await getFileFromEntry(entry));
     }
-    return fileInfoInput;
+  }
+  return fileInfoInput;
 };
 
 const onDrop: (e: DragEvent) => void = async e => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-    const dataTransferItems: DataTransferItemList = e.dataTransfer!.items;
+  e.preventDefault();
+  e.stopPropagation();
+  setIsDragging(false);
+  const dataTransferItems: DataTransferItemList = e.dataTransfer!.items;
 
-    //Assume one folder in the drag and drop for now
-    const files: TdrFile[] = await getAllFiles(
-        dataTransferItems[0].webkitGetAsEntry(),
-        []
-    );
-    processFiles(files);
+  //Assume one folder in the drag and drop for now
+  const files: TdrFile[] = await getAllFiles(dataTransferItems[0].webkitGetAsEntry(), []);
+  processFiles(files);
 };
 
-const getFileInfo: (
-    tdrFile: TdrFile
-) => Promise<CreateFileInput> = async tdrFile => {
-    const clientSideChecksum = await generateHash(tdrFile);
-    const urlParams: URLSearchParams = new URLSearchParams(
-        window.location.search
-    );
-    const consignmentId = parseInt(urlParams.get("consignmentId")!, 10);
-    const fileInfo: CreateFileInput = {
-        consignmentId,
-        clientSideChecksum,
-        fileSize: tdrFile.size,
-        path: tdrFile.webkitRelativePath,
-        lastModifiedDate: new Date(tdrFile.lastModified),
-        fileName: tdrFile.name
-    };
-    return fileInfo;
+const getFileInfo: (tdrFile: TdrFile) => Promise<CreateFileInput> = async tdrFile => {
+  const date = new Date();
+  const clientSideChecksum = await wasm.generate_checksum(tdrFile);
+  console.log(tdrFile.size);
+  const now = new Date();
+  // @ts-ignore
+  console.log(now - date);
+  const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
+  const consignmentId = parseInt(urlParams.get("consignmentId")!, 10);
+  const fileInfo: CreateFileInput = {
+    consignmentId,
+    clientSideChecksum,
+    fileSize: tdrFile.size,
+    path: tdrFile.webkitRelativePath,
+    lastModifiedDate: new Date(tdrFile.lastModified),
+    fileName: tdrFile.name
+  };
+  return fileInfo;
 };
 
 export { upload };
 
 interface Credentials {
-    accessKeyId: string;
-    secretAccessKey: string;
-    sessionToken: string;
+  accessKeyId: string;
+  secretAccessKey: string;
+  sessionToken: string;
 }
 
 interface AxiosResponse {
-    data: IFileData;
+  data: IFileData;
 }
 
 interface IFileData {
-    pathMap: { [key: string]: string };
-    credentials: Credentials;
-    bucketName: string;
+  pathMap: { [key: string]: string };
+  credentials: Credentials;
+  bucketName: string;
 }
 
 const fileDataUploadBatchSize = 250;
 
 function createBatches(files: CreateFileInput[], batchSize: number) {
-    const batches: CreateFileInput[][] = [];
+  const batches: CreateFileInput[][] = [];
 
-    for (var index = 0; index < files.length; index += batchSize) {
-        batches.push(files.slice(index, index + batchSize));
-    }
+  for (var index = 0; index < files.length; index += batchSize) {
+    batches.push(files.slice(index, index + batchSize));
+  }
 
-    return batches;
+  return batches;
 }
 
 function uploadFileData(batches: CreateFileInput[][], consignmentId: number) {
-    const responses = batches.map(async function(value) {
-        return await Axios.post<{}, AxiosResponse>(
-            `/filedata?consignmentId=${consignmentId}`,
-            { data: value }
-        );
+  const responses = batches.map(async function(value) {
+    return await Axios.post<{}, AxiosResponse>(`/filedata?consignmentId=${consignmentId}`, {
+      data: value
     });
-    return Promise.all(responses);
+  });
+  return Promise.all(responses);
 }
 
 async function processFiles(files: TdrFile[]) {
-    const fileInfoList: CreateFileInput[] = [];
-    const urlParams: URLSearchParams = new URLSearchParams(
-        window.location.search
-    );
-    const consignmentId = parseInt(urlParams.get("consignmentId")!, 10);
-    if (files) {
-        const filePathToFile: { [key: string]: File } = {};
+  const fileInfoList: CreateFileInput[] = [];
+  const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
+  const consignmentId = parseInt(urlParams.get("consignmentId")!, 10);
+  if (files) {
+    const filePathToFile: { [key: string]: File } = {};
 
-        const fileInfoStart = new Date().getTime();
+    const fileInfoStart = new Date().getTime();
 
-        let fileInfoCount = 0;
+    let fileInfoCount = 0;
 
-        for (var tdrFile of files) {
-            if (fileInfoCount % 100 == 0) {
-                console.log(`Got file info for ${fileInfoCount} files`);
-            }
+    for (var tdrFile of files) {
+      if (fileInfoCount % 100 == 0) {
+        console.log(`Got file info for ${fileInfoCount} files`);
+      }
 
-            const fileInfo: CreateFileInput = await getFileInfo(tdrFile);
+      const fileInfo: CreateFileInput = await getFileInfo(tdrFile);
 
-            fileInfoList.push(fileInfo);
-            filePathToFile[fileInfo.path!] = tdrFile;
-            fileInfoCount++;
-        }
-        const fileInfoEnd = new Date().getTime();
-        console.log(
-            `Got info for ${files.length} files in ${fileInfoEnd -
-                fileInfoStart} ms`
-        );
-
-        const fileDataBatches = createBatches(
-            fileInfoList,
-            fileDataUploadBatchSize
-        );
-
-        const fileDataUploadStart = new Date().getTime();
-        const responses = await uploadFileData(fileDataBatches, consignmentId);
-        const fileDataUploadEnd = new Date().getTime();
-        console.log(
-            `Uploaded data for ${files.length} files in ${
-                fileDataBatches.length
-            } batches in ${fileDataUploadEnd - fileDataUploadStart} ms`
-        );
-
-        const s3UploadStart = new Date().getTime();
-
-        for (const response of responses) {
-            const fileData = response!.data;
-            const {
-                accessKeyId,
-                secretAccessKey,
-                sessionToken
-            } = response!.data.credentials;
-            const region = "eu-west-2";
-            var s3 = new S3({
-                accessKeyId,
-                secretAccessKey,
-                sessionToken,
-                region
-            });
-
-            for (const path of Object.keys(response.data!.pathMap)) {
-                const file = filePathToFile[path];
-                const id = fileData.pathMap[path];
-
-                await uploadToS3(
-                    s3,
-                    `${consignmentId}/${id}`,
-                    fileData.bucketName,
-                    file
-                );
-            }
-        }
-
-        const s3UploadEnd = new Date().getTime();
-        console.log(
-            `Uploaded ${files.length} files in ${s3UploadEnd -
-                s3UploadStart} ms`
-        );
+      fileInfoList.push(fileInfo);
+      filePathToFile[fileInfo.path!] = tdrFile;
+      fileInfoCount++;
     }
+    const fileInfoEnd = new Date().getTime();
+    console.log(`Got info for ${files.length} files in ${fileInfoEnd - fileInfoStart} ms`);
+
+    const fileDataBatches = createBatches(fileInfoList, fileDataUploadBatchSize);
+
+    const fileDataUploadStart = new Date().getTime();
+    const responses = await uploadFileData(fileDataBatches, consignmentId);
+    const fileDataUploadEnd = new Date().getTime();
+    console.log(
+      `Uploaded data for ${files.length} files in ${
+        fileDataBatches.length
+      } batches in ${fileDataUploadEnd - fileDataUploadStart} ms`
+    );
+
+    const s3UploadStart = new Date().getTime();
+
+    for (const response of responses) {
+      const fileData = response!.data;
+      const { accessKeyId, secretAccessKey, sessionToken } = response!.data.credentials;
+      const region = "eu-west-2";
+      var s3 = new S3({
+        accessKeyId,
+        secretAccessKey,
+        sessionToken,
+        region
+      });
+
+      for (const path of Object.keys(response.data!.pathMap)) {
+        const file = filePathToFile[path];
+        const id = fileData.pathMap[path];
+
+        await uploadToS3(s3, `${consignmentId}/${id}`, fileData.bucketName, file);
+      }
+    }
+
+    const s3UploadEnd = new Date().getTime();
+    console.log(`Uploaded ${files.length} files in ${s3UploadEnd - s3UploadStart} ms`);
+  }
 }
 function uploadToS3(s3: S3, key: string, bucketName: string, file: File) {
-    return new Promise((resolve, reject) => {
-        s3.upload(
-            {
-                Key: key,
-                Bucket: bucketName,
-                Body: file
-            },
-            function(err, data) {
-                if (err) {
-                    reject(err);
-                }
-                resolve(data);
-            }
-        );
-    });
+  return new Promise((resolve, reject) => {
+    s3.upload(
+      {
+        Key: key,
+        Bucket: bucketName,
+        Body: file
+      },
+      function(err, data) {
+        if (err) {
+          reject(err);
+        }
+        resolve(data);
+      }
+    );
+  });
 }
