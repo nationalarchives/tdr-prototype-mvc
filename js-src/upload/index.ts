@@ -1,6 +1,7 @@
 import Axios from "axios";
 import * as S3 from "aws-sdk/clients/s3";
 import * as wasm from "@nationalarchives/checksum-calculator";
+import { generateHash } from "./checksum";
 
 interface HTMLInputTarget extends EventTarget {
   files?: InputElement;
@@ -34,38 +35,6 @@ export interface IWebkitEntry extends DataTransferItem {
   fullPath: string;
   file: (success: (file: File) => void) => void;
 }
-
-const hexString = (buffer: ArrayBuffer) => {
-  const byteArray = new Uint8Array(buffer);
-  const hexCodes = [...byteArray].map(value => {
-    const hexCode = value.toString(16);
-    return hexCode.padStart(2, "0");
-  });
-  return hexCodes.join("");
-};
-
-export const generateHash: (file: File) => Promise<string> = file => {
-  const hashStart = new Date().getTime();
-
-  const crypto = self.crypto.subtle;
-  const fileReader = new FileReader();
-  fileReader.readAsArrayBuffer(file);
-  return new Promise(resolve => {
-    fileReader.onload = async function() {
-      const fileReaderResult = fileReader.result;
-      if (fileReaderResult instanceof ArrayBuffer) {
-        const buffer = await crypto.digest("SHA-256", fileReaderResult);
-
-        if (file.size > 1000000) {
-          const hashEnd = new Date().getTime();
-          console.log(`Calculated hash for ${file.size} byte file ${hashEnd - hashStart} ms`);
-        }
-
-        resolve(hexString(buffer));
-      }
-    };
-  });
-};
 
 const upload: () => void = () => {
   const uploadForm: HTMLFormElement | null = document.querySelector("#file-upload-form");
@@ -180,10 +149,11 @@ const onDrop: (e: DragEvent) => void = async e => {
 const getFileInfo: (tdrFile: TdrFile) => Promise<CreateFileInput> = async tdrFile => {
   const date = new Date();
   const clientSideChecksum = await wasm.generate_checksum(tdrFile);
-  console.log(tdrFile.size);
-  const now = new Date();
   // @ts-ignore
-  console.log(now - date);
+  console.log(`wasm ${new Date() - date}`);
+  await generateHash(tdrFile);
+  // @ts-ignore
+  console.log(`js ${new Date() - date}`);
   const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
   const consignmentId = parseInt(urlParams.get("consignmentId")!, 10);
   const fileInfo: CreateFileInput = {
