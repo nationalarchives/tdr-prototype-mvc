@@ -38,19 +38,27 @@ export interface IWebkitEntry extends DataTransferItem {
 
 const wasmSupported = (() => {
     try {
-        if (typeof WebAssembly === "object" && typeof WebAssembly.instantiate === "function") {
+        if (
+            typeof WebAssembly === "object" &&
+            typeof WebAssembly.instantiate === "function"
+        ) {
             const module = new WebAssembly.Module(
                 Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00)
             );
             if (module instanceof WebAssembly.Module)
-                return new WebAssembly.Instance(module) instanceof WebAssembly.Instance;
+                return (
+                    new WebAssembly.Instance(module) instanceof
+                    WebAssembly.Instance
+                );
         }
     } catch (e) {}
     return false;
 })();
 
 const upload: () => void = () => {
-    const uploadForm: HTMLFormElement | null = document.querySelector("#file-upload-form");
+    const uploadForm: HTMLFormElement | null = document.querySelector(
+        "#file-upload-form"
+    );
     const commenceUploadForm: HTMLFormElement | null = document.querySelector(
         "#commence-upload-form"
     );
@@ -79,7 +87,9 @@ const upload: () => void = () => {
                 });
         });
     }
-    const dragAndDrop: HTMLDivElement | null = document.querySelector(".govuk-file-drop");
+    const dragAndDrop: HTMLDivElement | null = document.querySelector(
+        ".govuk-file-drop"
+    );
     if (dragAndDrop) {
         dragAndDrop.ondragover = onDragOver;
         dragAndDrop.ondragleave = () => setIsDragging(false);
@@ -89,13 +99,17 @@ const upload: () => void = () => {
 
 const setIsDragging: (isDragging: boolean) => void = isDragging => {
     let currentVal = ".govuk-file-drop";
-    let fileDrop: HTMLDivElement | null = document.querySelector(".govuk-file-drop");
+    let fileDrop: HTMLDivElement | null = document.querySelector(
+        ".govuk-file-drop"
+    );
     if (!fileDrop) {
         currentVal = ".govuk-file-drop-drag";
         fileDrop = document.querySelector(currentVal);
     }
     const targetVal = isDragging ? ".govuk-file-drop-drag" : ".govuk-file-drop";
-    const fileDropLabel: HTMLSpanElement | null = document.querySelector(".draganddrop");
+    const fileDropLabel: HTMLSpanElement | null = document.querySelector(
+        ".draganddrop"
+    );
     const labelText = isDragging ? "Drop now" : "Drag folder here";
     fileDropLabel!.innerText = labelText;
     fileDrop!.classList.replace(currentVal, targetVal);
@@ -115,7 +129,9 @@ const getFileFromEntry: (entry: IWebkitEntry) => Promise<TdrFile> = entry => {
     });
 };
 
-const getEntriesFromReader: (reader: IReader) => Promise<IWebkitEntry[]> = async reader => {
+const getEntriesFromReader: (
+    reader: IReader
+) => Promise<IWebkitEntry[]> = async reader => {
     let allEntries: IWebkitEntry[] = [];
 
     let nextBatch = await getEntryBatch(reader);
@@ -136,10 +152,10 @@ const getEntryBatch: (reader: IReader) => Promise<IWebkitEntry[]> = reader => {
     });
 };
 
-const getAllFiles: (entry: IWebkitEntry, fileInfoInput: TdrFile[]) => Promise<TdrFile[]> = async (
-    entry,
-    fileInfoInput
-) => {
+const getAllFiles: (
+    entry: IWebkitEntry,
+    fileInfoInput: TdrFile[]
+) => Promise<TdrFile[]> = async (entry, fileInfoInput) => {
     const reader: IReader = entry.createReader();
     const entries: IWebkitEntry[] = await getEntriesFromReader(reader);
     for (const entry of entries) {
@@ -159,19 +175,27 @@ const onDrop: (e: DragEvent) => void = async e => {
     const dataTransferItems: DataTransferItemList = e.dataTransfer!.items;
 
     //Assume one folder in the drag and drop for now
-    const files: TdrFile[] = await getAllFiles(dataTransferItems[0].webkitGetAsEntry(), []);
+    const files: TdrFile[] = await getAllFiles(
+        dataTransferItems[0].webkitGetAsEntry(),
+        []
+    );
     processFiles(files);
 };
 
-const getFileInfo: (tdrFile: TdrFile) => Promise<CreateFileInput> = async tdrFile => {
-    const progress: (percentage: number) => void = percentage => console.log(percentage);
+const getFileInfo: (
+    tdrFile: TdrFile
+) => Promise<CreateFileInput> = async tdrFile => {
+    const progress: (percentage: number) => void = percentage =>
+        console.log(percentage);
     let clientSideChecksum;
     if (wasmSupported) {
         clientSideChecksum = await wasm.generate_checksum(tdrFile, progress);
     } else {
         clientSideChecksum = await generateHash(tdrFile);
     }
-    const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
+    const urlParams: URLSearchParams = new URLSearchParams(
+        window.location.search
+    );
     const consignmentId = parseInt(urlParams.get("consignmentId")!, 10);
     const fileInfo: CreateFileInput = {
         consignmentId,
@@ -216,16 +240,21 @@ function createBatches(files: CreateFileInput[], batchSize: number) {
 
 function uploadFileData(batches: CreateFileInput[][], consignmentId: number) {
     const responses = batches.map(async function(value) {
-        return await Axios.post<{}, AxiosResponse>(`/filedata?consignmentId=${consignmentId}`, {
-            data: value
-        });
+        return await Axios.post<{}, AxiosResponse>(
+            `/filedata?consignmentId=${consignmentId}`,
+            {
+                data: value
+            }
+        );
     });
     return Promise.all(responses);
 }
 
 async function processFiles(files: TdrFile[]) {
     const fileInfoList: CreateFileInput[] = [];
-    const urlParams: URLSearchParams = new URLSearchParams(window.location.search);
+    const urlParams: URLSearchParams = new URLSearchParams(
+        window.location.search
+    );
     const consignmentId = parseInt(urlParams.get("consignmentId")!, 10);
     if (files) {
         const filePathToFile: { [key: string]: File } = {};
@@ -246,9 +275,15 @@ async function processFiles(files: TdrFile[]) {
             fileInfoCount++;
         }
         const fileInfoEnd = new Date().getTime();
-        console.log(`Got info for ${files.length} files in ${fileInfoEnd - fileInfoStart} ms`);
+        console.log(
+            `Got info for ${files.length} files in ${fileInfoEnd -
+                fileInfoStart} ms`
+        );
 
-        const fileDataBatches = createBatches(fileInfoList, fileDataUploadBatchSize);
+        const fileDataBatches = createBatches(
+            fileInfoList,
+            fileDataUploadBatchSize
+        );
 
         const fileDataUploadStart = new Date().getTime();
         const responses = await uploadFileData(fileDataBatches, consignmentId);
@@ -263,7 +298,11 @@ async function processFiles(files: TdrFile[]) {
 
         for (const response of responses) {
             const fileData = response!.data;
-            const { accessKeyId, secretAccessKey, sessionToken } = response!.data.credentials;
+            const {
+                accessKeyId,
+                secretAccessKey,
+                sessionToken
+            } = response!.data.credentials;
             const region = "eu-west-2";
             var s3 = new S3({
                 accessKeyId,
@@ -276,12 +315,20 @@ async function processFiles(files: TdrFile[]) {
                 const file = filePathToFile[path];
                 const id = fileData.pathMap[path];
 
-                await uploadToS3(s3, `${consignmentId}/${id}`, fileData.bucketName, file);
+                await uploadToS3(
+                    s3,
+                    `${consignmentId}/${id}`,
+                    fileData.bucketName,
+                    file
+                );
             }
         }
 
         const s3UploadEnd = new Date().getTime();
-        console.log(`Uploaded ${files.length} files in ${s3UploadEnd - s3UploadStart} ms`);
+        console.log(
+            `Uploaded ${files.length} files in ${s3UploadEnd -
+                s3UploadStart} ms`
+        );
     }
 }
 function uploadToS3(s3: S3, key: string, bucketName: string, file: File) {
