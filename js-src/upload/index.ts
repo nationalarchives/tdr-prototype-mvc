@@ -1,6 +1,7 @@
 import Axios from "axios";
 import * as S3 from "aws-sdk/clients/s3";
-import {generateHash} from "./checksum";
+import * as wasm from "@nationalarchives/checksum-calculator";
+import { generateHash } from "./checksum";
 
 interface HTMLInputTarget extends EventTarget {
     files?: InputElement;
@@ -34,6 +35,25 @@ export interface IWebkitEntry extends DataTransferItem {
     fullPath: string;
     file: (success: (file: File) => void) => void;
 }
+
+const wasmSupported = (() => {
+    try {
+        if (
+            typeof WebAssembly === "object" &&
+            typeof WebAssembly.instantiate === "function"
+        ) {
+            const module = new WebAssembly.Module(
+                Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00)
+            );
+            if (module instanceof WebAssembly.Module)
+                return (
+                    new WebAssembly.Instance(module) instanceof
+                    WebAssembly.Instance
+                );
+        }
+    } catch (e) {}
+    return false;
+})();
 
 const upload: () => void = () => {
     const uploadForm: HTMLFormElement | null = document.querySelector(
@@ -165,7 +185,14 @@ const onDrop: (e: DragEvent) => void = async e => {
 const getFileInfo: (
     tdrFile: TdrFile
 ) => Promise<CreateFileInput> = async tdrFile => {
-    const clientSideChecksum = await generateHash(tdrFile);
+    const progress: (percentage: number) => void = percentage =>
+        console.log(percentage);
+    let clientSideChecksum;
+    if (wasmSupported) {
+        clientSideChecksum = await wasm.generate_checksum(tdrFile, progress);
+    } else {
+        clientSideChecksum = await generateHash(tdrFile);
+    }
     const urlParams: URLSearchParams = new URLSearchParams(
         window.location.search
     );
@@ -215,7 +242,9 @@ function uploadFileData(batches: CreateFileInput[][], consignmentId: number) {
     const responses = batches.map(async function(value) {
         return await Axios.post<{}, AxiosResponse>(
             `/filedata?consignmentId=${consignmentId}`,
-            { data: value }
+            {
+                data: value
+            }
         );
     });
     return Promise.all(responses);

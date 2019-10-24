@@ -21,7 +21,7 @@ export const generateHash: (file: File) => Promise<string> = async file => {
         fileReader.readAsArrayBuffer(slice);
 
         await new Promise(resolve => {
-            fileReader.onload = async function () {
+            fileReader.onload = async function() {
                 const result = fileReader.result;
 
                 if (result instanceof ArrayBuffer) {
@@ -36,9 +36,7 @@ export const generateHash: (file: File) => Promise<string> = async file => {
 
     if (file.size > 1000000) {
         const hashEnd = new Date().getTime();
-        console.log(
-            `Calculated hash for ${file.size} byte file ${hashEnd - hashStart} ms`
-        );
+        console.log(`Calculated hash for ${file.size} byte file ${hashEnd - hashStart} ms`);
     }
 
     return bytes_to_hex(result);

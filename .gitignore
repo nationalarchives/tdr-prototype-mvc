@@ -7,4 +7,5 @@ node_modules
 cypress/videos
 *.js.map
 # Generated files
-public/javascripts/main.js
+public/javascripts/*main.js
+public/javascripts/*.wasm
