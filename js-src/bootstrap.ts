@@ -1,4 +1,2 @@
 // @ts-ignore
-import("./index.ts").catch(e =>
-  console.error("Error importing `index.ts`:", e)
-);
+import("./index.ts").catch(e => console.error("Error importing `index.ts`:", e));
