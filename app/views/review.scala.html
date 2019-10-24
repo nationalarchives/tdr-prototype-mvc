@@ -24,7 +24,7 @@
                     <dl class="govuk-summary-list govuk-summary-list">
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
-                                Series number
+                                Series reference
                             </dt>
                             <dd class="govuk-summary-list__value" >
                             @consignment.series.name
@@ -32,23 +32,23 @@
                         </div>
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
-                                Consignment name
+                                Consignment reference
                             </dt>
                             <dd class="govuk-summary-list__value">
                             @consignment.name
                             </dd>
                         </div>
-                        <div class="govuk-summary-list__row">
+                        <!-- <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
                                 Transferring body
                             </dt>
                             <dd class="govuk-summary-list__value">
                                 @consignment.transferringBody
                             </dd>
-                        </div>
+                        </div> -->
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
-                                Files uploaded
+                                Files uploaded for transfer
                             </dt>
                             <dd class="govuk-summary-list__value">
                                 @files.totalFiles
@@ -64,7 +64,7 @@
                     <fieldset class="govuk-fieldset" aria-describedby="confirm-transfer-checks">
                         <div class="govuk-form-group">
                             <div class="govuk-checkboxes govuk-checkboxes--small">
-                                @inputSingleCheckbox(
+                                <!-- @inputSingleCheckbox(
                                     reviewform("confirmRecordTransfer"),
                                     '_label -> s"${files.totalFiles} records are selected to be transferred.",
                                     '_value -> "true",
@@ -77,10 +77,10 @@
                                     '_value -> "true",
                                     '_smallCheckbox -> true,
                                     requiredInputArg -> true
-                                )
+                                ) -->
                                 @inputSingleCheckbox(
                                     reviewform("confirmTnaOwnership"),
-                                    '_label -> "I confirm that I am transferring ownership to The National Archives.",
+                                    '_label -> "I confirm that I am transferring legal ownership of these records to The National Archives.",
                                     '_value -> "true",
                                     '_smallCheckbox -> true,
                                     requiredInputArg -> true
@@ -91,9 +91,6 @@
 
                     <!-- Buttons -->
                     <div class="govuk-form-group">
-                        <a href="@routes.DashboardController.index" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
-                            Cancel
-                        </a>
                         <button class="govuk-button" type="submit" data-module="govuk-button" role="button">
                             Transfer
                         </button>

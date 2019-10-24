@@ -55,15 +55,12 @@
                                         </h2>
                                         <div class="govuk-error-summary__body">
                                             <p class="govuk-body">@messages("filestatus.success.filecount", status.totalFiles)</p>
-                                            <p class="govuk-body">@messages("filestatus.success.review")</p>
+                                            <!-- <p class="govuk-body">@messages("filestatus.success.review")</p> -->
                                         </div>
                                     </div>
 
                                     <!-- Buttons -->
                                     <div class="govuk-form-group">
-                                        <a href="@routes.DashboardController.index" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
-                                                Cancel
-                                        </a>
                                         <a href="@routes.ReviewController.index(consignmentId)" role="button" draggable="false" class="govuk-button govuk-button--primary" data-module="govuk-button">
                                             @messages("filestatus.success.confirm")
                                         </a>

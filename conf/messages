@@ -19,4 +19,4 @@ filestatus.error.checksum=This following file(s) do not appear to have uploaded 
 filestatus.success=Upload was successful
 filestatus.success.filecount={0} files have been successfully uploaded.
 filestatus.success.review=Please review and confirm your transfer to complete this transaction.
-filestatus.success.confirm=Confirm transfer
+filestatus.success.confirm=Continue
