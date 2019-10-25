@@ -185,11 +185,9 @@ const onDrop: (e: DragEvent) => void = async e => {
 const getFileInfo: (
     tdrFile: TdrFile
 ) => Promise<CreateFileInput> = async tdrFile => {
-    const progress: (percentage: number) => void = percentage =>
-        console.log(percentage);
     let clientSideChecksum;
     if (wasmSupported) {
-        clientSideChecksum = await wasm.generate_checksum(tdrFile, progress);
+        clientSideChecksum = await wasm.generate_checksum(tdrFile);
     } else {
         clientSideChecksum = await generateHash(tdrFile);
     }
