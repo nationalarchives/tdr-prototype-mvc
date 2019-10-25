@@ -2,7 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-  entry: './js-src/bootstrap.ts',
+  entry: './js-src/index.ts',
   output: {
     filename: 'main.js',
     path: path.resolve(__dirname, 'public/javascripts'),

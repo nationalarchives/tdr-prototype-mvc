@@ -1,7 +1,10 @@
 import Axios from "axios";
 import * as S3 from "aws-sdk/clients/s3";
-import * as wasm from "@nationalarchives/checksum-calculator";
 import { generateHash } from "./checksum";
+
+export interface ChecksumCalculator {
+    generate_checksum(blob: any): any;
+}
 
 interface HTMLInputTarget extends EventTarget {
     files?: InputElement;
@@ -36,26 +39,7 @@ export interface IWebkitEntry extends DataTransferItem {
     file: (success: (file: File) => void) => void;
 }
 
-const wasmSupported = (() => {
-    try {
-        if (
-            typeof WebAssembly === "object" &&
-            typeof WebAssembly.instantiate === "function"
-        ) {
-            const module = new WebAssembly.Module(
-                Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00)
-            );
-            if (module instanceof WebAssembly.Module)
-                return (
-                    new WebAssembly.Instance(module) instanceof
-                    WebAssembly.Instance
-                );
-        }
-    } catch (e) {}
-    return false;
-})();
-
-const upload: () => void = () => {
+const upload: (checksumCalculator?: ChecksumCalculator) => void = (checksumCalculator) => {
     const uploadForm: HTMLFormElement | null = document.querySelector(
         "#file-upload-form"
     );
@@ -68,7 +52,7 @@ const upload: () => void = () => {
             ev.preventDefault();
             const target: HTMLInputTarget | null = ev.currentTarget;
             const files: TdrFile[] = target!.files!.files!;
-            processFiles(files)
+            processFiles(files, checksumCalculator)
                 .then(() => {
                     if (commenceUploadForm) {
                         commenceUploadForm.submit();
@@ -87,9 +71,25 @@ const upload: () => void = () => {
                 });
         });
     }
+
+    const onDrop: (e: DragEvent) => void = async e => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+        const dataTransferItems: DataTransferItemList = e.dataTransfer!.items;
+
+        //Assume one folder in the drag and drop for now
+        const files: TdrFile[] = await getAllFiles(
+            dataTransferItems[0].webkitGetAsEntry(),
+            []
+        );
+        processFiles(files, checksumCalculator);
+    };
+
     const dragAndDrop: HTMLDivElement | null = document.querySelector(
         ".govuk-file-drop"
     );
+
     if (dragAndDrop) {
         dragAndDrop.ondragover = onDragOver;
         dragAndDrop.ondragleave = () => setIsDragging(false);
@@ -168,26 +168,13 @@ const getAllFiles: (
     return fileInfoInput;
 };
 
-const onDrop: (e: DragEvent) => void = async e => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-    const dataTransferItems: DataTransferItemList = e.dataTransfer!.items;
-
-    //Assume one folder in the drag and drop for now
-    const files: TdrFile[] = await getAllFiles(
-        dataTransferItems[0].webkitGetAsEntry(),
-        []
-    );
-    processFiles(files);
-};
-
 const getFileInfo: (
-    tdrFile: TdrFile
-) => Promise<CreateFileInput> = async tdrFile => {
+    tdrFile: TdrFile,
+    checksumCalculator?: ChecksumCalculator
+) => Promise<CreateFileInput> = async (tdrFile, checksumCalculator) => {
     let clientSideChecksum;
-    if (wasmSupported) {
-        clientSideChecksum = await wasm.generate_checksum(tdrFile);
+    if (checksumCalculator) {
+        clientSideChecksum = await checksumCalculator.generate_checksum(tdrFile);
     } else {
         clientSideChecksum = await generateHash(tdrFile);
     }
@@ -248,7 +235,7 @@ function uploadFileData(batches: CreateFileInput[][], consignmentId: number) {
     return Promise.all(responses);
 }
 
-async function processFiles(files: TdrFile[]) {
+async function processFiles(files: TdrFile[], checksumCalculator?: ChecksumCalculator) {
     const fileInfoList: CreateFileInput[] = [];
     const urlParams: URLSearchParams = new URLSearchParams(
         window.location.search
@@ -266,7 +253,7 @@ async function processFiles(files: TdrFile[]) {
                 console.log(`Got file info for ${fileInfoCount} files`);
             }
 
-            const fileInfo: CreateFileInput = await getFileInfo(tdrFile);
+            const fileInfo: CreateFileInput = await getFileInfo(tdrFile, checksumCalculator);
 
             fileInfoList.push(fileInfo);
             filePathToFile[fileInfo.path!] = tdrFile;
