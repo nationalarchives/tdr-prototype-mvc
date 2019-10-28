@@ -170,12 +170,13 @@ const getAllFiles: (
 
 const getFileInfo: (
     tdrFile: TdrFile,
+    useJsForChecksums: boolean,
     checksumCalculator?: ChecksumCalculator
-) => Promise<CreateFileInput> = async (tdrFile, checksumCalculator) => {
+) => Promise<CreateFileInput> = async (tdrFile, useJsForChecksums, checksumCalculator) => {
     const progress: (percentage: number) => void = percentage =>	
         console.log(percentage);
     let clientSideChecksum;
-    if (checksumCalculator) {
+    if (checksumCalculator && !useJsForChecksums) {
         clientSideChecksum = await checksumCalculator.generate_checksum(tdrFile, progress);
     } else {
         clientSideChecksum = await generateHash(tdrFile);
@@ -193,6 +194,11 @@ const getFileInfo: (
         fileName: tdrFile.name
     };
     return fileInfo;
+};
+
+// Temporary override to allow us to switch between WebAssembly and JavaScript checksums for performance testing.
+const useJsForChecksums: () => boolean = () => {
+    return window.localStorage.getItem("useJsForChecksums") === "true";
 };
 
 export { upload };
@@ -250,12 +256,14 @@ async function processFiles(files: TdrFile[], checksumCalculator?: ChecksumCalcu
 
         let fileInfoCount = 0;
 
+        const jsChecksumOverride = useJsForChecksums();
+
         for (var tdrFile of files) {
             if (fileInfoCount % 100 == 0) {
                 console.log(`Got file info for ${fileInfoCount} files`);
             }
 
-            const fileInfo: CreateFileInput = await getFileInfo(tdrFile, checksumCalculator);
+            const fileInfo: CreateFileInput = await getFileInfo(tdrFile, jsChecksumOverride, checksumCalculator);
 
             fileInfoList.push(fileInfo);
             filePathToFile[fileInfo.path!] = tdrFile;
