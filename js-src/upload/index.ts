@@ -3,7 +3,7 @@ import * as S3 from "aws-sdk/clients/s3";
 import { generateHash } from "./checksum";
 
 export interface ChecksumCalculator {
-    generate_checksum(blob: any): any;
+    generate_checksum(blob: any, callback: (percentage: number) => void): any;
 }
 
 interface HTMLInputTarget extends EventTarget {
@@ -172,9 +172,11 @@ const getFileInfo: (
     tdrFile: TdrFile,
     checksumCalculator?: ChecksumCalculator
 ) => Promise<CreateFileInput> = async (tdrFile, checksumCalculator) => {
+    const progress: (percentage: number) => void = percentage =>	
+        console.log(percentage);
     let clientSideChecksum;
     if (checksumCalculator) {
-        clientSideChecksum = await checksumCalculator.generate_checksum(tdrFile);
+        clientSideChecksum = await checksumCalculator.generate_checksum(tdrFile, progress);
     } else {
         clientSideChecksum = await generateHash(tdrFile);
     }
