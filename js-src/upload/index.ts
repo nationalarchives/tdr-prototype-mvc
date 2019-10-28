@@ -186,8 +186,10 @@ const getFileInfo: (
     tdrFile: TdrFile
 ) => Promise<CreateFileInput> = async tdrFile => {
     let clientSideChecksum;
+    const progress: (percentage: number) => void = percentage =>	
+        console.log(percentage);
     if (wasmSupported) {
-        clientSideChecksum = await wasm.generate_checksum(tdrFile);
+        clientSideChecksum = await wasm.generate_checksum(tdrFile, progress);
     } else {
         clientSideChecksum = await generateHash(tdrFile);
     }
