@@ -31,8 +31,9 @@
                 <!-- Form only handles the file upload without making any posts-->
                 <form id="file-upload-form">
                 <div class="upload-form">
+                    <!-- TODO: The site will have to choose the input type (folder OR zip file) depending on the browser, or we'll have instructions for IE. -->
                     <label class="govuk-label" for="file-upload">
-                        Select a folder or zip file
+                        Select a folder
                     </label>
                     <input type="hidden" class="file-id-data" name="file-id-data" />
                     <input type="file" id="file-upload" name="files" class="govuk-file-upload" webkitdirectory>

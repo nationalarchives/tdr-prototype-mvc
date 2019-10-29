@@ -6,9 +6,6 @@
 @main("Review") {
     @defining(play.core.PlayVersion.current) { version =>
 
-        <!-- PL: I think a Back button does not make sense in this step. Please correct me if you think it does. -->
-        <!-- <a href="@routes.HomeController.index" class="govuk-back-link">Back</a> -->
-
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
 
@@ -38,14 +35,6 @@
                             @consignment.name
                             </dd>
                         </div>
-                        <!-- <div class="govuk-summary-list__row">
-                            <dt class="govuk-summary-list__key">
-                                Transferring body
-                            </dt>
-                            <dd class="govuk-summary-list__value">
-                                @consignment.transferringBody
-                            </dd>
-                        </div> -->
                         <div class="govuk-summary-list__row">
                             <dt class="govuk-summary-list__key">
                                 Files uploaded for transfer
@@ -64,20 +53,6 @@
                     <fieldset class="govuk-fieldset" aria-describedby="confirm-transfer-checks">
                         <div class="govuk-form-group">
                             <div class="govuk-checkboxes govuk-checkboxes--small">
-                                <!-- @inputSingleCheckbox(
-                                    reviewform("confirmRecordTransfer"),
-                                    '_label -> s"${files.totalFiles} records are selected to be transferred.",
-                                    '_value -> "true",
-                                    '_smallCheckbox -> true,
-                                    requiredInputArg -> true
-                                )
-                                @inputSingleCheckbox(
-                                    reviewform("confirmOpen"),
-                                    '_label -> "I confirm that all records are open.",
-                                    '_value -> "true",
-                                    '_smallCheckbox -> true,
-                                    requiredInputArg -> true
-                                ) -->
                                 @inputSingleCheckbox(
                                     reviewform("confirmTnaOwnership"),
                                     '_label -> "I confirm that I am transferring legal ownership of these records to The National Archives.",
