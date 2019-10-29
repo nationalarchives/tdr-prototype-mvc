@@ -13,7 +13,7 @@
                 <!-- Progress indicator -->
                 <span class="govuk-caption-xl">Step 2 of 5</span>
                 <!-- Headline -->
-                <h1 class="govuk-heading-xl">Add New Series</h1>
+                <h1 class="govuk-heading-xl">Request a New Series</h1>
 
                 
             @form(action = routes.CreateSeriesController.submit) {
@@ -22,11 +22,10 @@
                         <!-- Series Name -->
                         @inputTextBox(
                             createSeriesForm("seriesName"),
-                            '_label -> "Series name",
+                            '_label -> "Series title",
                             requiredInputArg -> true
                         )
-                        <!-- Series Description -->
-                        @inputTextBox(
+                        @inputTextArea(
                             createSeriesForm("seriesDescription"),
                             '_label -> "Series description"
                         )
@@ -39,7 +38,7 @@
                         Cancel
                     </a>
                     <button class="govuk-button" type="submit" data-module="govuk-button" role="button">
-                        Save and continue
+                        Continue
                     </button>
                 </div>
             }

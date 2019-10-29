@@ -1,6 +1,6 @@
 package model
 
-case class ServiceAgreementsData (publicRecord: Boolean,
+case class TransferAgreementData (publicRecord: Boolean,
                                   crownCopyright: Boolean,
                                   english: Boolean,
                                   digital: Boolean,

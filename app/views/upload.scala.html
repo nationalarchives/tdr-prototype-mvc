@@ -12,7 +12,7 @@
                 <!-- Progress indicator -->
                 <span class="govuk-caption-xl">Step 4 of 5</span>
                 <!-- Headline -->
-                <h1 class="govuk-heading-xl">Upload</h1>
+                <h1 class="govuk-heading-xl">Upload Your Records</h1>
 
                 <!-- Error -->
                 <div id="uploadError" class="govuk-error-summary hide" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary"">
@@ -31,6 +31,7 @@
                 <!-- Form only handles the file upload without making any posts-->
                 <form id="file-upload-form">
                 <div class="upload-form">
+                    <!-- TODO: The site will have to choose the input type (folder OR zip file) depending on the browser, or we'll have instructions for IE. -->
                     <label class="govuk-label" for="file-upload">
                         Select a folder
                     </label>

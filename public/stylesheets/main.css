@@ -9,6 +9,14 @@ body {
  font-family: Arial, sans-serif;
 }
 
+/*---------------------------------------------------------------------------------------------------*/
+/* Before Upload */
+
+
+.govuk-select {
+  min-width: 50%;
+}
+
 
 /*---------------------------------------------------------------------------------------------------*/
 /* Upload */
@@ -143,32 +151,6 @@ body {
       border-radius:10px;
   }
 
-  /* .progress-complete {
-    height: 12em;
-    border: 1px solid;
-    border-radius: 1px;
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 13px;
-  } */
-
-  /* .iconify {
-    width: 10%;
-    height: 25%;
-    margin: 20px 0px 0px;
-    align-self: center;
-  } */
-
-  /* .complete-text {
-    display: flex;
-    flex-direction: column;
-    margin-left: 10px;
-  } */
-
-  /* .iconspan {
-    padding: 5px 0px;
-  } */
-
   .hide {
     display: none;
   }
@@ -183,16 +165,21 @@ body {
     border: 5px solid #00703c !important;
   }
 
+  .govuk-summary-list__value:last-child {
+    width: 30% !important;
+  }
+
 
 /*---------------------------------------------------------------------------------------------------*/
 /* Confirmation */
 
 #warning-div {
-  margin: 35px 0 -15px 70px;
+  margin: 35px 0 -15px 50px;
 }
 
 .warning-text {
   color: #fff;
+  margin-left: 16px;
 }
 
 #warning-span {

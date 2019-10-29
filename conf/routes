@@ -10,9 +10,9 @@ GET     /logout                             controllers.AuthController.logout
 POST    /processLoginAttempt                controllers.AuthController.processLoginAttempt
 GET     /                                   controllers.HomeController.index
 GET     /dashboard                          controllers.DashboardController.index
-GET     /serviceAgreements                  controllers.ServiceAgreementsController.index
+GET     /transferAgreement                  controllers.TransferAgreementController.index
 +nocsrf
-POST    /serviceAgreements/submit           controllers.ServiceAgreementsController.submit()
+POST    /transferAgreement/submit           controllers.TransferAgreementController.submit()
 GET     /seriesDetails                      controllers.SeriesDetailsController.index
 +nocsrf
 POST    /seriesDetails/submit               controllers.SeriesDetailsController.submit()

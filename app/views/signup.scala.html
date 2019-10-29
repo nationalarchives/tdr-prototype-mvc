@@ -9,8 +9,8 @@
         @helper.form(action = routes.AuthController.signUpSubmit(), 'id -> "login-form") {
             @inputTextBox(createUserForm("firstName"), '_inputType -> "text", '_requiredOption -> true, '_label -> "First Name", '_id -> "firstName")
             @inputTextBox(createUserForm("lastName"), '_inputType -> "text", '_requiredOption -> true, '_label -> "Last Name", '_id -> "lastName")
-            @inputTextBox(createUserForm("email"), '_inputType -> "text", '_requiredOption -> true, '_label -> "Email", '_id -> "email")
-            @inputTextBox(createUserForm("password"), '_inputType -> "password", '_requiredOption -> true, '_label -> "Password", '_id -> "password")
+            @inputTextBox(createUserForm("email"), '_inputType -> "text", '_requiredOption -> true, '_label -> "Email address", '_id -> "email")
+            @inputTextBox(createUserForm("password"), '_inputType -> "password", '_requiredOption -> true, '_label -> "Create a password", '_id -> "password")
 
             <input type="submit" class="govuk-button" value="Sign Up">
 
