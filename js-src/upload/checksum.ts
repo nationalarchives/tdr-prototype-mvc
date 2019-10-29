@@ -2,9 +2,27 @@ import { Sha256, bytes_to_hex } from "asmcrypto.js";
 
 const FILE_CHUNK_SIZE_BYTES = 10000000;
 
-export const generateHash: (file: File) => Promise<string> = async file => {
-    const hashStart = new Date().getTime();
+export interface WebAssemblyChecksumCalculator {
+    generate_checksum(blob: any, callback: (percentage: number) => void): any;
+}
 
+export class ChecksumCalculator {
+    wasmChecksumModule?: WebAssemblyChecksumCalculator;
+
+    constructor(wasmChecksumModule?: WebAssemblyChecksumCalculator) {
+        this.wasmChecksumModule = wasmChecksumModule;
+    }
+
+    calculateChecksum(file: File, useJsForChecksums: boolean, handleProgress: (percentage: number) => void) {
+        if (this.wasmChecksumModule && !useJsForChecksums) {
+            return this.wasmChecksumModule.generate_checksum(file, handleProgress);
+        } else {
+            return generateHash(file, handleProgress);
+        }
+    }
+}
+
+const generateHash: (file: File, handleProgress: (percentage: number) => void) => Promise<string> = async (file, handleProgress) => {
     const fileReader = new FileReader();
 
     const fileSize = file.size;
@@ -26,6 +44,10 @@ export const generateHash: (file: File) => Promise<string> = async file => {
 
                 if (result instanceof ArrayBuffer) {
                     sha256.process(new Uint8Array(result));
+
+                    const progressPercent = 100 * (i + 1) / chunkCount;
+                    handleProgress(progressPercent);
+
                     resolve();
                 }
             };
@@ -33,11 +55,5 @@ export const generateHash: (file: File) => Promise<string> = async file => {
     }
 
     const result = sha256.finish().result!;
-
-    if (file.size > 1000000) {
-        const hashEnd = new Date().getTime();
-        console.log(`Calculated hash for ${file.size} byte file ${hashEnd - hashStart} ms`);
-    }
-
     return bytes_to_hex(result);
 };

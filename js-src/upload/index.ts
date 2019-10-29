@@ -1,10 +1,6 @@
 import Axios from "axios";
 import * as S3 from "aws-sdk/clients/s3";
-import { generateHash } from "./checksum";
-
-export interface ChecksumCalculator {
-    generate_checksum(blob: any, callback: (percentage: number) => void): any;
-}
+import { ChecksumCalculator } from "./checksum";
 
 interface HTMLInputTarget extends EventTarget {
     files?: InputElement;
@@ -39,7 +35,7 @@ export interface IWebkitEntry extends DataTransferItem {
     file: (success: (file: File) => void) => void;
 }
 
-const upload: (checksumCalculator?: ChecksumCalculator) => void = (checksumCalculator) => {
+const upload: (checksumCalculator: ChecksumCalculator) => void = (checksumCalculator) => {
     const uploadForm: HTMLFormElement | null = document.querySelector(
         "#file-upload-form"
     );
@@ -171,19 +167,14 @@ const getAllFiles: (
 const getFileInfo: (
     tdrFile: TdrFile,
     useJsForChecksums: boolean,
-    checksumCalculator?: ChecksumCalculator
+    checksumCalculator: ChecksumCalculator
 ) => Promise<CreateFileInput> = async (tdrFile, useJsForChecksums, checksumCalculator) => {
     const progress: (percentage: number) => void = percentage => {
         if (tdrFile.size > 10000000) {
             console.log(`Progress: ${percentage}%`);
         }
     };
-    let clientSideChecksum;
-    if (checksumCalculator && !useJsForChecksums) {
-        clientSideChecksum = await checksumCalculator.generate_checksum(tdrFile, progress);
-    } else {
-        clientSideChecksum = await generateHash(tdrFile);
-    }
+    const clientSideChecksum = await checksumCalculator.calculateChecksum(tdrFile, useJsForChecksums, progress);
     const urlParams: URLSearchParams = new URLSearchParams(
         window.location.search
     );
@@ -246,7 +237,7 @@ function uploadFileData(batches: CreateFileInput[][], consignmentId: number) {
     return Promise.all(responses);
 }
 
-async function processFiles(files: TdrFile[], checksumCalculator?: ChecksumCalculator) {
+async function processFiles(files: TdrFile[], checksumCalculator: ChecksumCalculator) {
     const fileInfoList: CreateFileInput[] = [];
     const urlParams: URLSearchParams = new URLSearchParams(
         window.location.search

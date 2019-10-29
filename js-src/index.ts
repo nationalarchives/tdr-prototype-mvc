@@ -1,5 +1,6 @@
 import { updateFileStatuses } from "./fileStatus";
-import {ChecksumCalculator, upload} from "./upload";
+import { upload } from "./upload";
+import { ChecksumCalculator } from "./upload/checksum";
 
 const wasmSupported = (() => {
     try {
@@ -25,18 +26,18 @@ window.onload = function() {
         // @ts-ignore
         import("@nationalarchives/checksum-calculator")
             .then(checksumModule => {
-                renderModules(checksumModule);
+                renderModules(new ChecksumCalculator(checksumModule));
             })
             .catch(e => {
                 console.error("Error importing checksum module:", e);
-                renderModules()
+                renderModules(new ChecksumCalculator())
             });
     } else {
-        renderModules();
+        renderModules(new ChecksumCalculator());
     }
 };
 
-const renderModules = (checksumCalculator?: ChecksumCalculator) => {
+const renderModules = (checksumCalculator: ChecksumCalculator) => {
     const uploadContainer: HTMLDivElement | null = document.querySelector(".upload-form");
     if (uploadContainer) {
         upload(checksumCalculator);
