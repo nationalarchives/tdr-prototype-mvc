@@ -173,8 +173,11 @@ const getFileInfo: (
     useJsForChecksums: boolean,
     checksumCalculator?: ChecksumCalculator
 ) => Promise<CreateFileInput> = async (tdrFile, useJsForChecksums, checksumCalculator) => {
-    const progress: (percentage: number) => void = percentage =>	
-        console.log(percentage);
+    const progress: (percentage: number) => void = percentage => {
+        if (tdrFile.size > 10000000) {
+            console.log(`Progress: ${percentage}%`);
+        }
+    };
     let clientSideChecksum;
     if (checksumCalculator && !useJsForChecksums) {
         clientSideChecksum = await checksumCalculator.generate_checksum(tdrFile, progress);
