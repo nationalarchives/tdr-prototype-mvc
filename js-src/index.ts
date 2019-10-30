@@ -26,6 +26,7 @@ window.onload = function() {
         // @ts-ignore
         import("@nationalarchives/checksum-calculator")
             .then(checksumModule => {
+                console.log("WebAssembly checksum module loaded");
                 renderModules(new ChecksumCalculator(checksumModule));
             })
             .catch(e => {
@@ -33,6 +34,7 @@ window.onload = function() {
                 renderModules(new ChecksumCalculator())
             });
     } else {
+        console.log("WebAssembly not available");
         renderModules(new ChecksumCalculator());
     }
 };
