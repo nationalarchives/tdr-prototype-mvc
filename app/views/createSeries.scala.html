@@ -19,15 +19,22 @@
             @form(action = routes.CreateSeriesController.submit) {
                 <fieldset class="govuk-fieldset">
                     <div class="govuk-form-group">
-                        <!-- Series Name -->
+                        <!-- Series Title -->
                         @inputTextBox(
                             createSeriesForm("seriesName"),
                             '_label -> "Series title",
                             requiredInputArg -> true
                         )
+                        <!-- Series Description -->
                         @inputTextArea(
                             createSeriesForm("seriesDescription"),
                             '_label -> "Series description"
+                        )
+                        <!-- Creating Body -->
+                        @inputTextBox(
+                            createSeriesForm("creatingBody"),
+                            '_label -> "Creating body",
+                            requiredInputArg -> true
                         )
                     </div>
                 </fieldset>

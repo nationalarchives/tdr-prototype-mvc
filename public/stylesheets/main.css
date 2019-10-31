@@ -173,16 +173,3 @@ body {
 /*---------------------------------------------------------------------------------------------------*/
 /* Confirmation */
 
-#warning-div {
-  margin: 35px 0 -15px 50px;
-}
-
-.warning-text {
-  color: #fff;
-  margin-left: 16px;
-}
-
-#warning-span {
-  background: none;
-  border: 3px solid #fff;
-}

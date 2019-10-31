@@ -5,29 +5,30 @@
 
 <!-- Confirmation page -->
 <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
+    <div class="govuk-grid-column-two-thirds">
 
         <!-- Panel -->
         <div class="govuk-panel govuk-panel--confirmation">
-            <h1 class="govuk-panel__title govuk-!-margin-bottom-1">
+            <h1 class="govuk-panel__title">
                 Transfer complete
             </h1>
-            <div class="govuk-panel__body govuk-!-font-size-27">
+            <div class="govuk-panel__body">
                 Your records have been transferred.
-            </div>
-            <div id="warning-div" class="govuk-warning-text">
-                    <span id="warning-span" class="govuk-warning-text__icon" aria-hidden="true">!</span>
-                    
-                <p class="warning-text govuk-!-font-size-19">
-                        <span class="govuk-warning-text__assistive">Warning</span>
-                        Please do not delete your copies until you receive confirmation that your records have been received at The National Archives. We will contact you within 28 days.
-                </p>
             </div>
 
         </div>
 
+        <div class="govuk-warning-text">
+            <span id="warning-span" class="govuk-warning-text__icon" aria-hidden="true">!</span>
+            <span class="govuk-warning-text__text">
+                <span class="govuk-warning-text__assistive">Warning</span>
+                Please do not delete your copies until you receive confirmation that your records have been received at The National Archives. 
+                We will contact you within 28 days.
+            </span>
+        </div>
+
         <!-- Button -->
-        <div>
+        <div class="govuk-form-group">
             <!-- Back to dashboard -->
             <a href="@routes.DashboardController.index" role="button" draggable="false" class="govuk-button govuk-button--secondary" data-module="govuk-button">
                 Back to Dashboard
