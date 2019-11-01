@@ -29,10 +29,6 @@ class ReviewController @Inject()(
 
   val form = Form(
     mapping(
-      "confirmRecordTransfer" -> boolean
-        .verifying("Must answer yes", b => b),
-      "confirmOpen" -> boolean
-        .verifying("Must answer yes", b => b),
       "confirmTnaOwnership" -> boolean
         .verifying("Must answer yes", b => b),
     )(ReviewData.apply)(ReviewData.unapply)
