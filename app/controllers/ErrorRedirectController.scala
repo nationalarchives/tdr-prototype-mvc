@@ -10,7 +10,7 @@ import scala.concurrent.Future
 class ErrorRedirectController @Inject () (cc: ControllerComponents) extends AbstractController(cc) with SecuredErrorHandler with I18nSupport {
 
   override def onNotAuthenticated(implicit request: RequestHeader): Future[Result] = {
-    Future.successful(Redirect(routes.AuthController.login()))
+    Future.successful(Redirect(routes.SsoController.authenticate()))
   }
 
   override def onNotAuthorized(implicit request: RequestHeader) = {

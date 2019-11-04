@@ -30,7 +30,8 @@ class CreateConsignmentController @Inject()(
     request.identity.map(id => {
       val graphQlClient = client.graphqlClient
       val form = CreateConsignmentData.form.bindFromRequest
-      val vars = createConsignment.Variables(form.get.consignmentName,form.get.seriesId,id.email,form.get.transferringBody)
+      // TODO: Find some other way to store the consignment creator
+      val vars = createConsignment.Variables(form.get.consignmentName,form.get.seriesId,"QQ placeholder",form.get.transferringBody)
       graphQlClient.query[createConsignment.Data, createConsignment.Variables](createConsignment.document, vars).result.map {
         case Right(r) =>
           Redirect(routes.UploadController.index(r.data.createConsignment.id, r.data.createConsignment.series.id))

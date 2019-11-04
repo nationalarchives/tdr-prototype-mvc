@@ -1,6 +1,6 @@
 package modules
 
-import auth.{PasswordDao, TotpDao, UserService}
+import auth._
 import com.google.inject.name.Named
 import com.google.inject.{AbstractModule, Provides}
 import com.mohiva.play.silhouette.api.actions.SecuredErrorHandler
@@ -11,16 +11,21 @@ import com.mohiva.play.silhouette.api.util._
 import com.mohiva.play.silhouette.api.{Environment, EventBus, Silhouette, SilhouetteProvider}
 import com.mohiva.play.silhouette.crypto.{JcaCrypter, JcaCrypterSettings, JcaSigner, JcaSignerSettings}
 import com.mohiva.play.silhouette.impl.authenticators.{CookieAuthenticator, CookieAuthenticatorService, CookieAuthenticatorSettings}
-import com.mohiva.play.silhouette.impl.providers.{CredentialsProvider, GoogleTotpInfo, GoogleTotpProvider}
+import com.mohiva.play.silhouette.impl.providers.state.{CsrfStateItemHandler, CsrfStateSettings}
+import com.mohiva.play.silhouette.impl.providers.{OAuth2Settings, SocialStateHandler, _}
 import com.mohiva.play.silhouette.impl.util.{DefaultFingerprintGenerator, SecureRandomIDGenerator}
 import com.mohiva.play.silhouette.password.BCryptPasswordHasher
-import com.mohiva.play.silhouette.persistence.daos.{DelegableAuthInfoDAO, InMemoryAuthInfoDAO}
+import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
+import com.typesafe.config.Config
 import controllers.ErrorRedirectController
-import graphql.GraphQLClientProvider
+import net.ceedubs.ficus.Ficus._
+import net.ceedubs.ficus.readers.ArbitraryTypeReader._
+import net.ceedubs.ficus.readers.ValueReader
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
-import play.api.mvc.CookieHeaderEncoding
+import play.api.libs.ws.WSClient
+import play.api.mvc.{Cookie, CookieHeaderEncoding}
 import utils.DefaultEnv
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -40,9 +45,21 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     bind[SecuredErrorHandler].to[ErrorRedirectController]
   }
 
+  implicit val sameSiteReader: ValueReader[Option[Option[Cookie.SameSite]]] =
+    (config: Config, path: String) => {
+      if (config.hasPathOrNull(path)) {
+        if (config.getIsNull(path))
+          Some(None)
+        else {
+          Some(Cookie.SameSite.parse(config.getString(path)))
+        }
+      } else {
+        None
+      }
+    }
 
   @Provides
-  def provideEnvironment(userService: UserService,
+  def provideEnvironment(userService: DynamoUserService,
                          authenticatorService: AuthenticatorService[CookieAuthenticator],
                          eventBus: EventBus): Environment[DefaultEnv] = {
 
@@ -55,10 +72,9 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   }
 
   @Provides
-  def providePasswordDAO(client: GraphQLClientProvider): DelegableAuthInfoDAO[PasswordInfo] = new PasswordDao(client)
-
-  @Provides
-  def provideTotpDAO(client: GraphQLClientProvider): DelegableAuthInfoDAO[GoogleTotpInfo] = new TotpDao(client)
+  def provideDynamoAuthInfoDao(dbClient: UserDbClient,
+                               configuration: Configuration): DelegableAuthInfoDAO[OAuth2Info] =
+    new DynamoAuthInfoDao(dbClient, configuration)
 
   @Provides
   def provideAuthenticatorService(@Named("authenticator-signer") signer: Signer,
@@ -85,11 +101,6 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
 
     new CookieAuthenticatorService(config, None, signer, cookieHeaderEncoding, authenticatorEncoder, fingerprintGenerator, idGenerator, clock)
   }
-
-
-  @Provides
-  def provideAuthInfoRepository(passwordDAO: DelegableAuthInfoDAO[PasswordInfo], totpInfoDAO: DelegableAuthInfoDAO[GoogleTotpInfo]): AuthInfoRepository =
-    new DelegableAuthInfoRepository(passwordDAO, totpInfoDAO)
 
   @Provides
   def providePasswordHasherRegistry(passwordHasher: PasswordHasher): PasswordHasherRegistry = {
@@ -130,4 +141,52 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     new GoogleTotpProvider(passwordHasherRegistry)
   }
 
+  @Provides
+  def provideHTTPLayer(client: WSClient): HTTPLayer = new PlayHTTPLayer(client)
+
+  @Provides @Named("csrf-state-item-signer")
+  def provideCSRFStateItemSigner(configuration: Configuration): Signer = {
+    val config = configuration.underlying.as[JcaSignerSettings]("silhouette.csrfStateItemHandler.signer")
+
+    new JcaSigner(config)
+  }
+
+  @Provides
+  def provideCsrfStateItemHandler(
+                                   idGenerator: IDGenerator,
+                                   @Named("csrf-state-item-signer") signer: Signer,
+                                   configuration: Configuration): CsrfStateItemHandler = {
+
+    val settings = configuration.underlying.as[CsrfStateSettings]("silhouette.csrfStateItemHandler")
+    new CsrfStateItemHandler(settings, idGenerator, signer)
+  }
+
+  @Provides
+  @Named("social-state-signer")
+  def provideSocialStateSigner(configuration: Configuration): Signer = {
+    val config = configuration.underlying.as[JcaSignerSettings]("silhouette.socialStateHandler.signer")
+
+    new JcaSigner(config)
+  }
+
+  @Provides
+  def provideSocialStateHandler(
+                                 @Named("social-state-signer") signer: Signer,
+                                 csrfStateItemHandler: CsrfStateItemHandler): SocialStateHandler = {
+
+    new DefaultSocialStateHandler(Set(csrfStateItemHandler), signer)
+  }
+
+  @Provides
+  def provideAuth0Provider(
+                          httpLayer: HTTPLayer,
+                          socialStateHandler: SocialStateHandler,
+                          configuration: Configuration
+                          ): TdrAuth0Provider = {
+    new TdrAuth0Provider(httpLayer, socialStateHandler, configuration.underlying.as[OAuth2Settings]("silhouette.auth0"))
+  }
+
+  @Provides
+  def provideAuthInfoRepository(oauth2InfoDAO: DelegableAuthInfoDAO[OAuth2Info]): AuthInfoRepository =
+    new DelegableAuthInfoRepository(oauth2InfoDAO)
 }

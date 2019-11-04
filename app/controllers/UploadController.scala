@@ -1,7 +1,6 @@
 package controllers
 
 import akka.actor.ActorSystem
-import auth.Authorisers.IsConsignmentCreator
 import com.amazonaws.auth.{AWSStaticCredentialsProvider, BasicAWSCredentials}
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder
 import com.amazonaws.services.securitytoken.model.GetSessionTokenRequest
@@ -25,8 +24,7 @@ class UploadController @Inject()(
                                   controllerComponents: ControllerComponents,
                                   system: ActorSystem,
                                   config: Configuration,
-                                  silhouette: Silhouette[DefaultEnv],
-                                  isConsignmentCreator: IsConsignmentCreator
+                                  silhouette: Silhouette[DefaultEnv]
                                 )(implicit val ex: ExecutionContext) extends AbstractController(controllerComponents) {
 
 
@@ -41,12 +39,12 @@ class UploadController @Inject()(
   implicit val StateMachineWrites = Json.writes[StateMachineInput]
 
 
-  def index(consignmentId: Int, seriesId: Int) = silhouette.SecuredAction(isConsignmentCreator) { implicit request: Request[AnyContent] =>
+  def index(consignmentId: Int, seriesId: Int) = silhouette.SecuredAction { implicit request: Request[AnyContent] =>
     Ok(views.html.upload(consignmentId, seriesId))
   }
 
 
-  def saveFileData = silhouette.SecuredAction(isConsignmentCreator).async(parse.json) { request =>
+  def saveFileData = silhouette.SecuredAction.async(parse.json) { request =>
     val result = request.body.validate[FileInputs]
     result.fold(
       errors => {
@@ -66,7 +64,7 @@ class UploadController @Inject()(
     )
   }
 
-  def upload(consignmentId: Int) = silhouette.SecuredAction(isConsignmentCreator) { implicit request =>
+  def upload(consignmentId: Int) = silhouette.SecuredAction { implicit request =>
     val client = new TdrSignRequestClient(config, "stepfunction.uri")
     val input = Input(consignmentId.toString)
     val inputString = Json.asciiStringify(Json.toJson(input))
