@@ -48,7 +48,8 @@ class DynamoAuthInfoDao @Inject() (
   override def save(loginInfo: LoginInfo, authInfo: OAuth2Info): Future[OAuth2Info] = {
     val attributes = Map(
       "id" -> AttributeValue.builder.s(loginInfo.providerKey).build,
-      "accessToken" -> AttributeValue.builder.s(authInfo.accessToken).build
+      "accessToken" -> AttributeValue.builder.s(authInfo.accessToken).build,
+      "refreshToken" -> authInfo.refreshToken.map(token => AttributeValue.builder.s(authInfo.accessToken).build).getOrElse(AttributeValue.builder.nul(true).build)
     ).asJava
     val putItemRequest = PutItemRequest.builder.tableName(tokenTable).item(attributes).build
 
