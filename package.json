@@ -21,6 +21,7 @@
   "homepage": "https://github.com/nationalarchives/tdr-prototype-mvc#readme",
   "devDependencies": {
     "asmcrypto.js": "^2.3.2",
+    "@auth0/auth0-spa-js": "1.5.0",
     "@babel/core": "^7.5.0",
     "@babel/preset-env": "^7.5.0",
     "@types/jest": "^24.0.16",

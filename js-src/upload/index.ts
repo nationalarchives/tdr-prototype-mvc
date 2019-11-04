@@ -1,6 +1,8 @@
 import Axios from "axios";
 import * as S3 from "aws-sdk/clients/s3";
+import {CognitoIdentityCredentials, config} from "aws-sdk";
 import { ChecksumCalculator } from "./checksum";
+import createAuth0Client from "@auth0/auth0-spa-js";
 
 interface HTMLInputTarget extends EventTarget {
     files?: InputElement;
@@ -35,7 +37,7 @@ export interface IWebkitEntry extends DataTransferItem {
     file: (success: (file: File) => void) => void;
 }
 
-const upload: (checksumCalculator: ChecksumCalculator) => void = (checksumCalculator) => {
+const upload: (checksumCalculator: ChecksumCalculator) => void = async (checksumCalculator) => {
     const uploadForm: HTMLFormElement | null = document.querySelector(
         "#file-upload-form"
     );
@@ -285,19 +287,27 @@ async function processFiles(files: TdrFile[], checksumCalculator: ChecksumCalcul
 
         const s3UploadStart = new Date().getTime();
 
+        const identityPoolId = "eu-west-2:4b26364a-3070-4f98-8e86-1e33a1b54d85";
+
+        const auth0Token = await getAuth0Token();
+
+        config.update({
+            region: "eu-west-2",
+            credentials: new CognitoIdentityCredentials({
+                IdentityPoolId: identityPoolId,
+                Logins: {
+                    "tna-tdr-prototype.eu.auth0.com": auth0Token
+                }
+            })
+        });
+
         for (const response of responses) {
             const fileData = response!.data;
-            const {
-                accessKeyId,
-                secretAccessKey,
-                sessionToken
-            } = response!.data.credentials;
-            const region = "eu-west-2";
-            var s3 = new S3({
-                accessKeyId,
-                secretAccessKey,
-                sessionToken,
-                region
+
+            const s3 = new S3({
+                params: {
+                    Bucket: fileData.bucketName
+                }
             });
 
             for (const path of Object.keys(response.data!.pathMap)) {
@@ -336,4 +346,28 @@ function uploadToS3(s3: S3, key: string, bucketName: string, file: File) {
             }
         );
     });
+}
+
+async function getAuth0Token(): Promise<string> {
+    // TODO: Get dynamically
+    const auth0Domain = "tna-tdr-prototype.eu.auth0.com";
+    const clientId = "ismvC8gRHI06pyXvYoqWb6TFO9rP1AM6";
+
+    const auth0Client = await createAuth0Client({
+        domain: auth0Domain,
+        client_id: clientId
+    });
+
+    const silentTokenOptions = {
+        redirect_uri: "localhost:9000",
+        scope: "openid profile email",
+        audience: "default"
+    };
+
+    // TODO: Fall back to login popup or redirect if token is not available
+    // TODO: Can we skip this step if `auth0Client.isAuthenticated()` is true?
+    await auth0Client.getTokenSilently(silentTokenOptions);
+
+    const idToken: IdToken = await auth0Client.getIdTokenClaims();
+    return idToken.__raw;
 }
