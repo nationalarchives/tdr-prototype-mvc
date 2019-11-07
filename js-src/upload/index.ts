@@ -361,7 +361,7 @@ async function getAuth0Token(): Promise<string> {
     const silentTokenOptions = {
         redirect_uri: "localhost:9000",
         scope: "openid profile email",
-        audience: "default"
+        audience: "https://tna-tdr-prototype-dev"
     };
 
     // TODO: Fall back to login popup or redirect if token is not available
