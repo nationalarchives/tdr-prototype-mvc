@@ -69,4 +69,9 @@ libraryDependencies += "com.sendgrid" % "sendgrid-java" % "4.0.1"
 libraryDependencies ++= Seq(
   "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.2" % "test"
 )
+libraryDependencies ++= Seq(
+  "io.cucumber" % "cucumber-core" % "4.7.1" % "test",
+  "io.cucumber" %% "cucumber-scala" % "4.7.1" % "test",
+  "io.cucumber" % "cucumber-junit" % "4.7.1" % "test"
+)
 javaOptions in Test += "-Dconfig.file=conf/application.test.conf"

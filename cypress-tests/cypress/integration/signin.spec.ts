@@ -1,25 +1,34 @@
 /// <reference types="Cypress" />
 
-describe('TDR', () => {
+describe('TDR - root page & start now button', () => {
 
-  it('should display the sign in button when the root page loads', () => {
-    cy.visit('/')
-    cy.get('a').should('contain', 'Sign in')
+  before(() => {
+    cy.fixture("user").then(testuser => cy.signUp(testuser));
   })
 
-  // it('should fail the test if the test is obviously wrong', () => {
-  //   cy.visit('/')
-  //   cy.get('a').should('contain', 'Sign ina')
-  // })
+  beforeEach(() => {
+    //any tests using fixture needs to be in a regular functon rather than an arrow function to get binding to "this"
+    cy.fixture("user").as("testuser");
+  })
 
-  it('should display an error if you visit the dashboard page without signing in', () => {
-    cy.request({
-      url: '/dashboard',
-      failOnStatusCode: false
-    })
-      .then((resp) => {
-        expect(resp.status).to.eq(401)
-      })
+  it('should display the start now button when the root page loads', () => {
+    cy.visit('/')
+    cy.get('a').should('contain', 'Start now')
+  })
+
+  it('should take user to the sign in page where they can log in', function() {
+    cy.visit('/')
+    cy.contains('Start now').click()
+    cy.get('h1').should('contain', 'Sign In')
+    cy.login(this.testuser)
+    cy.get('h1').should('contain', 'Dashboard')
+  })
+
+  it('should take user to the dashboard page if already logged in', function()  {
+    cy.login(this.testuser)
+    cy.visit('/')
+    cy.contains('Start now').click()
+    cy.get('h1').should('contain', 'Dashboard')
   })
 
 })

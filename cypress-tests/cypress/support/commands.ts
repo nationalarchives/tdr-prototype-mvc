@@ -10,7 +10,32 @@
 //
 //
 // -- This is a parent command --
-// Cypress.Commands.add("login", (email, password) => { ... })
+
+import 'cypress-file-upload';
+
+Cypress.Commands.add('login', (user: User) => {
+  cy.visit('/login')
+  cy.get('#username').type(user.email)
+  cy.get('#password').type(user.password)
+  cy.get('.govuk-button').should('contain', 'Sign In').click()
+});
+
+Cypress.Commands.add('signUp', (user: User) => {
+  cy.visit('/signUp')
+  cy.get('#firstName').type(user.firstName)
+  cy.get('#lastName').type(user.lastName)
+  cy.get('#email').type(user.email)
+  cy.get('#password').type(user.password)
+  cy.get('.govuk-button').should('contain', 'Sign Up').click()
+});
+
+interface User {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}
+
 //
 //
 // -- This is a child command --

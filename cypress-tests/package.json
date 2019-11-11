@@ -15,6 +15,6 @@
   "scripts": {
     "ci": "cypress run --record --key $CYPRESS_KEY",
     "wait": "wait-on http://localhost:9000",
-    "cypress:ci": "cypress run --record --key $CYPRESS_KEY"
+    "cypress:ci": "cypress run"
   }
 }

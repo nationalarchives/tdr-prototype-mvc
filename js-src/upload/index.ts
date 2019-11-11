@@ -51,7 +51,7 @@ const upload: (checksumCalculator?: ChecksumCalculator) => void = (checksumCalcu
         uploadForm.addEventListener("submit", ev => {
             ev.preventDefault();
             const target: HTMLInputTarget | null = ev.currentTarget;
-            const files: TdrFile[] = target!.files!.files!;
+            const files: TdrFile[] = target!.files!.files!; //OR...
             processFiles(files, checksumCalculator)
                 .then(() => {
                     if (commenceUploadForm) {
