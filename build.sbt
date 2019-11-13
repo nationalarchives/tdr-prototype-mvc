@@ -62,6 +62,7 @@ libraryDependencies += "com.amazonaws" % "aws-java-sdk-sts" % "1.11.636"
 libraryDependencies += "com.amazonaws" % "aws-java-sdk-ses" % "1.11.641"
 libraryDependencies += "com.mohiva" %% "play-silhouette-totp" % "6.1.0"
 libraryDependencies += "com.amazonaws" % "aws-java-sdk-iam" % "1.9.21"
+libraryDependencies += "com.amazonaws" % "aws-java-sdk-cognitoidp" % "1.11.400"  //version, for now, matches https://github.com/IanLKaplan/CognitoDemo
 libraryDependencies += "ca.ryangreen" % "apigateway-generic-java-sdk" % "1.3"
 libraryDependencies +=  "com.github.jarlakxen" %% "drunk" % "2.5.0"
 libraryDependencies += "com.github.t3hnar" %% "scala-bcrypt" % "4.1"

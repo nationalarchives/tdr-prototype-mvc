@@ -24,6 +24,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class AuthController @Inject()(controllerComponents: ControllerComponents,
                                userService: UserService,
+                               uzerZervice: UzerZervice,
                                silhouette: Silhouette[DefaultEnv],
                                client: GraphQLClientProvider,
                                config: Configuration,
@@ -91,7 +92,7 @@ class AuthController @Inject()(controllerComponents: ControllerComponents,
         userService.retrieve(LoginInfo(CredentialsProvider.ID, success.email))
           .flatMap((uo: Option[auth.User]) =>
             uo.fold({
-              userService.create(success).flatMap(authService.create(_))
+              uzerZervice.createNewUser(success).flatMap(authService.create(_))
                 .flatMap(authService.init(_))
                 .flatMap(authService.embed(_, Redirect(routes.HomeController.index())))
 
