@@ -11,9 +11,9 @@ import com.amazonaws.services.cognitoidp.{AWSCognitoIdentityProvider, AWSCognito
 class UzerZervice{
 
   //config from
-  val cognitoID: String = "439a68k19tugh89sevo7eh9pcc"
-  val cognitoKey: String = "ade60gaujm6oaee9s9iib3rnksmq5fcd6i1pk607q3drdidrkdd"
-  val poolId: String = "eu-west-2_6Mn0M2i9C"
+  val cognitoID: String = "AKIATTD47MKYZZC6CJ6W"
+  val cognitoKey: String = "Kw3440AMWqGED/aVWyXCwmH/0rBzvUhA3OI4Pipl"
+  val poolId: String = "eu-west-2_MV1Sze5fS"
   val region: Regions = Regions.EU_WEST_2
 
 
@@ -38,7 +38,7 @@ class UzerZervice{
             .withUsername(userInfo.firstName) //TODO = we have firstname
             .withUserAttributes(
               new AttributeType().withName(EMAIL).withValue(emailAddr),
-              new AttributeType().withName(LASTNAME).withValue(userInfo.lastName),
+              new AttributeType().withName(LOCATION).withValue(userInfo.lastName),
               new AttributeType().withName("email_verified").withValue("true")
             )
         val xx: AdminCreateUserResult = mIdentityProvider.adminCreateUser(cognitoReequest)
