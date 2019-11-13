@@ -225,16 +225,20 @@ function createBatches(files: CreateFileInput[], batchSize: number) {
     return batches;
 }
 
-function uploadFileData(batches: CreateFileInput[][], consignmentId: number) {
-    const responses = batches.map(async function(value) {
-        return await Axios.post<{}, AxiosResponse>(
+async function uploadFileData(batches: CreateFileInput[][], consignmentId: number) {
+    let responses: AxiosResponse[] = [];
+
+    for (const batch of batches) {
+        const response = await Axios.post<{}, AxiosResponse>(
             `/filedata?consignmentId=${consignmentId}`,
             {
-                data: value
+                data: batch
             }
         );
-    });
-    return Promise.all(responses);
+        responses = responses.concat(response);
+    }
+
+    return responses;
 }
 
 async function processFiles(files: TdrFile[], checksumCalculator: ChecksumCalculator) {
