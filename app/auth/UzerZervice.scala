@@ -1,20 +1,14 @@
 package auth
 
-import akka.actor.ActorSystem
 import forms.SignUpForm
 import com.amazonaws.auth.{AWSStaticCredentialsProvider, BasicAWSCredentials}
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.cognitoidp.model.{AdminCreateUserRequest, AdminCreateUserResult, AttributeType}
 import com.amazonaws.services.cognitoidp.{AWSCognitoIdentityProvider, AWSCognitoIdentityProviderClientBuilder}
-import com.mohiva.play.silhouette.api.LoginInfo
-
-import scala.concurrent.{ExecutionContext, Future}
 
 
-class UzerZervice {
 
-  implicit val as: ActorSystem = ActorSystem("GraphQLClient")
-  implicit val ec: ExecutionContext = as.dispatcher
+class UzerZervice{
 
   //config from
   val cognitoID: String = "439a68k19tugh89sevo7eh9pcc"
@@ -26,7 +20,6 @@ class UzerZervice {
   //names for things in congnito db...
   val LOCATION = "custom:location"
   val LASTNAME = "custom:lastname"
-
   val EMAIL = "email"
 
   val mIdentityProvider: AWSCognitoIdentityProvider = {
@@ -35,7 +28,7 @@ class UzerZervice {
     AWSCognitoIdentityProviderClientBuilder.standard.withCredentials(credProvider).withRegion(region).build
   }
 
-  def createNewUser(userInfo: SignUpForm.Data) = {
+  def createNewUser(userInfo: SignUpForm.Data): Unit = {
     val emailAddr: String = userInfo.email  //it's checked for emailness and non empty in Form
     findUserByEmailAddr(userInfo.email) match {
       case Some(_) => throw new Exception("duplicate email: caller should check not already existing")
@@ -49,7 +42,6 @@ class UzerZervice {
               new AttributeType().withName("email_verified").withValue("true")
             )
         val xx: AdminCreateUserResult = mIdentityProvider.adminCreateUser(cognitoReequest)
-        Future(LoginInfo("providerId", "providerKey"))
     }
   }
 

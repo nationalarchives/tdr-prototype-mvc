@@ -88,11 +88,11 @@ class AuthController @Inject()(controllerComponents: ControllerComponents,
         Future.successful(BadRequest(views.html.signup(hasErrors))),
 
       (success: SignUpForm.Data) => {
-
+        uzerZervice.createNewUser(success) //sneak in call to demo code
         userService.retrieve(LoginInfo(CredentialsProvider.ID, success.email))
           .flatMap((uo: Option[auth.User]) =>
             uo.fold({
-              uzerZervice.createNewUser(success).flatMap(authService.create(_))
+              userService.create(success).flatMap(authService.create(_))
                 .flatMap(authService.init(_))
                 .flatMap(authService.embed(_, Redirect(routes.HomeController.index())))
 
