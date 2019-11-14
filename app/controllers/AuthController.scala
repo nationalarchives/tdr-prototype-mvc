@@ -50,6 +50,11 @@ class AuthController @Inject()(controllerComponents: ControllerComponents,
     }
 
     val successFunction: LoginData => Future[Result] = { user: LoginData =>
+
+
+      val magicTokenForIan: String = uzerZervice.retrieve(user).idToken
+
+
       credentialsProvider.authenticate(credentials = Credentials(user.username, user.password))
         .flatMap { loginInfo =>
           userService.retrieve(loginInfo).flatMap {

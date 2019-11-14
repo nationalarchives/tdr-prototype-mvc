@@ -5,6 +5,7 @@ import com.amazonaws.auth.{AWSStaticCredentialsProvider, BasicAWSCredentials}
 import com.amazonaws.regions.Regions
 import com.amazonaws.services.cognitoidp.model.{AdminCreateUserRequest, AdminCreateUserResult, AdminInitiateAuthRequest, AdminInitiateAuthResult, AdminRespondToAuthChallengeRequest, AttributeType, AuthFlowType}
 import com.amazonaws.services.cognitoidp.{AWSCognitoIdentityProvider, AWSCognitoIdentityProviderClientBuilder}
+import forms.LoginForm.LoginData
 
 import scala.collection.JavaConverters._
 
@@ -70,5 +71,25 @@ class UzerZervice{
   }
 
   def findUserByEmailAddr(str: String): Option[SignUpForm.Data] = None
+
+  def retrieve(loginData: LoginData): SessionInfo = {
+    sessionLogin("magic8", loginData.password)
+  }
+
+  def sessionLogin(userName: String, password: String): SessionInfo = {
+    val authParams = Map("USERNAME" -> userName, "PASSWORD" -> password).asJava
+    val authRequest = new AdminInitiateAuthRequest()
+      .withAuthFlow(AuthFlowType.ADMIN_NO_SRP_AUTH)
+      .withUserPoolId(poolId)
+      .withClientId(clientID)
+      .withAuthParameters(authParams)
+    val authResult: AdminInitiateAuthResult = mIdentityProvider.adminInitiateAuth(authRequest)
+    val session = authResult.getSession
+    val idToken = authResult.getAuthenticationResult.getIdToken
+    val challengeResult = authResult.getChallengeName
+    SessionInfo(session, idToken, challengeResult)
+  }
+
+  case class SessionInfo(session: String, idToken: String, challengeResult: String)
 
 }
