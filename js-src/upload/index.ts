@@ -1,6 +1,8 @@
 import Axios from "axios";
 import * as S3 from "aws-sdk/clients/s3";
+import { CognitoIdentityCredentials, config } from "aws-sdk/";
 import { ChecksumCalculator } from "./checksum";
+import * as Keycloak from "keycloak-js";
 
 interface HTMLInputTarget extends EventTarget {
     files?: InputElement;
@@ -34,14 +36,22 @@ export interface IWebkitEntry extends DataTransferItem {
     fullPath: string;
     file: (success: (file: File) => void) => void;
 }
-
-const upload: (checksumCalculator: ChecksumCalculator) => void = (checksumCalculator) => {
-    const uploadForm: HTMLFormElement | null = document.querySelector(
-        "#file-upload-form"
-    );
-    const commenceUploadForm: HTMLFormElement | null = document.querySelector(
-        "#commence-upload-form"
-    );
+    /// @ts-ignore
+    // const keycloak = new Keycloak<'native'>("http://localhost:9000/assets/keycloak/keycloak.json");
+    var keycloak = new Keycloak({
+    url: 'https://keycloak.tdr-prototype.co.uk/auth',
+    realm: 'tdr',
+    clientId: 'tdr-fe'
+});
+    keycloak.init({
+        onLoad: "login-required",
+        checkLoginIframe: false,
+        promiseType: "native"
+    });
+    console.log(keycloak.token)
+const upload: (checksumCalculator: ChecksumCalculator) => void = checksumCalculator => {
+    const uploadForm: HTMLFormElement | null = document.querySelector("#file-upload-form");
+    const commenceUploadForm: HTMLFormElement | null = document.querySelector("#commence-upload-form");
 
     if (uploadForm) {
         uploadForm.addEventListener("submit", ev => {
@@ -287,22 +297,26 @@ async function processFiles(files: TdrFile[], checksumCalculator: ChecksumCalcul
 
         for (const response of responses) {
             const fileData = response!.data;
-            const {
-                accessKeyId,
-                secretAccessKey,
-                sessionToken
-            } = response!.data.credentials;
-            const region = "eu-west-2";
-            var s3 = new S3({
-                accessKeyId,
-                secretAccessKey,
-                sessionToken,
-                region
+
+            const identityPoolId = "eu-west-2:ae127f6d-5bb1-4f85-bafc-b243923df54f";
+            config.update({
+                region: "eu-west-2",
+                credentials: new CognitoIdentityCredentials({
+                    IdentityPoolId: identityPoolId,
+                    Logins: {
+                        "keycloak.tdr-prototype.co.uk/auth/realms/tdr": keycloak.token
+                    }
+                })
             });
 
             for (const path of Object.keys(response.data!.pathMap)) {
                 const file = filePathToFile[path];
                 const id = fileData.pathMap[path];
+                const s3 = new S3({
+                    params: {
+                        Bucket: fileData.bucketName
+                    }
+                });
 
                 await uploadToS3(
                     s3,

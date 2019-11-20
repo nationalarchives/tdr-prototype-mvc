@@ -53,6 +53,20 @@ libraryDependencies += "com.typesafe.slick" %% "slick" % "3.3.0"
 libraryDependencies += "com.typesafe.slick" %% "slick-hikaricp" % "3.3.0"
 libraryDependencies += "org.postgresql" % "postgresql" % "42.2.5"
 
+val playPac4jVersion = "8.0.0"
+val pac4jVersion = "3.7.0"
+
+libraryDependencies ++= Seq(
+  "org.pac4j" %% "play-pac4j" % playPac4jVersion,
+  "org.pac4j" % "pac4j-http" % pac4jVersion,
+  "org.pac4j" % "pac4j-oidc" % pac4jVersion exclude("commons-io", "commons-io"),
+  "com.typesafe.play" % "play-cache_2.12" % "2.7.2",
+  "org.apache.shiro" % "shiro-core" % "1.4.0"
+)
+
+libraryDependencies += play.sbt.PlayImport.cacheApi
+libraryDependencies += "com.github.karelcemus" %% "play-redis" % "2.5.0"
+
 libraryDependencies += guice
 libraryDependencies += "com.iheart" %% "ficus" % "1.4.3"
 libraryDependencies += "net.codingwell" %% "scala-guice" % "4.1.0"

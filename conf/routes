@@ -50,3 +50,8 @@ POST    /totpSubmit                         controllers.TotpController.submit()
 GET     /enableTotp                         controllers.TotpController.enableTotp()
 +nocsrf
 POST    /enableTotpSubmit                   controllers.TotpController.enableTotpSubmit()
+
+# Routes necessary for play-pac4j
+GET         /callback                                @org.pac4j.play.CallbackController.callback()
+POST        /callback                                @org.pac4j.play.CallbackController.callback()
+GET         /logout                                  @org.pac4j.play.LogoutController.logout()
