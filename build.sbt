@@ -30,6 +30,7 @@ resolvers += Resolver.bintrayRepo("jarlakxen", "maven")
 resolvers += Resolver.jcenterRepo
 
 libraryDependencies ++= Seq(
+  "com.typesafe.akka" %% "akka-actor" % "2.5.26",
   "io.circe" %% "circe-core" %  "0.9.3",
   "io.circe" %% "circe-generic" %  "0.9.3",
   "io.circe" %% "circe-parser" %  "0.9.3",
