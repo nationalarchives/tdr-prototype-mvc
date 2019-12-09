@@ -55,5 +55,5 @@ const generateHash: (file: File, handleProgress: (percentage: number) => void) =
     }
 
     const result = sha256.finish().result!;
-    return bytes_to_hex(result);
+    return bytes_to_hex(result).trim();
 };
